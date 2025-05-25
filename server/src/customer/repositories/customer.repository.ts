@@ -9,18 +9,14 @@ export class CustomerRepository {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
-    return await this.prisma.customer.findMany({
-      include: {
-        orders: true,
-      },
-    });
+    return await this.prisma.customer.findMany({});
   }
 
   async findById(customerId: number, includeOrders = false) {
     return await this.prisma.customer.findUnique({
       include: {
         address: true,
-        orders: includeOrders,
+        // orders: includeOrders,
       },
       where: {
         id: customerId,
@@ -36,9 +32,10 @@ export class CustomerRepository {
         phone: customer.phone,
         address: {
           create: {
+            city: customer.city,
             complement: customer.complement,
-            district: customer.district,
-            landmark: customer.landmark,
+            neighborhood: customer.neighborhood,
+            reference: customer.reference,
             street: customer.street,
             number: customer.number,
           },
@@ -58,9 +55,10 @@ export class CustomerRepository {
         phone: customer.phone,
         address: {
           update: {
+            city: customer.city,
             complement: customer.complement,
-            district: customer.district,
-            landmark: customer.landmark,
+            neighborhood: customer.neighborhood,
+            reference: customer.reference,
             street: customer.street,
             number: customer.number,
           },

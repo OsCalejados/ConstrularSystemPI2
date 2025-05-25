@@ -3,7 +3,6 @@ import { OrderRepository } from '../repositories/order.repository';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { Injectable } from '@nestjs/common';
-import { ItemRepository } from 'src/item/repositories/item.repository';
 import { UpdateStatusDto } from '../dtos/update-status';
 import { UpdateNotesDto } from '../dtos/update-notes';
 
@@ -12,7 +11,6 @@ export class OrderService {
   constructor(
     private orderRepository: OrderRepository,
     private customerRepository: CustomerRepository,
-    private itemRepository: ItemRepository,
   ) {}
 
   async getAllOrders() {
@@ -70,9 +68,9 @@ export class OrderService {
       throw new Error(`Order not found`);
     }
 
-    if (existingOrder.items) {
-      await this.itemRepository.deleteMany(orderId);
-    }
+    // if (existingOrder.items) {
+    //   await this.itemRepository.deleteMany(orderId);
+    // }
 
     const updatedOrder = await this.orderRepository.update(orderId, order);
 

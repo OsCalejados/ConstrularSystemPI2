@@ -10,7 +10,9 @@ export class CreateCustomerDto {
 
   phone: string;
 
-  district: string;
+  city: string;
+
+  neighborhood: string;
 
   street: string;
 
@@ -18,5 +20,5 @@ export class CreateCustomerDto {
 
   complement: string;
 
-  landmark: string;
+  reference: string;
 }
