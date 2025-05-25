@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id      Int     @id @default(autoincrement())
+  name    String
+  email   String?
+  phone   String?
+  balance Float   @default(0)
+
+  orders  Order[]
+  address Address?
+
+  @@map("customers")
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  notes     String?
+  status    String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  items      Item[]
+  payments   Payment[]
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId Int
+
+  @@map("orders")
+}
+
+model Item {
+  id       Int    @id @default(autoincrement())
+  name     String
+  unit     String
+  quantity Int
+
+  order   Order? @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId Int?
+
+  @@map("items")
+}
+
+model Payment {
+  id    Int   @id @default(autoincrement())
+  value Float
+
+  order   Order? @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId Int?
+
+  @@map("payments")
+}
+
+model Address {
+  id         Int     @id @default(autoincrement())
+  district   String?
+  street     String?
+  number     String?
+  complement String?
+  landmark   String?
+
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId Int      @unique
+
+  @@map("addresses")
+}
