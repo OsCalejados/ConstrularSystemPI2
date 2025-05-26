@@ -10,28 +10,30 @@ export class OrderRepository {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
-    return await this.prisma.order.findMany({
-      include: {
-        customer: true,
-      },
-    });
+    return false;
+    // return await this.prisma.order.findMany({
+    //   include: {
+    //     customer: true,
+    //   },
+    // });
   }
 
   async findById(orderId: number) {
-    return await this.prisma.order.findUnique({
-      where: {
-        id: orderId,
-      },
-      include: {
-        items: true,
-        customer: {
-          include: {
-            address: true,
-          },
-        },
-        payments: true,
-      },
-    });
+    return false;
+    // return await this.prisma.order.findUnique({
+    //   where: {
+    //     id: orderId,
+    //   },
+    //   include: {
+    //     items: true,
+    //     customer: {
+    //       include: {
+    //         address: true,
+    //       },
+    //     },
+    //     payments: true,
+    //   },
+    // });
   }
 
   async findByCustomer(
@@ -40,103 +42,108 @@ export class OrderRepository {
     pageSize: number = 12,
     status?: string,
   ) {
-    const skip = (page - 1) * pageSize;
-
-    const totalItems = await this.prisma.order.count({
-      where: {
-        customerId: customerId,
-        ...(status && { status: status }),
-      },
-    });
-
-    const orders = await this.prisma.order.findMany({
-      include: {
-        items: true,
-      },
-      where: {
-        customerId: customerId,
-        ...(status && { status: status }),
-      },
-      skip: skip,
-      take: pageSize,
-    });
-
-    return {
-      totalItems,
-      orders,
-    };
+    return false;
+    // const skip = (page - 1) * pageSize;
+    // const totalItems = await this.prisma.order.count({
+    //   where: {
+    //     customerId: customerId,
+    //     ...(status && { status: status }),
+    //   },
+    // });
+    // const orders = await this.prisma.order.findMany({
+    //   include: {
+    //     items: true,
+    //   },
+    //   where: {
+    //     customerId: customerId,
+    //     ...(status && { status: status }),
+    //   },
+    //   skip: skip,
+    //   take: pageSize,
+    // });
+    // return {
+    //   totalItems,
+    //   orders,
+    // };
   }
 
   async create(order: CreateOrderDto) {
-    return await this.prisma.order.create({
-      data: {
-        customerId: order.customerId,
-        notes: order.notes,
-        status: order.status,
-        items: {
-          createMany: {
-            data: order.items,
-          },
-        },
-      },
-    });
+    return false;
+    // return await this.prisma.order.create({
+    //   data: {
+    //     customerId: order.customerId,
+    //     notes: order.notes,
+    //     status: order.status,
+    //     items: {
+    //       createMany: {
+    //         data: order.items,
+    //       },
+    //     },
+    //   },
+    // });
   }
 
   async update(orderId: number, order: UpdateOrderDto) {
-    return await this.prisma.order.update({
-      where: {
-        id: orderId,
-      },
-      data: {
-        customerId: order.customerId,
-        notes: order.notes,
-        status: order.status,
-        items: {
-          createMany: {
-            data: order.items,
-          },
-        },
-      },
-    });
+    return false;
+    // return await this.prisma.order.update({
+    //   where: {
+    //     id: orderId,
+    //   },
+    //   data: {
+    //     customerId: order.customerId,
+    //     notes: order.notes,
+    //     status: order.status,
+    //     items: {
+    //       createMany: {
+    //         data: order.items,
+    //       },
+    //     },
+    //   },
+    // });
   }
 
   async updateNotes(orderId: number, updateStatusDto: UpdateNotesDto) {
-    return await this.prisma.order.update({
-      where: {
-        id: orderId,
-      },
-      data: {
-        notes: updateStatusDto.notes,
-      },
-    });
+    return false;
+    // return await this.prisma.order.update({
+    //   where: {
+    //     id: orderId,
+    //   },
+    //   data: {
+    //     notes: updateStatusDto.notes,
+    //   },
+    // });
   }
 
   async updateStatus(orderId: number, updateStatusDto: UpdateStatusDto) {
-    return await this.prisma.order.update({
-      where: {
-        id: orderId,
-      },
-      data: {
-        status: updateStatusDto.status,
-      },
-    });
+    return false;
+    // return await this.prisma.order.update({
+    //   where: {
+    //     id: orderId,
+    //   },
+    //   data: {
+    //     status: updateStatusDto.status,
+    //   },
+    // });
   }
 
   async delete(orderId: number) {
-    return await this.prisma.order.delete({
-      where: {
-        id: orderId,
-      },
-    });
+    return false;
+    // return await this.prisma.order.delete({
+    //   where: {
+    //     id: orderId,
+    //   },
+    // });
   }
 
   async deleteMany(orderIds: number[]) {
-    return await this.prisma.order.deleteMany({
-      where: {
-        id: {
-          in: orderIds,
-        },
-      },
-    });
+    return false;
+
+    // return await this.prisma.order.deleteMany({
+    //   where: {
+    //     id: {
+    //       in: orderIds,
+    //     },
+    //   },
+    // });
   }
 }

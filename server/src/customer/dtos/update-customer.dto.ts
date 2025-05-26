@@ -9,7 +9,9 @@ export class UpdateCustomerDto {
 
   phone: string;
 
-  district: string;
+  city: string;
+
+  neighborhood: string;
 
   street: string;
 
@@ -17,5 +19,5 @@ export class UpdateCustomerDto {
 
   complement: string;
 
-  landmark: string;
+  reference: string;
 }
