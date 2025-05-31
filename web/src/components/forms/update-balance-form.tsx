@@ -2,11 +2,11 @@
 
 import InputError from '../ui/input-error'
 
-import { balanceFormSchema } from '@/lib/validations/balance-form-schema'
-import { currencyToFloat } from '@/utils/currencyToFloat'
+import { balanceFormSchema } from '@/validations/balance-form-schema'
+import { currencyToFloat } from '@/utils/currency-to-float'
 import { BalanceFormData } from '@/types/validations'
-import { formatCurrency } from '@/utils/formatCurrency'
-import { currencyMask } from '@/utils/currencyMask'
+import { formatCurrency } from '@/utils/format-currency'
+import { currencyMask } from '@/utils/currency-mask'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Label } from '../shadcnui/label'

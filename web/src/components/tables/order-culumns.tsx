@@ -2,7 +2,7 @@ import OrderOptions from '../dropdown-menus/order-options'
 
 import { OrderStatus } from '@/enums/order-status'
 import { ArrowUpDown } from 'lucide-react'
-import { formatDate } from '@/utils/formatDate'
+import { formatDate } from '@/utils/format-date'
 import { ColumnDef } from '@tanstack/react-table'
 import { Checkbox } from '../shadcnui/checkbox'
 import { Button } from '../shadcnui/button'

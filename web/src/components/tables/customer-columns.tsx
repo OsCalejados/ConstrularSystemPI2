@@ -1,6 +1,6 @@
 import CustomerOptions from '../dropdown-menus/customer-options'
 
-import { formatCurrency } from '@/utils/formatCurrency'
+import { formatCurrency } from '@/utils/format-currency'
 import { ArrowUpDown } from 'lucide-react'
 import { ColumnDef } from '@tanstack/react-table'
 import { Checkbox } from '../shadcnui/checkbox'
