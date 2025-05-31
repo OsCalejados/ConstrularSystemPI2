@@ -11,11 +11,12 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   name     String
-  username String @unique
+  username String  @unique
   password String
-  role     String @default("SELLER") // ADMINISTRATOR
+  role     String  @default("SELLER") // ADMINISTRATOR
+  Order    Order[]
 
   @@map("users")
 }
@@ -28,6 +29,7 @@ model Customer {
   balance Float   @default(0)
 
   address Address?
+  Order   Order[]
 
   @@map("customers")
 }
@@ -45,4 +47,56 @@ model Address {
   customerId Int      @unique
 
   @@map("addresses")
+}
+
+model Product {
+  id            Int      @id @default(autoincrement())
+  name          String
+  brand         String
+  unit          String
+  stockQuantity Decimal  @default(0.00)
+  costPrice     Decimal
+  profitMargin  Decimal
+  profit        Decimal
+  salePrice     Decimal
+  createdAt     DateTime
+
+  OrderItem OrderItem[]
+
+  @@map("products")
+}
+
+model Order {
+  id            Int      @id @default(autoincrement())
+  customerId    Int?
+  sellerId      Int
+  type          String
+  status        String
+  total         Decimal
+  discount      Decimal  @default(0.00)
+  paymentMethod String?
+  paid          Boolean  @default(false)
+  installments  Int? // Usado quando pagamento em cartão de crédito
+  amountPaid    Decimal? // Usado quando pagamento em dinheiro
+  createdAt     DateTime
+
+  customer Customer?   @relation(fields: [customerId], references: [id])
+  seller   User        @relation(fields: [sellerId], references: [id])
+  items    OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Decimal
+  unitPrice Decimal
+  total     Decimal
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
 }
