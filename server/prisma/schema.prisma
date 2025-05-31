@@ -16,6 +16,7 @@ model User {
   username String  @unique
   password String
   role     String  @default("SELLER") // ADMINISTRATOR
+  
   Order    Order[]
 
   @@map("users")
