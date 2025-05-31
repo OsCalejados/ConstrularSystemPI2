@@ -13,36 +13,33 @@ const config: Config = {
         primary: '#D9D9D9',
       },
       textColor: {
-        primary: '#333437',
+        primary: '#3f3f43',
         secondary: '#5C5E64',
-        terciary: '#767D92',
+        terciary: '#71717A',
         placeholder: '#ABB0B4',
-        contrast: '#7741FB',
+        contrast: '#f46801',
       },
       colors: {
-        danger: '#A94442',
-        warning: '#F28000',
-        contrast: '#7741FB',
         currency: '#43B682',
-        button: {
-          primary: {
-            DEFAULT: '#7741FB',
-            hover: '#6b3be2',
-          },
-          danger: {
-            DEFAULT: '#A94442',
-            hover: '#983d3b',
-          },
-          warning: {
-            DEFAULT: '#F28000',
-            hover: '#da7300',
-          },
+        border: '#D9D9D9',
+        primary: {
+          DEFAULT: '#f46801',
+          hover: '#dc5e01',
+        },
+        danger: {
+          DEFAULT: '#A94442',
+          hover: '#983d3b',
+        },
+        warning: {
+          DEFAULT: '#F3BB1B',
+          hover: '#dba818',
         },
         table: {
           header: '#F9F8FA',
         },
-        sidebar: {
-          hover: '#F6F6F6',
+        background: {
+          primary: '#F6F6F6',
+          secondary: '#ECF4F4',
         },
         status: {
           paid: '#43B682',
@@ -51,7 +48,17 @@ const config: Config = {
             alternative: '#A94442',
           },
         },
-        border: '#D9D9D9',
+        sidebar: {
+          hover: '#F6F6F6',
+          DEFAULT: 'hsl(var(--sidebar-background))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          primary: 'hsl(var(--sidebar-primary))',
+          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+          accent: 'hsl(var(--sidebar-accent))',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+          border: 'hsl(var(--sidebar-border))',
+          ring: 'hsl(var(--sidebar-ring))',
+        },
       },
     },
   },

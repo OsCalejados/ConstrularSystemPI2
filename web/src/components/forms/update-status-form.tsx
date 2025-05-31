@@ -3,7 +3,7 @@
 import InputError from '../ui/input-error'
 
 import { Controller, useForm } from 'react-hook-form'
-import { statusFormSchema } from '@/lib/validations/status-form-schema'
+import { statusFormSchema } from '@/validations/status-form-schema'
 import { StatusFormData } from '@/types/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { OrderStatus } from '@/enums/order-status'

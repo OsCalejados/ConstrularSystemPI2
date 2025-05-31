@@ -1,11 +1,20 @@
-import { CustomerModule } from './customer/customer.module';
+import { CustomerModule } from './modules/customer/customer.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
+import { Module } from '@nestjs/common';
+// import { APP_GUARD } from '@nestjs/core';
+// import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 // import { PaymentModule } from './payment/payment.module';
 // import { OrderModule } from './order/order.module';
-import { Module } from '@nestjs/common';
 
 @Module({
-  imports: [CustomerModule],
+  imports: [AuthModule, CustomerModule, UserModule],
   controllers: [],
-  providers: [],
+  providers: [
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: JwtAuthGuard,
+    // },
+  ],
 })
 export class AppModule {}
