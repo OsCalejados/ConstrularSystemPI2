@@ -9,11 +9,12 @@ export const customerFormSchema = z.object({
     z.literal(''),
     z.string().email({ message: 'Digite um e-mail válido' }),
   ]),
-  district: z.string(),
+  city: z.string(),
+  neighborhood: z.string(),
   street: z.string(),
   number: z
     .string()
     .max(6, { message: 'O campo "Número" aceita no máximo 6 caracteres.' }),
   complement: z.string(),
-  landmark: z.string(),
+  reference: z.string(),
 })

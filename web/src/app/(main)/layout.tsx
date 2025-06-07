@@ -29,7 +29,9 @@ export default function RootLayout({
       >
         <Providers>
           <Sidebar />
-          <main className="flex-1 h-full">{children}</main>
+          <main className="bg-background-primary flex-1 h-full">
+            {children}
+          </main>
         </Providers>
         <Toaster />
       </body>

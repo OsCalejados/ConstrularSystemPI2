@@ -75,7 +75,7 @@ export default function CustomerOptions({
             </Button>
           ) : (
             <Button
-              className="bg-button-primary gap-1 hover:bg-button-primary-hover px-0 w-10"
+              className="bg-primary hover:bg-primary-hover gap-1 px-0 w-10"
               onClick={(event) => event.stopPropagation()}
             >
               <MoreVertical className="h-4 w-4" />

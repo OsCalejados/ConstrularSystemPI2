@@ -71,17 +71,4 @@ export class CustomerService {
 
     await this.customerRepository.delete(customerId);
   }
-
-  async deleteCustomers(customerIds: number[]) {
-    for (const customerId of customerIds) {
-      const existingCustomer =
-        await this.customerRepository.findById(customerId);
-
-      if (!existingCustomer) {
-        throw new Error(`Customer with ID ${customerId} not found`);
-      }
-    }
-
-    await this.customerRepository.deleteMany(customerIds);
-  }
 }

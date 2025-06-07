@@ -11,6 +11,7 @@ const config: Config = {
     extend: {
       borderColor: {
         primary: '#D9D9D9',
+        contrast: '#f46801',
       },
       textColor: {
         primary: '#3f3f43',
@@ -38,7 +39,7 @@ const config: Config = {
           header: '#F9F8FA',
         },
         background: {
-          primary: '#F6F6F6',
+          primary: '#FCFBFC',
           secondary: '#ECF4F4',
         },
         status: {

@@ -85,14 +85,4 @@ export class CustomerRepository {
       },
     });
   }
-
-  async deleteMany(customerIds: number[]) {
-    return await this.prisma.customer.deleteMany({
-      where: {
-        id: {
-          in: customerIds,
-        },
-      },
-    });
-  }
 }
