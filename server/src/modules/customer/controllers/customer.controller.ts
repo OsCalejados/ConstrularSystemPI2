@@ -27,12 +27,12 @@ export class CustomerController {
   @Get(':id')
   async getCustomerById(
     @Param('id') customerId: string,
-    @Query('includeOrders', new DefaultValuePipe(false), ParseBoolPipe)
-    includeOrders: boolean,
+    @Query('includeAddress', new DefaultValuePipe(false), ParseBoolPipe)
+    includeAddress: boolean,
   ) {
     const id = parseInt(customerId);
 
-    return await this.customerService.getCustomerById(id, includeOrders);
+    return await this.customerService.getCustomerById(id, includeAddress);
   }
 
   @Post()

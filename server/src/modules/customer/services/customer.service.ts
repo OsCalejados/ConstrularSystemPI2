@@ -1,4 +1,4 @@
-import { CustomerRepository } from '../repositories/customer.repository';
+import { CustomerRepository } from '../interfaces/customer.repository.interface';
 import { CreateCustomerDto } from '../dtos/create-customer.dto';
 import { UpdateCustomerDto } from '../dtos/update-customer.dto';
 import { UpdateBalanceDto } from '../dtos/update-balance.dto';
@@ -13,11 +13,10 @@ export class CustomerService {
     return customers;
   }
 
-  async getCustomerById(customerId: number, includeOrders: boolean) {
-    const customer = await this.customerRepository.findById(
-      customerId,
-      includeOrders,
-    );
+  async getCustomerById(customerId: number, includeAddress: boolean) {
+    const customer = await this.customerRepository.findById(customerId, {
+      includeAddress: includeAddress,
+    });
 
     if (!customer) {
       throw new Error(`Customer not found`);
@@ -27,6 +26,10 @@ export class CustomerService {
   }
 
   async createCustomer(customer: CreateCustomerDto) {
+    if (!customer.name) {
+      throw new Error('Customer name must be defined');
+    }
+
     const createdCustomer = await this.customerRepository.create(customer);
 
     return createdCustomer;
@@ -37,6 +40,10 @@ export class CustomerService {
 
     if (!existingCustomer) {
       throw new Error(`Customer not found`);
+    }
+
+    if (!customer.name) {
+      throw new Error('Customer name must be defined');
     }
 
     const updatedCustomer = await this.customerRepository.update(
@@ -69,6 +76,6 @@ export class CustomerService {
       throw new Error(`Customer not found`);
     }
 
-    await this.customerRepository.delete(customerId);
+    await this.customerRepository.deleteById(customerId);
   }
 }
