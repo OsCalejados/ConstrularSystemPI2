@@ -13,6 +13,7 @@ services:
       - /app/node_modules
     environment:
       - DATABASE_URL=postgresql://postgres:secret@db:5432/pdv_db
+      - JWT_SECRET=secret
       - NODE_ENV=development
     depends_on:
       - db

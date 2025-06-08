@@ -1,4 +1,3 @@
-import { DeleteCustomersDto } from '../dtos/delete-customers.dto';
 import { UpdateCustomerDto } from '../dtos/update-customer.dto';
 import { CreateCustomerDto } from '../dtos/create-customer.dto';
 import { UpdateBalanceDto } from '../dtos/update-balance.dto';
@@ -28,12 +27,12 @@ export class CustomerController {
   @Get(':id')
   async getCustomerById(
     @Param('id') customerId: string,
-    @Query('includeOrders', new DefaultValuePipe(false), ParseBoolPipe)
-    includeOrders: boolean,
+    @Query('includeAddress', new DefaultValuePipe(false), ParseBoolPipe)
+    includeAddress: boolean,
   ) {
     const id = parseInt(customerId);
 
-    return await this.customerService.getCustomerById(id, includeOrders);
+    return await this.customerService.getCustomerById(id, includeAddress);
   }
 
   @Post()
@@ -66,12 +65,5 @@ export class CustomerController {
     const id = parseInt(customerId);
 
     await this.customerService.deleteCustomer(id);
-  }
-
-  @Delete()
-  async deleteCustomers(@Body() deleteCustomersDto: DeleteCustomersDto) {
-    const { customerIds } = deleteCustomersDto;
-
-    return await this.customerService.deleteCustomers(customerIds);
   }
 }

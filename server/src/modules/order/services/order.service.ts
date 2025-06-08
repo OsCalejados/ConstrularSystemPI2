@@ -1,5 +1,5 @@
-import { CustomerRepository } from 'src/modules/customer/repositories/customer.repository';
 import { OrderRepository } from '../repositories/order.repository';
+import { CustomerRepository } from 'src/modules/customer/interfaces/customer.repository.interface';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { Injectable } from '@nestjs/common';

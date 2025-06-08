@@ -25,7 +25,7 @@ export default function LoginForm() {
     mutationFn: login,
     onSuccess: async (data) => {
       await saveSession(data)
-      router.replace('/orders')
+      router.replace('/customers')
     },
     onError: (e: AxiosError) => {
       if (e.response && e.response.status === 401) {

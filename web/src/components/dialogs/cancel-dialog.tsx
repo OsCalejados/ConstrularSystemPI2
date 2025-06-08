@@ -34,7 +34,7 @@ export default function CancelDialog({ children }: CancelDialogProps) {
         <AlertDialogFooter>
           <AlertDialogCancel>Voltar</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-button-warning hover:bg-button-warning-hover"
+            className="bg-warning hover:bg-warning-hover"
             onClick={router.back}
           >
             Sim, cancelar

@@ -3,29 +3,38 @@ import { UpdateCustomerDto } from '../dtos/update-customer.dto';
 import { UpdateBalanceDto } from '../dtos/update-balance.dto';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { CustomerRepository } from '../interfaces/customer.repository.interface';
+import { CustomerMapper } from '../mappers/customer.mapper';
+import { CustomerDto } from '../dtos/customer.dto';
 
 @Injectable()
-export class CustomerRepository {
+export class PrismaCustomerRepository implements CustomerRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
-    return await this.prisma.customer.findMany({});
+  async findAll(): Promise<CustomerDto[]> {
+    const customers = await this.prisma.customer.findMany({});
+
+    return customers.map((c) => CustomerMapper.toDto(c));
   }
 
-  async findById(customerId: number, includeOrders = false) {
-    return await this.prisma.customer.findUnique({
+  async findById(
+    customerId: number,
+    options?: { includeAddress?: boolean; includeOrders?: boolean },
+  ): Promise<CustomerDto> {
+    const customer = await this.prisma.customer.findUnique({
       include: {
-        address: true,
-        // orders: includeOrders,
+        address: options.includeAddress,
       },
       where: {
         id: customerId,
       },
     });
+
+    return CustomerMapper.toDto(customer);
   }
 
-  async create(customer: CreateCustomerDto) {
-    return await this.prisma.customer.create({
+  async create(customer: CreateCustomerDto): Promise<CustomerDto> {
+    const createdCustomer = await this.prisma.customer.create({
       data: {
         name: customer.name,
         email: customer.email,
@@ -42,10 +51,15 @@ export class CustomerRepository {
         },
       },
     });
+
+    return CustomerMapper.toDto(createdCustomer);
   }
 
-  async update(customerId: number, customer: UpdateCustomerDto) {
-    return await this.prisma.customer.update({
+  async update(
+    customerId: number,
+    customer: UpdateCustomerDto,
+  ): Promise<CustomerDto> {
+    const updatedCustomer = await this.prisma.customer.update({
       where: {
         id: customerId,
       },
@@ -65,10 +79,15 @@ export class CustomerRepository {
         },
       },
     });
+
+    return CustomerMapper.toDto(updatedCustomer);
   }
 
-  async updateBalance(customerId: number, updateBalanceDto: UpdateBalanceDto) {
-    return await this.prisma.customer.update({
+  async updateBalance(
+    customerId: number,
+    updateBalanceDto: UpdateBalanceDto,
+  ): Promise<CustomerDto> {
+    const updatedCustomer = await this.prisma.customer.update({
       where: {
         id: customerId,
       },
@@ -76,23 +95,17 @@ export class CustomerRepository {
         balance: updateBalanceDto.balance,
       },
     });
+
+    return CustomerMapper.toDto(updatedCustomer);
   }
 
-  async delete(customerId: number) {
-    return await this.prisma.customer.delete({
+  async deleteById(customerId: number): Promise<CustomerDto> {
+    const deletedCustomer = await this.prisma.customer.delete({
       where: {
         id: customerId,
       },
     });
-  }
 
-  async deleteMany(customerIds: number[]) {
-    return await this.prisma.customer.deleteMany({
-      where: {
-        id: {
-          in: customerIds,
-        },
-      },
-    });
+    return CustomerMapper.toDto(deletedCustomer);
   }
 }

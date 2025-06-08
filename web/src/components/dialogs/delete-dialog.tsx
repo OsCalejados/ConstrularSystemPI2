@@ -36,7 +36,7 @@ export default function DeleteDialog({
           Cancelar
         </AlertDialogCancel>
         <AlertDialogAction
-          className="bg-button-danger hover:bg-button-danger-hover"
+          className="bg-danger hover:bg-danger-hover"
           onClick={(event) => {
             event.stopPropagation()
             onConfirm()

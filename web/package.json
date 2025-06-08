@@ -4,6 +4,7 @@
   "private": true,
   "main": "build/main.js",
   "scripts": {
+    "next": "next",
     "next:dev": "next dev",
     "next:build": "next build",
     "next:start": "next start",

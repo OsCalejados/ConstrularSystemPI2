@@ -14,10 +14,15 @@
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
+    "resolveJsonModule": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@src/*": ["./src/*"],
+      "@test/*": ["./test/*"]
+    }
   },
   "watchOptions": {
     "watchFile": "dynamicPriorityPolling",

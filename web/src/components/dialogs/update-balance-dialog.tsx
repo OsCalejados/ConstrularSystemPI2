@@ -37,7 +37,7 @@ export default function UpdateBalanceDialog({
           <Button
             type="submit"
             form="balance-form"
-            className="bg-button-warning hover:bg-button-warning-hover"
+            className="bg-warning hover:bg-warning-hover"
           >
             Salvar
           </Button>

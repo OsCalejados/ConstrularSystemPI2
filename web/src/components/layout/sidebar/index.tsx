@@ -103,7 +103,7 @@ export default function Sidebar() {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive(item)}
-                    className="data-[active='true']:border-primary data-[active='true']:border"
+                    className="data-[active='true']:border-contrast data-[active='true']:border"
                   >
                     <Link href={item.url}>
                       <item.icon />

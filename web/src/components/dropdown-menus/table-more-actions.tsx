@@ -1,7 +1,9 @@
-import DeleteManyDialog from '../dialogs/delete-many-dialog'
-
 import { AlertDialog, AlertDialogTrigger } from '../shadcnui/alert-dialog'
-import { TrashSimple } from '@phosphor-icons/react/dist/ssr'
+import {
+  CaretDownIcon,
+  TrashSimple,
+  TrashSimpleIcon,
+} from '@phosphor-icons/react/dist/ssr'
 import { CaretDown } from '@phosphor-icons/react'
 import { Customer } from '@/types/customer'
 import { Button } from '../shadcnui/button'
@@ -57,7 +59,7 @@ export default function TableMoreActions<TData extends DataType>({
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="gap-1 font-normal">
             <span>Mais ações</span>
-            <CaretDown size={16} />
+            <CaretDownIcon size={16} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -68,18 +70,18 @@ export default function TableMoreActions<TData extends DataType>({
               className="w-full text-danger gap-2"
               onClick={(event) => event.stopPropagation()}
             >
-              <TrashSimple size={16} />
+              <TrashSimpleIcon size={16} />
               <span>Excluir selecionados ({data.length})</span>
             </AlertDialogTrigger>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <DeleteManyDialog
+      {/* <DeleteManyDialog
         onConfirm={variant === 'customer' ? onDeleteCustomers : onDeleteOrders}
         variant={variant}
         quantity={data.length}
-      />
+      /> */}
     </AlertDialog>
   )
 }

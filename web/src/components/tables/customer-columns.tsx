@@ -3,34 +3,33 @@ import CustomerOptions from '../dropdown-menus/customer-options'
 import { formatCurrency } from '@/utils/format-currency'
 import { ArrowUpDown } from 'lucide-react'
 import { ColumnDef } from '@tanstack/react-table'
-import { Checkbox } from '../shadcnui/checkbox'
 import { Customer } from '@/types/customer'
 import { Button } from '../shadcnui/button'
 
 export const costumerColumns: ColumnDef<Customer>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        onClick={(event) => event.stopPropagation()}
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   id: 'select',
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && 'indeterminate')
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //       onClick={(event) => event.stopPropagation()}
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: 'name',
     header: ({ column }) => {
@@ -79,11 +78,6 @@ export const costumerColumns: ColumnDef<Customer>[] = [
 
       return <div>{formatted}</div>
     },
-  },
-  {
-    header: 'Pedidos',
-    accessorKey: 'orders',
-    accessorFn: (row) => row.orders.length,
   },
   {
     id: 'actions',

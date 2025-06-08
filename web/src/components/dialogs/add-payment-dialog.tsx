@@ -42,7 +42,7 @@ export default function AddPaymentDialog({
             <Button
               type="submit"
               form="balance-form"
-              className="bg-button-primary hover:bg-button-primary-hover"
+              className="bg-primary hover:bg-primary-hover"
             >
               Adicionar
             </Button>
