@@ -1,12 +1,12 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { MesureUnit } from '../enums/mesure-unit.enum';
+import { MeasureUnit } from '../../../common/enums/measure-unit.enum';
 
 export class ItemDto {
   @IsNotEmpty()
   name: string;
 
-  @IsEnum(MesureUnit)
-  unit: MesureUnit;
+  @IsEnum(MeasureUnit)
+  unit: MeasureUnit;
 
   @IsNotEmpty()
   quantity: number;

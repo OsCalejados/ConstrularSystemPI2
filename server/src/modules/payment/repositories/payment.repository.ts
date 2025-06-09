@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { Injectable } from '@nestjs/common';

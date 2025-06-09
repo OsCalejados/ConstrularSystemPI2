@@ -14,9 +14,14 @@ import { PrismaCustomerRepository } from '../customer/repositories/prisma-custom
     PrismaService,
     OrderService,
     {
+      provide: 'IOrderService', // Token para a interface
+      useExisting: OrderService, // Reutiliza a instância de OrderService já registrada
+    },
+    {
       provide: CustomerRepository,
       useClass: PrismaCustomerRepository,
     },
   ],
+  exports: [OrderService, 'IOrderService'],
 })
 export class OrderModule {}

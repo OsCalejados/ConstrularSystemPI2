@@ -1,5 +1,13 @@
 #!/bin/sh
 
+set -e # Interrompe o script em caso de erro
+
+# Verifica se o comando nc está disponível
+if ! command -v nc >/dev/null 2>&1; then
+  echo "❌ O comando 'nc' (Netcat) não está disponível. Certifique-se de que ele está instalado."
+  exit 1
+fi
+
 # Espera o Postgres estar disponível
 until nc -z db 5432; do
   echo "⏳ Aguardando o PostgreSQL ficar disponível..."
@@ -21,12 +29,13 @@ fi
 echo "⏳ Gerando Prisma Client..."
 npx prisma generate
 
+# Executa o seed para criar o usuário admin
 echo "⏳ Criando Usuário Admin..."
 npm run prisma:seed
 
 # Inicia o Prisma Studio
 echo "⏳ Iniciando Prisma Studio..."
-npx prisma studio --port 5555 &
+npx prisma studio --port 5555
 
 # Inicia a aplicação
 echo "⏳ Iniciando Backend..."
