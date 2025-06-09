@@ -41,14 +41,12 @@ export class ProductRepository implements IProductRepository {
     productId: number,
     data: Prisma.ProductUpdateInput,
   ): Promise<Product | null> {
-    return this.prisma.product
-      .update({
-        where: {
-          id: productId,
-        },
-        data,
-      })
-      .catch(() => null);
+    return this.prisma.product.update({
+      where: {
+        id: productId,
+      },
+      data,
+    });
   }
 
   async delete(productId: number): Promise<void> {
@@ -60,11 +58,11 @@ export class ProductRepository implements IProductRepository {
   }
 
   async existsByName(productName: string): Promise<boolean> {
-    const product = await this.prisma.product.findFirst({
+    const count = await this.prisma.product.count({
       where: {
         name: productName,
       },
     });
-    return !!product;
+    return count > 0;
   }
 }

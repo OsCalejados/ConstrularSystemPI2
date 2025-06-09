@@ -70,143 +70,169 @@ describe('ProductController', () => {
     mockProductService.deleteProduct.mockClear();
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  describe('deve ser definido', () => {
+    it('should be defined', () => {
+      expect(controller).toBeDefined();
+    });
   });
 
   describe('getAllProducts', () => {
-    it('should return an array of products', async () => {
-      const result: ProductDto[] = [mockProductDto];
-      mockProductService.getAllProducts.mockResolvedValue(result);
+    describe('deve retornar um array de produtos', () => {
+      it('should return an array of products', async () => {
+        const result: ProductDto[] = [mockProductDto];
+        mockProductService.getAllProducts.mockResolvedValue(result);
 
-      expect(await controller.getAllProducts()).toBe(result);
-      expect(productService.getAllProducts).toHaveBeenCalledTimes(1);
+        expect(await controller.getAllProducts()).toBe(result);
+        expect(productService.getAllProducts).toHaveBeenCalledTimes(1);
+      });
     });
 
-    it('should return an empty array if no products exist', async () => {
-      const result: ProductDto[] = [];
-      mockProductService.getAllProducts.mockResolvedValue(result);
+    describe('deve retornar um array vazio se não existirem produtos', () => {
+      it('should return an empty array if no products exist', async () => {
+        const result: ProductDto[] = [];
+        mockProductService.getAllProducts.mockResolvedValue(result);
 
-      expect(await controller.getAllProducts()).toBe(result);
-      expect(productService.getAllProducts).toHaveBeenCalledTimes(1);
+        expect(await controller.getAllProducts()).toBe(result);
+        expect(productService.getAllProducts).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
   describe('getProductById', () => {
-    it('should return a single product if found', async () => {
-      mockProductService.getProductById.mockResolvedValue(mockProductDto);
+    describe('deve retornar um único produto se encontrado', () => {
+      it('should return a single product if found', async () => {
+        mockProductService.getProductById.mockResolvedValue(mockProductDto);
 
-      expect(await controller.getProductById(1)).toBe(mockProductDto);
-      expect(productService.getProductById).toHaveBeenCalledWith(1);
-      expect(productService.getProductById).toHaveBeenCalledTimes(1);
+        expect(await controller.getProductById(1)).toBe(mockProductDto);
+        expect(productService.getProductById).toHaveBeenCalledWith(1);
+        expect(productService.getProductById).toHaveBeenCalledTimes(1);
+      });
     });
 
-    it('should throw AppException if product is not found', async () => {
-      const errorMessage = 'Product not found.';
-      mockProductService.getProductById.mockRejectedValue(
-        new AppException(errorMessage, HttpStatus.NOT_FOUND),
-      );
+    describe('deve lançar AppException se o produto não for encontrado', () => {
+      it('should throw AppException if product is not found', async () => {
+        const errorMessage = 'Product not found.';
+        mockProductService.getProductById.mockRejectedValue(
+          new AppException(errorMessage, HttpStatus.NOT_FOUND),
+        );
 
-      await expect(controller.getProductById(999)).rejects.toThrow(
-        new AppException(errorMessage, HttpStatus.NOT_FOUND),
-      );
-      expect(productService.getProductById).toHaveBeenCalledWith(999);
+        await expect(controller.getProductById(999)).rejects.toThrow(
+          new AppException(errorMessage, HttpStatus.NOT_FOUND),
+        );
+        expect(productService.getProductById).toHaveBeenCalledWith(999);
+      });
     });
   });
 
   describe('createProduct', () => {
-    it('should create and return a new product', async () => {
-      const createdProduct = {
-        ...mockProductDto,
-        ...mockCreateProductDto,
-        id: 2,
-      };
-      mockProductService.createProduct.mockResolvedValue(createdProduct);
+    describe('deve criar e retornar um novo produto', () => {
+      it('should create and return a new product', async () => {
+        const createdProduct = {
+          ...mockProductDto,
+          ...mockCreateProductDto,
+          id: 2,
+        };
+        mockProductService.createProduct.mockResolvedValue(createdProduct);
 
-      expect(await controller.createProduct(mockCreateProductDto)).toBe(
-        createdProduct,
-      );
-      expect(productService.createProduct).toHaveBeenCalledWith(
-        mockCreateProductDto,
-      );
-      expect(productService.createProduct).toHaveBeenCalledTimes(1);
+        expect(await controller.createProduct(mockCreateProductDto)).toBe(
+          createdProduct,
+        );
+        expect(productService.createProduct).toHaveBeenCalledWith(
+          mockCreateProductDto,
+        );
+        expect(productService.createProduct).toHaveBeenCalledTimes(1);
+      });
     });
 
-    it('should throw AppException if creation fails (e.g., validation error)', async () => {
-      const errorMessage = 'Invalid product data.';
-      mockProductService.createProduct.mockRejectedValue(
-        new AppException(errorMessage, HttpStatus.BAD_REQUEST),
-      );
+    describe('deve lançar AppException se a criação falhar (ex: erro de validação)', () => {
+      it('should throw AppException if creation fails (e.g., validation error)', async () => {
+        const errorMessage = 'Invalid product data.';
+        mockProductService.createProduct.mockRejectedValue(
+          new AppException(errorMessage, HttpStatus.BAD_REQUEST),
+        );
 
-      await expect(
-        controller.createProduct(mockCreateProductDto),
-      ).rejects.toThrow(new AppException(errorMessage, HttpStatus.BAD_REQUEST));
+        await expect(
+          controller.createProduct(mockCreateProductDto),
+        ).rejects.toThrow(
+          new AppException(errorMessage, HttpStatus.BAD_REQUEST),
+        );
+      });
     });
   });
 
   describe('updateProduct', () => {
-    it('should update and return the product', async () => {
-      const productId = 1;
-      const updatedProduct = { ...mockProductDto, ...mockUpdateProductDto };
-      mockProductService.updateProduct.mockResolvedValue(updatedProduct);
+    describe('deve atualizar e retornar o produto', () => {
+      it('should update and return the product', async () => {
+        const productId = 1;
+        const updatedProduct = { ...mockProductDto, ...mockUpdateProductDto };
+        mockProductService.updateProduct.mockResolvedValue(updatedProduct);
 
-      expect(
-        await controller.updateProduct(productId, mockUpdateProductDto),
-      ).toBe(updatedProduct);
-      expect(productService.updateProduct).toHaveBeenCalledWith(
-        productId,
-        mockUpdateProductDto,
-      );
-      expect(productService.updateProduct).toHaveBeenCalledTimes(1);
+        expect(
+          await controller.updateProduct(productId, mockUpdateProductDto),
+        ).toBe(updatedProduct);
+        expect(productService.updateProduct).toHaveBeenCalledWith(
+          productId,
+          mockUpdateProductDto,
+        );
+        expect(productService.updateProduct).toHaveBeenCalledTimes(1);
+      });
     });
 
-    it('should throw AppException if product to update is not found', async () => {
-      const productId = 999;
-      const errorMessage = 'Product not found.';
-      mockProductService.updateProduct.mockRejectedValue(
-        new AppException(errorMessage, HttpStatus.NOT_FOUND),
-      );
+    describe('deve lançar AppException se o produto a ser atualizado não for encontrado', () => {
+      it('should throw AppException if product to update is not found', async () => {
+        const productId = 999;
+        const errorMessage = 'Product not found.';
+        mockProductService.updateProduct.mockRejectedValue(
+          new AppException(errorMessage, HttpStatus.NOT_FOUND),
+        );
 
-      await expect(
-        controller.updateProduct(productId, mockUpdateProductDto),
-      ).rejects.toThrow(new AppException(errorMessage, HttpStatus.NOT_FOUND));
+        await expect(
+          controller.updateProduct(productId, mockUpdateProductDto),
+        ).rejects.toThrow(new AppException(errorMessage, HttpStatus.NOT_FOUND));
+      });
     });
   });
 
   describe('deleteProduct', () => {
-    it('should delete a product successfully', async () => {
-      const productId = 1;
-      mockProductService.deleteProduct.mockResolvedValue(null);
+    describe('deve deletar um produto com sucesso', () => {
+      it('should delete a product successfully', async () => {
+        const productId = 1;
+        mockProductService.deleteProduct.mockResolvedValue(null); // Ajustado para null, já que deleteProduct retorna Promise<void>
 
-      await expect(
-        controller.deleteProduct(productId),
-      ).resolves.toBeUndefined();
-      expect(productService.deleteProduct).toHaveBeenCalledWith(productId);
-      expect(productService.deleteProduct).toHaveBeenCalledTimes(1);
+        await expect(
+          controller.deleteProduct(productId),
+        ).resolves.toBeUndefined();
+        expect(productService.deleteProduct).toHaveBeenCalledWith(productId);
+        expect(productService.deleteProduct).toHaveBeenCalledTimes(1);
+      });
     });
 
-    it('should throw AppException if product to delete is not found', async () => {
-      const productId = 999;
-      const errorMessage = 'Product not found.';
-      mockProductService.deleteProduct.mockRejectedValue(
-        new AppException(errorMessage, HttpStatus.NOT_FOUND),
-      );
+    describe('deve lançar AppException se o produto a ser deletado não for encontrado', () => {
+      it('should throw AppException if product to delete is not found', async () => {
+        const productId = 999;
+        const errorMessage = 'Product not found.';
+        mockProductService.deleteProduct.mockRejectedValue(
+          new AppException(errorMessage, HttpStatus.NOT_FOUND),
+        );
 
-      await expect(controller.deleteProduct(productId)).rejects.toThrow(
-        new AppException(errorMessage, HttpStatus.NOT_FOUND),
-      );
+        await expect(controller.deleteProduct(productId)).rejects.toThrow(
+          new AppException(errorMessage, HttpStatus.NOT_FOUND),
+        );
+      });
     });
 
-    it('should throw AppException if product has sales history', async () => {
-      const productId = 1;
-      const errorMessage = 'Cannot remove product. It has a sales history.';
-      mockProductService.deleteProduct.mockRejectedValue(
-        new AppException(errorMessage, HttpStatus.BAD_REQUEST),
-      );
+    describe('deve lançar AppException se o produto tiver histórico de vendas', () => {
+      it('should throw AppException if product has sales history', async () => {
+        const productId = 1;
+        const errorMessage = 'Cannot remove product. It has a sales history.';
+        mockProductService.deleteProduct.mockRejectedValue(
+          new AppException(errorMessage, HttpStatus.BAD_REQUEST),
+        );
 
-      await expect(controller.deleteProduct(productId)).rejects.toThrow(
-        new AppException(errorMessage, HttpStatus.BAD_REQUEST),
-      );
+        await expect(controller.deleteProduct(productId)).rejects.toThrow(
+          new AppException(errorMessage, HttpStatus.BAD_REQUEST),
+        );
+      });
     });
   });
 });

@@ -121,46 +121,58 @@ describe('ProductService (Integration)', () => {
     delete process.env.DATABASE_URL;
   }, 60000);
 
-  it('should be defined', () => {
-    expect(productService).toBeDefined();
+  describe('deve ser definido', () => {
+    it('should be defined', () => {
+      expect(productService).toBeDefined();
+    });
   });
 
   describe('getAllProducts', () => {
-    it('should return all created products', async () => {
-      await prismaTestClient.product.createMany({
-        data: [
-          { ...baseCreateDto, name: 'Product A', createdAt: new Date() } as any,
-          {
-            ...baseCreateDto,
-            name: 'Product B',
-            brand: 'Other Brand',
-            createdAt: new Date(),
-          } as any,
-        ],
+    describe('deve retornar todos os produtos criados', () => {
+      it('should return all created products', async () => {
+        await prismaTestClient.product.createMany({
+          data: [
+            {
+              ...baseCreateDto,
+              name: 'Product A',
+              createdAt: new Date(),
+            } as any,
+            {
+              ...baseCreateDto,
+              name: 'Product B',
+              brand: 'Other Brand',
+              createdAt: new Date(),
+            } as any,
+          ],
+        });
+
+        const products = await productService.getAllProducts();
+        expect(products).toHaveLength(2);
+        expect(products.map((p) => p.name).sort()).toEqual(
+          ['Product A', 'Product B'].sort(),
+        );
       });
-
-      const products = await productService.getAllProducts();
-      expect(products).toHaveLength(2);
-      expect(products.map((p) => p.name).sort()).toEqual(
-        ['Product A', 'Product B'].sort(),
-      );
     });
 
-    it('should return an empty array if no products exist', async () => {
-      const products = await productService.getAllProducts();
-      expect(products).toHaveLength(0);
+    describe('deve retornar um array vazio se não existirem produtos', () => {
+      it('should return an empty array if no products exist', async () => {
+        const products = await productService.getAllProducts();
+        expect(products).toHaveLength(0);
+      });
     });
 
-    it('should throw AppException with INTERNAL_SERVER_ERROR if repository findAll fails unexpectedly', async () => {
-      jest
-        .spyOn(productService['productRepository'], 'findAll')
-        .mockRejectedValueOnce(new Error('DB connection error'));
-      await expect(productService.getAllProducts()).rejects.toThrow(
-        new AppException(
-          'Failed to retrieve products from database.',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        ),
-      );
+    describe('deve lançar AppException com INTERNAL_SERVER_ERROR se o repositório findAll falhar inesperadamente', () => {
+      it('should throw AppException with INTERNAL_SERVER_ERROR if repository findAll fails unexpectedly', async () => {
+        jest
+          .spyOn(productService['productRepository'], 'findAll')
+          .mockRejectedValueOnce(new Error('DB connection error'));
+        await expect(productService.getAllProducts()).rejects.toThrow(
+          new AppException(
+            'Failed to retrieve products from database.',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          ),
+        );
+      });
     });
   });
 
