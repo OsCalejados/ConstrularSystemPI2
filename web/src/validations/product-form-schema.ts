@@ -20,4 +20,6 @@ export const productFormSchema = z.object({
     .number({ message: 'Campo obrigatório.' })
     .min(0, { message: 'A margem deve ser maior ou igual a 0.' })
     .max(100, { message: 'A margem deve ser menor ou igual a 100%.' }),
+  profit: z.number().optional(),
+  salePrice: z.number().optional(),
 })
