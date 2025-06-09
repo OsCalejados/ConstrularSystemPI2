@@ -7,7 +7,7 @@ export const productFormSchema = z.object({
   brand: z
     .string()
     .min(2, { message: 'Insira uma marca com pelo menos 2 caracteres.' }),
-  unit: z.enum(['UN', 'KG', 'MT'], {
+  unit: z.enum(['UN', 'KG', 'M', 'M²', 'M³', 'SC', 'GL', 'L'], {
     message: 'Selecione uma unidade válida.',
   }),
   stockQuantity: z

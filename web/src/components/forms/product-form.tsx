@@ -90,7 +90,12 @@ export default function ProductForm({ onSubmit }: ProductFormProps) {
                   <SelectContent>
                     <SelectItem value="UN">UN</SelectItem>
                     <SelectItem value="KG">KG</SelectItem>
-                    <SelectItem value="MT">MT</SelectItem>
+                    <SelectItem value="M">M</SelectItem>
+                    <SelectItem value="M²">M²</SelectItem>
+                    <SelectItem value="M³">M³</SelectItem>
+                    <SelectItem value="SC">SC</SelectItem>
+                    <SelectItem value="GL">GL</SelectItem>
+                    <SelectItem value="L">L</SelectItem>
                   </SelectContent>
                 </Select>
               )}

@@ -12,9 +12,17 @@ export async function getProducts() {
 }
 
 export async function getProductById(productId: number | string) {
-  const response = await api.get(`products/${productId}`)
+  // Temporariamente usando dados mock
+  // TODO: Descomentar quando o backend estiver pronto
+  // const response = await api.get(`products/${productId}`)
+  // return response.data
 
-  return response.data
+  const product = products.find((p) => p.id === Number(productId))
+  if (!product) {
+    throw new Error('Produto não encontrado')
+  }
+
+  return product
 }
 
 export async function createProduct(productFormData: ProductFormData) {

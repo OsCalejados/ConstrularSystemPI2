@@ -23,3 +23,5 @@ export type NotesFormData = z.infer<typeof notesFormSchema>
 export type LoginFormData = z.infer<typeof loginFormSchema>
 
 export type ProductFormData = z.infer<typeof productFormSchema>
+
+export const productSchema = productFormSchema
