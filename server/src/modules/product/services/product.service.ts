@@ -13,7 +13,7 @@ import { AppException } from '@src/common/exceptions/app.exception';
 export class ProductService implements IProductService {
   constructor(
     @Inject('IProductRepository') private productRepository: IProductRepository,
-    @Inject('IOrderService') private orderService: IOrderService, // Assuming IOrderService is defined elsewhere
+    @Inject('IOrderService') private orderService: IOrderService,
   ) {}
 
   async getAllProducts(): Promise<ProductDto[]> {
@@ -75,7 +75,7 @@ export class ProductService implements IProductService {
   }
 
   async createProduct(data: CreateProductDto): Promise<ProductDto> {
-    const validation = this.checkIfPropertiesAreValid(data, false); // false para isUpdate
+    const validation = this.checkIfPropertiesAreValid(data, false);
     if (!validation.isValid) {
       throw new AppException(
         validation.error || 'Invalid product data',
@@ -146,7 +146,7 @@ export class ProductService implements IProductService {
       throw new AppException('Product not found.', HttpStatus.NOT_FOUND);
     }
 
-    const validation = this.checkIfPropertiesAreValid(data, true); // true para isUpdate
+    const validation = this.checkIfPropertiesAreValid(data, true);
     if (!validation.isValid) {
       throw new AppException(
         validation.error || 'Invalid product data',
@@ -157,7 +157,6 @@ export class ProductService implements IProductService {
     }
 
     try {
-      // Validação de nome duplicado, somente se o nome estiver sendo alterado e for diferente do nome atual
       if (data.name && data.name !== productToUpdate.name) {
         const existingProductsWithNewName =
           await this.productRepository.getAllByName(data.name);
@@ -274,7 +273,6 @@ export class ProductService implements IProductService {
     const providedProperties = Object.keys(data) as (keyof CreateProductDto)[];
 
     if (!isUpdate) {
-      // Para CREATE, todas as propriedades esperadas devem estar presentes e não nulas/undefined
       const missingProperties = expectedProperties.filter(
         (prop) => !(prop in data) || data[prop] == null,
       );
@@ -288,16 +286,13 @@ export class ProductService implements IProductService {
       }
     }
 
-    // Validações de valor para propriedades fornecidas (tanto para CREATE quanto para UPDATE)
-    // Usar providedProperties para update, expectedProperties para create (após a checagem de missing)
     const propertiesToValidateValues = isUpdate
       ? providedProperties
       : expectedProperties;
 
-    // Verifica se há números negativos nas propriedades numéricas fornecidas
     const negativeNumberProperties = propertiesToValidateValues.filter(
       (prop) =>
-        prop in data && // Apenas se a propriedade foi fornecida em 'data'
+        prop in data &&
         typeof data[prop] === 'number' &&
         (data[prop] as number) < 0,
     );
@@ -308,25 +303,6 @@ export class ProductService implements IProductService {
         error: 'Negative numbers are not allowed.',
         properties: negativeNumberProperties.sort(),
       };
-    }
-
-    // Para UPDATE: se uma propriedade é fornecida, ela não deve ser null (a menos que seja intencional e o schema permita)
-    // Esta validação pode ser mais granular. Por exemplo, 'name' em update não deve ser null se fornecido.
-    // No entanto, o ValidationPipe com decoradores no DTO é geralmente o melhor lugar para isso.
-    // A lógica atual de `missingProperties` para create já cobre campos obrigatórios serem null/undefined.
-    if (isUpdate) {
-      const nullProvidedProperties = providedProperties.filter(
-        (prop) => data[prop] == null && prop in data,
-      );
-      if (nullProvidedProperties.length > 0) {
-        // Decide se isso é um erro. Se UpdateProductDto permite null para campos opcionais,
-        // então isso não é um erro aqui, mas sim no nível do DTO/ValidationPipe.
-        // Por ora, vamos assumir que se uma propriedade é fornecida em update, ela não deve ser explicitamente null
-        // se o campo não for anulável no banco.
-        // Para simplificar, esta validação específica de null em update pode ser removida se
-        // os DTOs e o ValidationPipe estiverem configurados corretamente.
-        // O erro original era "Missing required properties" em update, que já foi corrigido.
-      }
     }
 
     return { isValid: true };

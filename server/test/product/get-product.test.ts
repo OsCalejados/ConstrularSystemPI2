@@ -72,4 +72,29 @@ describe('Get Product Service Tests', () => {
 
     expect(findByIdMock).toHaveBeenCalledWith(1000);
   });
+
+  it('should throw AppException with INTERNAL_SERVER_ERROR if repository throws an unexpected error', async () => {
+    const mockOrderService: IOrderService = {} as unknown as IOrderService;
+    const errorMessage = 'Database connection lost';
+
+    const findByIdMock = jest.fn().mockRejectedValue(new Error(errorMessage));
+
+    const mockProductRepository: IProductRepository = {
+      findById: findByIdMock,
+    } as unknown as IProductRepository;
+
+    const productService = new ProductService(
+      mockProductRepository,
+      mockOrderService,
+    );
+
+    await expect(productService.getProductById(1)).rejects.toThrow(
+      new AppException(
+        `Failed to retrieve product with ID 1.`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        new Error(errorMessage),
+      ),
+    );
+    expect(findByIdMock).toHaveBeenCalledWith(1);
+  });
 });

@@ -13,9 +13,9 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Remove propriedades não definidas no DTO
-      forbidNonWhitelisted: true, // Lança erro se propriedades não definidas forem enviadas
-      transform: true, // Transforma o payload em uma instância do DTO
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
   app.useGlobalFilters(new HttpExceptionFilter(app.get(HttpAdapterHost)));
@@ -48,11 +48,7 @@ async function bootstrap() {
       error.stderr?.toString() || error.message,
       'Prisma',
     );
-    process.exit(1); // Encerra o processo com código de erro
-    // Decide if you want the application to fail to start if migrations fail.
-    // For "sem quebrar", we log the error and continue, but the app might not work correctly.
-    // To make it a hard stop, you could re-throw the error or process.exit(1).
-    // Logger.warn('Application will continue to start, but database schema might be out of sync.', 'Prisma');
+    process.exit(1);
   }
 
   await app.listen(process.env.BACKEND_PORT);

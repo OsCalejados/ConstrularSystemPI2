@@ -2,15 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@src/common/services/prisma.service';
 import { ProductRepository } from '@src/modules/product/repositories/product.repository';
 import { StartedTestContainer, GenericContainer } from 'testcontainers';
-import { Wait } from 'testcontainers'; // Importe Wait
+import { Wait } from 'testcontainers';
 import { execSync } from 'child_process';
-import { PrismaClient } from '@prisma/client'; // Importe Prisma também se for usar tipos
+import { PrismaClient } from '@prisma/client';
 
 describe('ProductRepository (Integration)', () => {
   let repository: ProductRepository;
   let prismaService: PrismaService;
   let container: StartedTestContainer;
-  let client: PrismaClient; // Cliente Prisma direto para setup/teardown
+  let client: PrismaClient;
 
   beforeAll(async () => {
     // Iniciar o container PostgreSQL
@@ -26,31 +26,26 @@ describe('ProductRepository (Integration)', () => {
       .start();
     console.log('PostgreSQL container started.');
 
-    // Construir a URL de conexão para o Prisma
     const databaseUrl = `postgresql://test_user:test_password@${container.getHost()}:${container.getFirstMappedPort()}/test_db`;
 
-    // Sobrescrever a DATABASE_URL para o Prisma usar durante os testes
     process.env.DATABASE_URL = databaseUrl;
 
     console.log(`Database URL: ${databaseUrl}`);
     console.log('DATABASE_URL environment variable set.');
 
-    // Aplicar migrações do Prisma (ou db push)
     console.log('Applying Prisma migrations...');
     try {
       execSync('npx prisma migrate deploy', {
         env: { ...process.env, DATABASE_URL: databaseUrl },
-        stdio: 'inherit', // para ver a saída do comando
+        stdio: 'inherit',
       });
       console.log('Prisma migrations applied successfully.');
     } catch (error) {
       console.error('Failed to apply Prisma migrations:', error);
-      // Se as migrações falharem, pode ser necessário parar o container e falhar os testes
       await container.stop();
       throw error;
     }
 
-    // Inicializar o cliente Prisma direto para manipulação do banco
     console.log('Initializing direct Prisma client...');
     client = new PrismaClient({
       datasources: {
@@ -64,36 +59,23 @@ describe('ProductRepository (Integration)', () => {
     console.log('Direct Prisma client connected.');
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ProductRepository, // Usar a implementação real
-        PrismaService, // Usar a implementação real
-      ],
+      providers: [ProductRepository, PrismaService],
     }).compile();
     console.log('NestJS testing module compiled.');
 
     repository = module.get<ProductRepository>(ProductRepository);
-    prismaService = module.get<PrismaService>(PrismaService); // PrismaService será instanciado com a DATABASE_URL do env
+    prismaService = module.get<PrismaService>(PrismaService);
     console.log('Repository and Service instances obtained.');
-
-    // (prismaService as any).onModuleInit(); // Para forçar a reconexão com a nova URL
-    // await prismaService.$connect();
-  }, 120000); // Timeout aumentado para o setup do container e migrações
+  }, 120000);
 
   beforeEach(async () => {
-    // Limpar dados das tabelas relevantes antes de cada teste
-    // A ordem é importante devido às foreign keys
     await client.product.deleteMany({});
-    // Adicione deleteMany para outras tabelas se necessário
   });
 
   afterAll(async () => {
-    // Desconectar o cliente Prisma direto
     await client?.$disconnect();
-    // Parar o container
     await container?.stop();
-    // Limpar a variável de ambiente
     delete process.env.DATABASE_URL;
-    // Desconectar o prismaService do módulo
     await prismaService?.$disconnect();
   });
 
@@ -189,7 +171,7 @@ describe('ProductRepository (Integration)', () => {
     });
 
     it('should return null if product with ID does not exist', async () => {
-      const foundProduct = await repository.findById(99999); // ID não existente
+      const foundProduct = await repository.findById(99999);
       expect(foundProduct).toBeNull();
     });
   });
@@ -219,7 +201,7 @@ describe('ProductRepository (Integration)', () => {
       expect(updatedProduct).not.toBeNull();
       expect(updatedProduct?.id).toBe(initialProduct.id);
       expect(updatedProduct?.name).toBe('Updated Product Name');
-      expect(updatedProduct?.brand).toBe('Initial Brand'); // Outros campos permanecem
+      expect(updatedProduct?.brand).toBe('Initial Brand');
 
       const dbProduct = await client.product.findUnique({
         where: { id: initialProduct.id },
@@ -260,11 +242,7 @@ describe('ProductRepository (Integration)', () => {
     });
 
     it('should not throw an error if deleting a non-existent product (Prisma delete behavior)', async () => {
-      // Prisma's delete throws P2025 if record not found.
-      // O repository.delete não trata isso, então o Prisma vai lançar.
-      // Se você quiser um comportamento diferente (ex: retornar silenciosamente),
-      // o repositório precisaria de um try-catch.
-      await expect(repository.delete(99999)).rejects.toThrow(); // Espera-se que o Prisma lance um erro (ex: PrismaClientKnownRequestError P2025)
+      await expect(repository.delete(99999)).rejects.toThrow();
     });
   });
 

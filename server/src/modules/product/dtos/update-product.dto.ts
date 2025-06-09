@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/swagger'; // Alterado para @nestjs/swagger para melhor integração com ApiPropertyOptional
+import { PartialType } from '@nestjs/swagger';
 import { CreateProductDto } from './create-product.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { MeasureUnit } from '@src/common/enums/measure-unit.enum';

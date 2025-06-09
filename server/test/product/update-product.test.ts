@@ -40,10 +40,8 @@ describe('Update Product Service Tests', () => {
       .mockImplementation((productId: number, data: Partial<Product>) => {
         const updatedProduct = { ...existentProduct };
 
-        // Substitui apenas as propriedades definidas em `data`
         Object.keys(data).forEach((key) => {
           if (data[key as keyof Product] !== undefined) {
-            // Need to cast to any because the types are not matching exactly
             (updatedProduct as any)[key] = data[key as keyof Product];
           }
         });
@@ -54,7 +52,7 @@ describe('Update Product Service Tests', () => {
     const mockProductRepository: IProductRepository = {
       update: updateMock,
       getAllByName: jest.fn().mockResolvedValue([existentProduct]),
-      findById: jest.fn().mockResolvedValue(true), // Produto existe
+      findById: jest.fn().mockResolvedValue(true),
     } as unknown as IProductRepository;
 
     const productService = new ProductService(
@@ -114,7 +112,7 @@ describe('Update Product Service Tests', () => {
 
     const mockProductRepository: IProductRepository = {
       getAllByName: jest.fn().mockResolvedValue([]),
-      findById: jest.fn().mockResolvedValue(true), // Produto existe
+      findById: jest.fn().mockResolvedValue(true),
     } as unknown as IProductRepository;
 
     const productService = new ProductService(
@@ -153,10 +151,10 @@ describe('Update Product Service Tests', () => {
     );
 
     const mockProductRepository: IProductRepository = {
-      getAllByName: jest.fn().mockResolvedValue([
-        { id: 2, name: 'Existing Product' }, // Simula outro produto com o mesmo nome
-      ]),
-      findById: jest.fn().mockResolvedValue(true), // Produto existe
+      getAllByName: jest
+        .fn()
+        .mockResolvedValue([{ id: 2, name: 'Existing Product' }]),
+      findById: jest.fn().mockResolvedValue(true),
     } as unknown as IProductRepository;
 
     const productService = new ProductService(
@@ -192,7 +190,7 @@ describe('Update Product Service Tests', () => {
     );
 
     const mockProductRepository: IProductRepository = {
-      findById: jest.fn().mockResolvedValue(null), // Produto não existe
+      findById: jest.fn().mockResolvedValue(null),
     } as unknown as IProductRepository;
 
     const productService = new ProductService(

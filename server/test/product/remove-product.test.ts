@@ -59,7 +59,7 @@ describe('Remove Product Service Tests', () => {
 
   it('should fail to remove a product with sales history', async () => {
     const mockOrderService: IOrderService = {
-      getOrdersByProductId: jest.fn().mockResolvedValue([{ id: 1 }]), // Simula histórico de vendas
+      getOrdersByProductId: jest.fn().mockResolvedValue([{ id: 1 }]),
     } as unknown as IOrderService;
 
     const findByIdMock = jest.fn().mockResolvedValue({

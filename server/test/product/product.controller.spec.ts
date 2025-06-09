@@ -54,7 +54,7 @@ describe('ProductController', () => {
       controllers: [ProductController],
       providers: [
         {
-          provide: 'IProductService', // O mesmo token usado no controller
+          provide: 'IProductService',
           useValue: mockProductService,
         },
       ],
@@ -176,7 +176,7 @@ describe('ProductController', () => {
   describe('deleteProduct', () => {
     it('should delete a product successfully', async () => {
       const productId = 1;
-      mockProductService.deleteProduct.mockResolvedValue(null); // deleteProduct retorna void
+      mockProductService.deleteProduct.mockResolvedValue(null);
 
       await expect(
         controller.deleteProduct(productId),

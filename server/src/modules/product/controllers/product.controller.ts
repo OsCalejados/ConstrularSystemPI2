@@ -124,7 +124,7 @@ export class ProductController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Product cannot be deleted (e.g., has sales history).',
   })
-  @HttpCode(HttpStatus.OK) // Alterado para NO_CONTENT para delete
+  @HttpCode(HttpStatus.OK)
   async deleteProduct(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.productService.deleteProduct(id);
   }

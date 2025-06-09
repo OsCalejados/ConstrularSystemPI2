@@ -12,15 +12,15 @@ const orderMockada = {
   id: 1,
   customerId: 123,
   sellerId: 456,
-  type: 'online', // Exemplo de tipo
-  status: 'pending', // Exemplo de status
-  total: new Decimal(100.5), // Total da ordem
-  discount: new Decimal(10.0), // Desconto aplicado
-  paymentMethod: 'credit_card', // Método de pagamento
-  paid: false, // Indica se foi pago
-  installments: 3, // Parcelas (se aplicável)
-  amountPaid: null, // Valor pago (se aplicável)
-  createdAt: new Date(), // Data de criação
+  type: 'online',
+  status: 'pending',
+  total: new Decimal(100.5),
+  discount: new Decimal(10.0),
+  paymentMethod: 'credit_card',
+  paid: false,
+  installments: 3,
+  amountPaid: null,
+  createdAt: new Date(),
   customer: {
     id: 123,
     name: 'John Doe',

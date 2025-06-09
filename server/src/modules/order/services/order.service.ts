@@ -15,6 +15,7 @@ export class OrderService implements IOrderService {
     private customerRepository: CustomerRepository,
   ) {}
   async getOrdersByProductId(productId: number): Promise<Order[]> {
+    // TODO
     //find order_item by productId
     // then find order by order_item.orderId
     // if not find return empty array
@@ -85,10 +86,6 @@ export class OrderService implements IOrderService {
     if (!existingOrder) {
       throw new Error(`Order not found`);
     }
-
-    // if (existingOrder.items) {
-    //   await this.itemRepository.deleteMany(orderId);
-    // }
 
     const updatedOrder = await this.orderRepository.update(orderId, order);
 

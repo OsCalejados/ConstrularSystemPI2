@@ -14,8 +14,8 @@ import { PrismaCustomerRepository } from '../customer/repositories/prisma-custom
     PrismaService,
     OrderService,
     {
-      provide: 'IOrderService', // Token para a interface
-      useExisting: OrderService, // Reutiliza a instância de OrderService já registrada
+      provide: 'IOrderService',
+      useExisting: OrderService,
     },
     {
       provide: CustomerRepository,

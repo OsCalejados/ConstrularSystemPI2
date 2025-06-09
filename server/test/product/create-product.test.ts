@@ -14,9 +14,7 @@ describe('Create Product Service Tests', () => {
   });
 
   it('should create a product successfully', async () => {
-    const mockOrderService: IOrderService = {
-      // getOrderByProductId: jest.fn().mockResolvedValue([]),
-    } as unknown as IOrderService;
+    const mockOrderService: IOrderService = {} as unknown as IOrderService;
 
     const createProductDto = new CreateProductDto();
     createProductDto.name = 'Test Product';
@@ -33,8 +31,8 @@ describe('Create Product Service Tests', () => {
       .mockImplementation((data: Prisma.ProductCreateInput) => {
         return Promise.resolve({
           ...data,
-          createdAt: expect.any(Date), // A data de criação será gerada no momento da execução
-          id: expect.any(Number), // O ID será gerado pelo banco de dados
+          createdAt: expect.any(Date),
+          id: expect.any(Number),
         } as Product);
       });
 
@@ -79,9 +77,7 @@ describe('Create Product Service Tests', () => {
   });
 
   it('should fail in create a product because have a negative number', async () => {
-    const mockOrderService: IOrderService = {
-      // getOrderByProductId: jest.fn().mockResolvedValue([]),
-    } as unknown as IOrderService;
+    const mockOrderService: IOrderService = {} as unknown as IOrderService;
 
     const createProductDto = new CreateProductDto();
     createProductDto.name = 'Test Product';
@@ -112,8 +108,8 @@ describe('Create Product Service Tests', () => {
       .mockImplementation((data: Prisma.ProductCreateInput) => {
         return Promise.resolve({
           ...data,
-          createdAt: expect.any(Date), // A data de criação será gerada no momento da execução
-          id: expect.any(Number), // O ID será gerado pelo banco de dados
+          createdAt: expect.any(Date),
+          id: expect.any(Number),
         } as Product);
       });
 
@@ -146,11 +142,9 @@ describe('Create Product Service Tests', () => {
   });
 
   it("should fail in create a product because don't have obrigatory property", async () => {
-    const mockOrderService: IOrderService = {
-      // getOrderByProductId: jest.fn().mockResolvedValue([]),
-    } as unknown as IOrderService;
+    const mockOrderService: IOrderService = {} as unknown as IOrderService;
 
-    const createProductDto = new CreateProductDto(); // DTO vazio
+    const createProductDto = new CreateProductDto();
 
     const targetException = new AppException(
       'Missing or null required properties.',
@@ -196,11 +190,9 @@ describe('Create Product Service Tests', () => {
   });
 
   it("should fail in create a product because don't have obrigatory property", async () => {
-    const mockOrderService: IOrderService = {
-      // getOrderByProductId: jest.fn().mockResolvedValue([]),
-    } as unknown as IOrderService;
+    const mockOrderService: IOrderService = {} as unknown as IOrderService;
 
-    const createProductDto = new CreateProductDto(); // DTO vazio
+    const createProductDto = new CreateProductDto();
     createProductDto.name = 'Test Product';
     createProductDto.brand = 'Test Brand';
     createProductDto.unit = MeasureUnit.UN;
@@ -245,9 +237,7 @@ describe('Create Product Service Tests', () => {
   });
 
   it('should fail in create a product because a product with the same name already exists', async () => {
-    const mockOrderService: IOrderService = {
-      // getOrderByProductId: jest.fn().mockResolvedValue([]),
-    } as unknown as IOrderService;
+    const mockOrderService: IOrderService = {} as unknown as IOrderService;
 
     const createProductDto = new CreateProductDto();
     createProductDto.name = 'Test Product';
@@ -272,8 +262,8 @@ describe('Create Product Service Tests', () => {
       .mockImplementation((data: Prisma.ProductCreateInput) => {
         return Promise.resolve({
           ...data,
-          createdAt: expect.any(Date), // A data de criação será gerada no momento da execução
-          id: expect.any(Number), // O ID será gerado pelo banco de dados
+          createdAt: expect.any(Date),
+          id: expect.any(Number),
         } as Product);
       });
 
@@ -306,5 +296,3 @@ describe('Create Product Service Tests', () => {
     );
   });
 });
-
-// Recomendamos instalar uma extensão para executar testes jest.
