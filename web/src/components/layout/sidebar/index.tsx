@@ -46,7 +46,7 @@ const items: MenuItem[] = [
   },
   {
     title: 'Estoque',
-    url: '/inventory',
+    url: '/products',
     icon: Package,
   },
   {
