@@ -49,14 +49,21 @@ export default function EditCustomer() {
   } = customerForm
 
   const onSubmit = async (data: CustomerFormData) => {
-    await updateCustomer(customerId as string, data)
+    try {
+      await updateCustomer(customerId as string, data)
 
-    toast({
-      title: 'Cliente editado com sucesso',
-    })
+      toast({
+        title: 'Cliente editado com sucesso',
+      })
 
-    reset(data)
-    router.back()
+      reset(data)
+      router.back()
+    } catch (error) {
+      toast({
+        title: 'Erro ao editar cliente',
+        variant: 'destructive',
+      })
+    }
   }
 
   useEffect(() => {

@@ -1,8 +1,10 @@
+import { MeasureUnit } from '@/enums/measure-unit'
+
 export interface Product {
   id: number
   name: string
   brand: string
-  unit: string
+  unit: MeasureUnit
   stockQuantity: number
   costPrice: number
   profitMargin: number

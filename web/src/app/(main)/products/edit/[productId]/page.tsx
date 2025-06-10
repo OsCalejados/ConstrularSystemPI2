@@ -1,107 +1,69 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
 import { Button } from '@/components/shadcnui/button'
 import ProductForm from '@/components/forms/product-form'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ProductFormData, productSchema } from '@/types/validations'
+import { ProductFormData } from '@/types/validations'
 import { updateProduct, getProductById } from '@/services/product-service'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { toast } from '@/hooks/use-toast'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+import Breadcrumb from '@/components/ui/breadcrumb'
+import { Page } from '@/components/layout/page'
+import CancelDialog from '@/components/dialogs/cancel-dialog'
+import { productFormSchema } from '@/validations/product-form-schema'
 
 export default function EditProduct() {
-  const { productId } = useParams()
+  // const queryClient = useQueryClient()
   const router = useRouter()
-  const queryClient = useQueryClient()
-  const [isDirty, setIsDirty] = useState(false)
 
-  const methods = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
-    defaultValues: {
-      name: '',
-      brand: '',
-      unit: 'UN',
-      stockQuantity: 0,
-      costPrice: 0,
-      profitMargin: 0,
-      salePrice: 0,
-      profit: 0,
-    },
-  })
+  const { productId } = useParams()
 
-  // Buscar dados do produto
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', productId],
     queryFn: () => getProductById(productId as string),
   })
 
-  // Preencher o formulário quando os dados chegarem
-  useEffect(() => {
-    if (product) {
-      methods.reset({
-        name: product.name,
-        brand: product.brand,
-        unit: product.unit as
-          | 'UN'
-          | 'KG'
-          | 'M'
-          | 'M²'
-          | 'M³'
-          | 'SC'
-          | 'GL'
-          | 'L',
-        stockQuantity: product.stockQuantity,
-        costPrice: product.costPrice,
-        profitMargin: product.profitMargin,
-        salePrice: product.salePrice,
-        profit: product.profit,
-      })
-    }
-  }, [product, methods])
-
-  // Monitorar mudanças no formulário
-  useEffect(() => {
-    const subscription = methods.watch(() => {
-      setIsDirty(methods.formState.isDirty)
-    })
-    return () => subscription.unsubscribe()
-  }, [methods])
-
-  const updateProductMutation = useMutation({
-    mutationFn: (data: ProductFormData) =>
-      updateProduct(productId as string, data),
-    onSuccess: () => {
-      toast({
-        title: 'Produto atualizado com sucesso!',
-      })
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-      queryClient.invalidateQueries({ queryKey: ['product', productId] })
-      router.push('/products')
-    },
-    onError: () => {
-      toast({
-        title: 'Erro ao atualizar produto',
-        variant: 'destructive',
-      })
+  const productForm = useForm<ProductFormData>({
+    resolver: zodResolver(productFormSchema),
+    mode: 'onTouched',
+    defaultValues: {
+      name: product?.name,
+      brand: product?.brand,
+      unit: product?.unit,
+      stockQuantity: product?.stockQuantity,
+      costPrice: product?.costPrice,
+      profitMargin: product?.profitMargin,
+      profit: product?.profit,
+      salePrice: product?.salePrice,
     },
   })
 
-  const handleSubmit = async (data: ProductFormData) => {
-    await updateProductMutation.mutateAsync(data)
-  }
+  const {
+    reset,
+    formState: { isDirty },
+  } = productForm
 
-  const handleCancel = () => {
-    if (isDirty) {
-      const confirmed = window.confirm(
-        'Você tem alterações não salvas. Tem certeza que deseja sair?',
-      )
-      if (!confirmed) return
+  useEffect(() => {
+    if (product) {
+      reset({
+        ...product,
+      })
     }
-    router.push('/products')
+  }, [product, reset])
+
+  const onSubmit = async (data: ProductFormData) => {
+    await updateProduct(productId as string, data)
+
+    toast({
+      title: 'Produto editado com sucesso',
+    })
+
+    reset()
+    router.back()
   }
 
   if (isLoading) {
@@ -121,55 +83,67 @@ export default function EditProduct() {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8">
-      {/* Header com breadcrumb */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-          >
-            <CaretLeftIcon size={20} />
-          </button>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link href="/products" className="hover:text-foreground">
-              Estoque
-            </Link>
-            <span>›</span>
-            <Link href="/products" className="hover:text-foreground">
-              Produtos
-            </Link>
-            <span>›</span>
-            <span className="text-foreground">Editar produto</span>
+    <Page.Container>
+      <Page.Header>
+        <Breadcrumb
+          currentPage="Novo produto"
+          parents={[
+            {
+              name: 'Estoque',
+              path: '/products',
+            },
+          ]}
+        />
+      </Page.Header>
+      <Page.Content>
+        <div className="flex justify-between items-center">
+          <div className="flex gap-2">
+            {isDirty ? (
+              <CancelDialog>
+                <Button className="w-8 h-8" variant="outline">
+                  <CaretLeftIcon size={20} />
+                </Button>
+              </CancelDialog>
+            ) : (
+              <Button
+                onClick={() => router.back()}
+                className="w-8 h-8"
+                variant="outline"
+              >
+                <CaretLeftIcon size={20} />
+              </Button>
+            )}
+            <h2 className="font-medium">Editar produto</h2>
+          </div>
+          <div className="flex gap-2">
+            {isDirty ? (
+              <CancelDialog>
+                <Button variant="ghost">
+                  <span>Cancelar</span>
+                </Button>
+              </CancelDialog>
+            ) : (
+              <Button variant="ghost" onClick={router.back}>
+                <span>Cancelar</span>
+              </Button>
+            )}
+
+            <Button
+              className="bg-primary hover:bg-primary-hover"
+              type="submit"
+              form="product-form"
+            >
+              <span>Editar</span>
+            </Button>
           </div>
         </div>
-      </div>
 
-      {/* Título e ações */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Editar produto</h1>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={handleCancel}
-            disabled={updateProductMutation.isPending}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            form="product-form"
-            disabled={updateProductMutation.isPending}
-          >
-            {updateProductMutation.isPending ? 'Salvando...' : 'Salvar'}
-          </Button>
+        <div className="mt-4">
+          <FormProvider {...productForm}>
+            <ProductForm onSubmit={onSubmit} />
+          </FormProvider>
         </div>
-      </div>
-
-      {/* Formulário */}
-      <FormProvider {...methods}>
-        <ProductForm onSubmit={handleSubmit} />
-      </FormProvider>
-    </div>
+      </Page.Content>
+    </Page.Container>
   )
 }

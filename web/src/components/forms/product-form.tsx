@@ -12,12 +12,17 @@ import {
   SelectValue,
 } from '../shadcnui/select'
 import { useEffect } from 'react'
+import { MeasureUnit } from '@/enums/measure-unit'
 
 interface ProductFormProps {
   onSubmit: (data: ProductFormData) => Promise<void>
+  readOnly?: boolean
 }
 
-export default function ProductForm({ onSubmit }: ProductFormProps) {
+export default function ProductForm({
+  onSubmit,
+  readOnly = false,
+}: ProductFormProps) {
   const {
     register,
     handleSubmit,
@@ -58,6 +63,7 @@ export default function ProductForm({ onSubmit }: ProductFormProps) {
               id="name"
               {...register('name')}
               className="mt-1"
+              readOnly={readOnly}
             />
             <InputError error={errors.name?.message?.toString()} />
           </div>
@@ -69,6 +75,7 @@ export default function ProductForm({ onSubmit }: ProductFormProps) {
               id="brand"
               {...register('brand')}
               className="mt-1"
+              readOnly={readOnly}
             />
             <InputError error={errors.brand?.message?.toString()} />
           </div>
@@ -80,6 +87,7 @@ export default function ProductForm({ onSubmit }: ProductFormProps) {
               control={control}
               render={({ field }) => (
                 <Select
+                  disabled={readOnly}
                   name={field.name}
                   value={field.value}
                   onValueChange={field.onChange}
@@ -88,14 +96,11 @@ export default function ProductForm({ onSubmit }: ProductFormProps) {
                     <SelectValue placeholder="Selecione uma unidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="UN">UN</SelectItem>
-                    <SelectItem value="KG">KG</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="M²">M²</SelectItem>
-                    <SelectItem value="M³">M³</SelectItem>
-                    <SelectItem value="SC">SC</SelectItem>
-                    <SelectItem value="GL">GL</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
+                    {Object.values(MeasureUnit).map((unit) => (
+                      <SelectItem key={unit} value={unit}>
+                        {unit}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
@@ -110,6 +115,7 @@ export default function ProductForm({ onSubmit }: ProductFormProps) {
               type="number"
               step="0.01"
               id="stockQuantity"
+              readOnly={readOnly}
               {...register('stockQuantity', {
                 valueAsNumber: true,
               })}
@@ -131,6 +137,7 @@ export default function ProductForm({ onSubmit }: ProductFormProps) {
               type="number"
               step="0.01"
               id="costPrice"
+              readOnly={readOnly}
               {...register('costPrice', {
                 valueAsNumber: true,
               })}
@@ -146,6 +153,7 @@ export default function ProductForm({ onSubmit }: ProductFormProps) {
               type="number"
               step="0.01"
               id="profitMargin"
+              readOnly={readOnly}
               {...register('profitMargin', {
                 valueAsNumber: true,
               })}
@@ -161,11 +169,11 @@ export default function ProductForm({ onSubmit }: ProductFormProps) {
               type="number"
               step="0.01"
               id="salePrice"
+              readOnly={readOnly}
               {...register('salePrice', {
                 valueAsNumber: true,
               })}
               className="mt-1 bg-gray-50"
-              readOnly
             />
             <InputError error={errors.salePrice?.message?.toString()} />
           </div>
@@ -181,7 +189,7 @@ export default function ProductForm({ onSubmit }: ProductFormProps) {
                 valueAsNumber: true,
               })}
               className="mt-1 bg-gray-50"
-              readOnly
+              readOnly={readOnly}
             />
             <InputError error={errors.profit?.message?.toString()} />
           </div>

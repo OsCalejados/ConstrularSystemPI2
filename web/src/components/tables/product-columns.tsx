@@ -1,3 +1,5 @@
+import ProductOptions from '../dropdown-menus/product-options'
+
 import { formatCurrency } from '@/utils/format-currency'
 import { ArrowUpDown } from 'lucide-react'
 import { ColumnDef } from '@tanstack/react-table'
@@ -103,27 +105,10 @@ export const productColumns: ColumnDef<Product>[] = [
   },
   {
     id: 'actions',
-    cell: () => {
-      return (
-        <div className="text-right">
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Abrir menu</span>
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
-              />
-            </svg>
-          </Button>
-        </div>
-      )
+    cell: ({ row }) => {
+      const product = row.original
+
+      return <ProductOptions product={product} variant="ghost" showViewItem />
     },
   },
 ]

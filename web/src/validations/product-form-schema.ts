@@ -1,3 +1,4 @@
+import { MeasureUnit } from '@/enums/measure-unit'
 import { z } from 'zod'
 
 export const productFormSchema = z.object({
@@ -7,7 +8,7 @@ export const productFormSchema = z.object({
   brand: z
     .string()
     .min(2, { message: 'Insira uma marca com pelo menos 2 caracteres.' }),
-  unit: z.enum(['UN', 'KG', 'M', 'M²', 'M³', 'SC', 'GL', 'L'], {
+  unit: z.enum(Object.values(MeasureUnit) as [string, ...string[]], {
     message: 'Selecione uma unidade válida.',
   }),
   stockQuantity: z

@@ -39,14 +39,21 @@ export default function CreateProduct() {
   } = productForm
 
   const onSubmit = async (data: ProductFormData) => {
-    await createProduct(data)
+    try {
+      await createProduct(data)
 
-    toast({
-      title: 'Produto criado com sucesso',
-    })
+      toast({
+        title: 'Produto criado com sucesso',
+      })
 
-    reset()
-    router.back()
+      reset()
+      router.back()
+    } catch (error) {
+      toast({
+        title: 'Erro ao criar produto',
+        variant: 'destructive',
+      })
+    }
   }
 
   return (
