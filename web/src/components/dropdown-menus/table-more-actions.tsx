@@ -1,10 +1,5 @@
 import { AlertDialog, AlertDialogTrigger } from '../shadcnui/alert-dialog'
-import {
-  CaretDownIcon,
-  TrashSimple,
-  TrashSimpleIcon,
-} from '@phosphor-icons/react/dist/ssr'
-import { CaretDown } from '@phosphor-icons/react'
+import { CaretDownIcon, TrashSimpleIcon } from '@phosphor-icons/react/dist/ssr'
 import { Customer } from '@/types/customer'
 import { Button } from '../shadcnui/button'
 import { Order } from '@/types/order'

@@ -1,5 +1,5 @@
 import { Tote } from '@phosphor-icons/react/dist/ssr'
-import { User } from 'lucide-react'
+import { User, Package } from 'lucide-react'
 
 export const menu = [
   {
@@ -7,6 +7,12 @@ export const menu = [
     label: 'Clientes',
     path: '/customers',
     icon: <User size={24} />,
+  },
+  {
+    id: 'products',
+    label: 'Estoque',
+    path: '/products',
+    icon: <Package size={24} />,
   },
   {
     id: 'orders',

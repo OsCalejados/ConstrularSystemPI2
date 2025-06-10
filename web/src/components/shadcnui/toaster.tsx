@@ -9,7 +9,7 @@ import {
   ToastTitle,
   ToastViewport,
 } from '@/components/shadcnui/toast'
-import { Check } from '@phosphor-icons/react/dist/ssr'
+import { CheckCircleIcon } from '@phosphor-icons/react/dist/ssr'
 
 export function Toaster() {
   const { toasts } = useToast()
@@ -18,16 +18,23 @@ export function Toaster() {
     <ToastProvider duration={2000}>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
-          <Toast key={id} {...props} className="justify-start">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center text-white bg-currency">
-              <Check size={24} />
-            </div>
-            <div>
-              {title && <ToastTitle>{title}</ToastTitle>}
-              {description && (
-                <ToastDescription>{description}</ToastDescription>
+          <Toast key={id} {...props}>
+            <div className="flex gap-2 items-center">
+              {props.variant === 'default' && (
+                <CheckCircleIcon
+                  size={32}
+                  weight="fill"
+                  className="text-green-500"
+                />
               )}
+              <div className="grid gap-1">
+                {title && <ToastTitle>{title}</ToastTitle>}
+                {description && (
+                  <ToastDescription>{description}</ToastDescription>
+                )}
+              </div>
             </div>
+
             {action}
             <ToastClose />
           </Toast>
