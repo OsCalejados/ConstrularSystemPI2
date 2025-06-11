@@ -14,9 +14,14 @@ import { PrismaCustomerRepository } from '../customer/repositories/prisma-custom
     PrismaService,
     OrderService,
     {
+      provide: 'IOrderService',
+      useExisting: OrderService,
+    },
+    {
       provide: CustomerRepository,
       useClass: PrismaCustomerRepository,
     },
   ],
+  exports: [OrderService, 'IOrderService'],
 })
 export class OrderModule {}

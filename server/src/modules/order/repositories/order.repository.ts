@@ -1,16 +1,67 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
-import { PrismaService } from 'src/common/services/prisma.service';
+import { PrismaService } from '@src/common/services/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { UpdateStatusDto } from '../dtos/update-status';
 import { UpdateNotesDto } from '../dtos/update-notes';
+import { Decimal } from '@prisma/client/runtime/library';
+import { OrderItem } from '@prisma/client';
+
+const orderMockada = {
+  id: 1,
+  customerId: 123,
+  sellerId: 456,
+  type: 'online',
+  status: 'pending',
+  total: new Decimal(100.5),
+  discount: new Decimal(10.0),
+  paymentMethod: 'credit_card',
+  paid: false,
+  installments: 3,
+  amountPaid: null,
+  createdAt: new Date(),
+  customer: {
+    id: 123,
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+  },
+  seller: {
+    id: 456,
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+  },
+  items: [
+    {
+      id: 1,
+      productId: 789,
+      quantity: 2,
+      price: new Decimal(50.25),
+    },
+    {
+      id: 2,
+      productId: 790,
+      quantity: 1,
+      price: new Decimal(30.0),
+    },
+  ],
+};
+
+const itemOrderMockado = {
+  id: 1,
+  orderId: 1,
+  productId: 789,
+  quantity: 2,
+  unityPrice: new Decimal(50.25),
+  total: new Decimal(100.5),
+} as unknown as OrderItem;
 
 @Injectable()
 export class OrderRepository {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
-    return false;
+    return Promise.resolve([orderMockada]);
     // return await this.prisma.order.findMany({
     //   include: {
     //     customer: true,
@@ -19,7 +70,7 @@ export class OrderRepository {
   }
 
   async findById(orderId: number) {
-    return false;
+    return Promise.resolve(orderMockada);
     // return await this.prisma.order.findUnique({
     //   where: {
     //     id: orderId,
@@ -42,7 +93,38 @@ export class OrderRepository {
     pageSize: number = 12,
     status?: string,
   ) {
-    return false;
+    return Promise.resolve([orderMockada]);
+    // const skip = (page - 1) * pageSize;
+    // const totalItems = await this.prisma.order.count({
+    //   where: {
+    //     customerId: customerId,
+    //     ...(status && { status: status }),
+    //   },
+    // });
+    // const orders = await this.prisma.order.findMany({
+    //   include: {
+    //     items: true,
+    //   },
+    //   where: {
+    //     customerId: customerId,
+    //     ...(status && { status: status }),
+    //   },
+    //   skip: skip,
+    //   take: pageSize,
+    // });
+    // return {
+    //   totalItems,
+    //   orders,
+    // };
+  }
+
+  async findOrderItemByProduct(
+    productId: number,
+    page: number = 1,
+    pageSize: number = 12,
+    status?: string,
+  ) {
+    return Promise.resolve([itemOrderMockado]);
     // const skip = (page - 1) * pageSize;
     // const totalItems = await this.prisma.order.count({
     //   where: {
@@ -68,7 +150,7 @@ export class OrderRepository {
   }
 
   async create(order: CreateOrderDto) {
-    return false;
+    return Promise.resolve(orderMockada);
     // return await this.prisma.order.create({
     //   data: {
     //     customerId: order.customerId,
@@ -84,7 +166,7 @@ export class OrderRepository {
   }
 
   async update(orderId: number, order: UpdateOrderDto) {
-    return false;
+    return Promise.resolve(orderMockada);
     // return await this.prisma.order.update({
     //   where: {
     //     id: orderId,
@@ -103,7 +185,7 @@ export class OrderRepository {
   }
 
   async updateNotes(orderId: number, updateStatusDto: UpdateNotesDto) {
-    return false;
+    return Promise.resolve(orderMockada);
     // return await this.prisma.order.update({
     //   where: {
     //     id: orderId,
@@ -115,7 +197,7 @@ export class OrderRepository {
   }
 
   async updateStatus(orderId: number, updateStatusDto: UpdateStatusDto) {
-    return false;
+    return Promise.resolve(orderMockada);
     // return await this.prisma.order.update({
     //   where: {
     //     id: orderId,
@@ -127,7 +209,7 @@ export class OrderRepository {
   }
 
   async delete(orderId: number) {
-    return false;
+    return;
     // return await this.prisma.order.delete({
     //   where: {
     //     id: orderId,
@@ -136,7 +218,7 @@ export class OrderRepository {
   }
 
   async deleteMany(orderIds: number[]) {
-    return false;
+    return;
 
     // return await this.prisma.order.deleteMany({
     //   where: {

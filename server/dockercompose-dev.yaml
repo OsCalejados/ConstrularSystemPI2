@@ -1,0 +1,40 @@
+services:
+    postgres-pi2:
+        image: postgres:17.2
+        container_name: postgres-pi2
+        environment:
+            POSTGRES_USER: ${DATABASE_USER:-postgres}
+            POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+            POSTGRES_DB: ${DATABASE_SCHEMA:-postgres}
+        ports:
+            - '5432:5432'
+        networks:
+            - app-network
+        restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+
+    backend:
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        environment:
+            DATABASE_HOST: ${DATABASE_HOST:-postgres-pi2}
+            DATABASE_PORT: ${DATABASE_PORT:-5432}
+            DATABASE_URL: ${DATABASE_URL:-${DATABASE:-postgresql}://${DATABASE_USER:-postgres}:${DATABASE_USER:-postgres}@${DATABASE_HOST:-postgres-pi2}:${DATABASE_PORT:-5432}/${DATABASE_DB:-postgres}}
+            BACKEND_PORT: ${BACKEND_PORT:-3001}
+        networks:
+            - app-network
+        ports:
+            - "${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}"
+            - "5555:5555"
+        depends_on:
+            postgres-pi2:
+                condition: service_healthy
+
+networks:
+    app-network:
+        driver: bridge

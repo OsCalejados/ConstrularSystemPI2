@@ -1,17 +1,36 @@
 import { OrderRepository } from '../repositories/order.repository';
-import { CustomerRepository } from 'src/modules/customer/interfaces/customer.repository.interface';
+import { CustomerRepository } from '@src/modules/customer/interfaces/customer.repository.interface';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { Injectable } from '@nestjs/common';
 import { UpdateStatusDto } from '../dtos/update-status';
 import { UpdateNotesDto } from '../dtos/update-notes';
+import { IOrderService } from '../interfaces/order.service.interface';
+import { Order } from '@prisma/client';
 
 @Injectable()
-export class OrderService {
+export class OrderService implements IOrderService {
   constructor(
     private orderRepository: OrderRepository,
     private customerRepository: CustomerRepository,
   ) {}
+  async getOrdersByProductId(productId: number): Promise<Order[]> {
+    // TODO
+    //find order_item by productId
+    // then find order by order_item.orderId
+    // if not find return empty array
+    // else return orders
+    return [];
+    const ordersItems =
+      await this.orderRepository.findOrderItemByProduct(productId);
+    if (!ordersItems || ordersItems.length === 0) {
+      return [];
+    }
+    const orderIds = ordersItems.map((item) => item.orderId);
+    return Promise.all(
+      orderIds.map((orderId) => this.orderRepository.findById(orderId)),
+    );
+  }
 
   async getAllOrders() {
     const orders = await this.orderRepository.findAll();
@@ -67,10 +86,6 @@ export class OrderService {
     if (!existingOrder) {
       throw new Error(`Order not found`);
     }
-
-    // if (existingOrder.items) {
-    //   await this.itemRepository.deleteMany(orderId);
-    // }
 
     const updatedOrder = await this.orderRepository.update(orderId, order);
 

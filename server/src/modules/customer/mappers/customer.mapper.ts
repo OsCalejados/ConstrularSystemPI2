@@ -3,7 +3,7 @@ import { Address, Customer } from '@prisma/client';
 import { AddressMapper } from './address.mapper';
 
 type CustomerWithAddress = Customer & {
-  address?: Address | null;
+  address?: Address | null | undefined;
 };
 
 export class CustomerMapper {
