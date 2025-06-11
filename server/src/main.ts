@@ -7,6 +7,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { execSync } from 'child_process';
 
 dotenv.config();
+const backendPort = process.env.BACKEND_PORT ?? 3001;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -51,17 +52,13 @@ async function bootstrap() {
     process.exit(1);
   }
 
-  await app.listen(process.env.BACKEND_PORT);
+  await app.listen(backendPort);
 }
 
 bootstrap().then(
   () => {
-    Logger.log(
-      `Server is running in http://localhost:${process.env.BACKEND_PORT}/`,
-    );
-    Logger.log(
-      `Swagger is running in http://localhost:${process.env.BACKEND_PORT}/docs`,
-    );
+    Logger.log(`Server is running in http://localhost:${backendPort}/`);
+    Logger.log(`Swagger is running in http://localhost:${backendPort}/docs`);
   },
   (err) => Logger.error(err),
 );

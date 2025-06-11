@@ -8,10 +8,19 @@ if ! command -v nc >/dev/null 2>&1; then
   exit 1
 fi
 
+MAX_WAIT_SECONDS=180 # 3 minutos
+WAIT_INTERVAL_SECONDS=5
+SECONDS_WAITED=0
+
 # Espera o Postgres estar disponível
-until nc -z db 5432; do
-  echo "⏳ Aguardando o PostgreSQL ficar disponível..."
-  sleep 1
+until nc -z ${DATABASE_HOST:-postgres-pi2} ${DATABASE_PORT:-5432} ; do
+  echo "⏳ Aguardando o Banco no host ${DATABASE_HOST:-postgres-pi2} na porta ${DATABASE_PORT:-5432} ficar disponível..."
+  sleep $WAIT_INTERVAL_SECONDS
+  SECONDS_WAITED=$((SECONDS_WAITED + WAIT_INTERVAL_SECONDS))
+  if [ $SECONDS_WAITED -ge $MAX_WAIT_SECONDS ]; then
+    echo "❌ Tempo limite excedido ($MAX_WAIT_SECONDS segundos). O banco de dados não ficou disponível."
+    exit 1
+  fi
 done
 
 echo "✅ PostgreSQL está pronto, iniciando a aplicação..."
@@ -33,9 +42,9 @@ npx prisma generate
 echo "⏳ Criando Usuário Admin..."
 npm run prisma:seed
 
-# Inicia o Prisma Studio
-echo "⏳ Iniciando Prisma Studio..."
-npx prisma studio --port 5555
+# Inicia o Prisma Studio em background
+echo "⏳ Iniciando Prisma Studio em background na porta 5555..."
+npx prisma studio --port 5555 &
 
 # Inicia a aplicação
 echo "⏳ Iniciando Backend..."

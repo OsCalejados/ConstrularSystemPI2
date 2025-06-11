@@ -1,16 +1,19 @@
-FROM node:20.18.1
+FROM node:20-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y netcat-openbsd && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y netcat-openbsd openssl && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Define o target do binário do Prisma para compatibilidade com OpenSSL 3.x (presente no Debian Bookworm / node:20-slim)
+ENV PRISMA_CLI_BINARY_TARGETS="debian-openssl-3.0.x"
 
 COPY package*.json ./
-COPY start.sh ./start.sh
-RUN chmod +x ./start.sh
-
 RUN npm install
 
 COPY . .
+
+# Corrige possíveis problemas de terminação de linha (CRLF) e garante permissão de execução para o start.sh
+RUN sed -i 's/\r$//' ./start.sh && chmod +x ./start.sh
 
 CMD ["./start.sh"]
 
