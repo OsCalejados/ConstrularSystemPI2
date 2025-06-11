@@ -40,14 +40,21 @@ export default function CreateCustomer() {
   } = customerForm
 
   const onSubmit = async (data: CustomerFormData) => {
-    await createCustomer(data)
+    try {
+      await createCustomer(data)
 
-    toast({
-      title: 'Cliente criado com sucesso',
-    })
+      toast({
+        title: 'Cliente criado com sucesso',
+      })
 
-    reset()
-    router.back()
+      reset()
+      router.back()
+    } catch (error) {
+      toast({
+        title: 'Erro ao criar cliente',
+        variant: 'destructive',
+      })
+    }
   }
 
   return (

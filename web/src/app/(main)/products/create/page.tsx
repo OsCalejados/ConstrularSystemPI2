@@ -1,91 +1,70 @@
 'use client'
 
-import CustomerForm from '@/components/forms/customer-form'
 import CancelDialog from '@/components/dialogs/cancel-dialog'
+import ProductForm from '@/components/forms/product-form'
+import Breadcrumb from '@/components/ui/breadcrumb'
 
-import { getCustomerById, updateCustomer } from '@/services/customer-service'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useParams, useRouter } from 'next/navigation'
-import { customerFormSchema } from '@/validations/customer-form-schema'
-import { CustomerFormData } from '@/types/validations'
+import { productFormSchema } from '@/validations/product-form-schema'
+import { ProductFormData } from '@/types/validations'
+import { createProduct } from '@/services/product-service'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Customer } from '@/types/customer'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/shadcnui/button'
 import { toast } from '@/hooks/use-toast'
 import { Page } from '@/components/layout/page'
-import Breadcrumb from '@/components/ui/breadcrumb'
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
 
-export default function EditCustomer() {
-  const { customerId } = useParams()
+export default function CreateProduct() {
   const router = useRouter()
 
-  const { data: customer } = useQuery<Customer>({
-    queryKey: ['customerById'],
-    queryFn: () => getCustomerById(customerId as string),
-  })
-
-  const customerForm = useForm<CustomerFormData>({
-    resolver: zodResolver(customerFormSchema),
+  const productForm = useForm<ProductFormData>({
+    resolver: zodResolver(productFormSchema),
     mode: 'onTouched',
     defaultValues: {
-      name: customer?.name ?? '',
-      phone: customer?.phone ?? '',
-      email: customer?.email ?? '',
-      city: customer?.address.city ?? '',
-      neighborhood: customer?.address.neighborhood ?? '',
-      street: customer?.address.street ?? '',
-      number: customer?.address.number ?? '',
-      complement: customer?.address.complement ?? '',
-      reference: customer?.address.reference ?? '',
+      name: '',
+      brand: '',
+      unit: 'UN',
+      stockQuantity: 0,
+      costPrice: 0,
+      profitMargin: 0,
+      profit: 0,
+      salePrice: 0,
     },
   })
 
   const {
     reset,
     formState: { isDirty },
-  } = customerForm
+  } = productForm
 
-  const onSubmit = async (data: CustomerFormData) => {
+  const onSubmit = async (data: ProductFormData) => {
     try {
-      await updateCustomer(customerId as string, data)
+      await createProduct(data)
 
       toast({
-        title: 'Cliente editado com sucesso',
+        title: 'Produto criado com sucesso',
       })
 
-      reset(data)
+      reset()
       router.back()
     } catch (error) {
       toast({
-        title: 'Erro ao editar cliente',
+        title: 'Erro ao criar produto',
         variant: 'destructive',
       })
     }
   }
 
-  useEffect(() => {
-    if (customer) {
-      const { email, ...data } = customer
-
-      reset({
-        email: email ?? '',
-        ...data,
-      })
-    }
-  }, [customer, reset])
-
   return (
     <Page.Container>
       <Page.Header>
         <Breadcrumb
-          currentPage="Editar cliente"
+          currentPage="Novo produto"
           parents={[
             {
-              name: 'Clientes',
-              path: '/customers',
+              name: 'Estoque',
+              path: '/products',
             },
           ]}
         />
@@ -108,7 +87,7 @@ export default function EditCustomer() {
                 <CaretLeftIcon size={20} />
               </Button>
             )}
-            <h2 className="font-medium">Editar cliente</h2>
+            <h2 className="font-medium">Novo produto</h2>
           </div>
           <div className="flex gap-2">
             {isDirty ? (
@@ -126,16 +105,16 @@ export default function EditCustomer() {
             <Button
               className="bg-primary hover:bg-primary-hover"
               type="submit"
-              form="customer-form"
+              form="product-form"
             >
-              <span>Editar cliente</span>
+              <span>Cadastrar</span>
             </Button>
           </div>
         </div>
 
         <div className="mt-4">
-          <FormProvider {...customerForm}>
-            <CustomerForm onSubmit={onSubmit} />
+          <FormProvider {...productForm}>
+            <ProductForm onSubmit={onSubmit} />
           </FormProvider>
         </div>
       </Page.Content>

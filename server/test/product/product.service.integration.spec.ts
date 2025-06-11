@@ -119,7 +119,7 @@ describe('ProductService (Integration)', () => {
     await prismaTestClient?.$disconnect();
     await container?.stop();
     delete process.env.DATABASE_URL;
-  }, 60000);
+  }, 300000);
 
   describe('deve ser definido', () => {
     it('should be defined', () => {
@@ -393,7 +393,7 @@ describe('ProductService (Integration)', () => {
         const mockOrder: Partial<Order> = {
           id: 1,
           customerId: customer.id,
-          status: OrderStatus.PENDING,
+          status: OrderStatus.OPEN,
         };
 
         jest

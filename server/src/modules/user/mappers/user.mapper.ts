@@ -1,6 +1,6 @@
 import { UserDto } from '../dtos/user.dto';
 import { User } from '@prisma/client';
-import { Role } from 'src/modules/user/enums/role';
+import { Role } from 'src/common/enums/role';
 
 export class UserMapper {
   static toDto(user: User): UserDto {

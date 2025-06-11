@@ -77,7 +77,7 @@ describe('ProductRepository (Integration)', () => {
     await container?.stop();
     delete process.env.DATABASE_URL;
     await prismaService?.$disconnect();
-  });
+  }, 300000);
 
   describe('deve ser definido', () => {
     it('should be defined', () => {

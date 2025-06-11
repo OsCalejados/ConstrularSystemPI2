@@ -78,14 +78,21 @@ export default function EditOrder() {
   })
 
   const onSubmit = async (data: OrderFormData) => {
-    await updateOrder(orderId as string, data)
+    try {
+      await updateOrder(orderId as string, data)
 
-    toast({
-      title: 'Pedido editado com sucesso',
-    })
+      toast({
+        title: 'Pedido editado com sucesso',
+      })
 
-    reset(data)
-    router.back()
+      reset(data)
+      router.back()
+    } catch (error) {
+      toast({
+        title: 'Erro ao editar produto',
+        variant: 'destructive',
+      })
+    }
   }
 
   useEffect(() => {
