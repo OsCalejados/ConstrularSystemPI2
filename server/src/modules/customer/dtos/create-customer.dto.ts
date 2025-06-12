@@ -8,17 +8,24 @@ export class CreateCustomerDto {
   @IsEmail()
   email: string;
 
+  @IsOptional()
   phone: string;
 
+  @IsOptional()
   city: string;
 
+  @IsOptional()
   neighborhood: string;
 
+  @IsOptional()
   street: string;
 
+  @IsOptional()
   number: string;
 
+  @IsOptional()
   complement: string;
 
+  @IsOptional()
   reference: string;
 }

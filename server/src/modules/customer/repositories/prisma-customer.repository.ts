@@ -23,7 +23,7 @@ export class PrismaCustomerRepository implements CustomerRepository {
   ): Promise<CustomerDto> {
     const customer = await this.prisma.customer.findUnique({
       include: {
-        address: options.includeAddress,
+        address: options?.includeAddress ?? false,
       },
       where: {
         id: customerId,

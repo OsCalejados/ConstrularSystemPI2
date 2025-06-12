@@ -7,7 +7,6 @@ import { OrderModule } from './modules/order/order.module';
 // import { APP_GUARD } from '@nestjs/core';
 // import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 // import { PaymentModule } from './payment/payment.module';
-// import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [AuthModule, CustomerModule, UserModule, ProductModule, OrderModule],

@@ -1,4 +1,4 @@
-import { InMemoryCustomerRepository } from './repositories/in-memory-customer.repository';
+import { PrismaCustomerRepository } from './repositories/prisma-customer.repository';
 import { CustomerRepository } from './interfaces/customer.repository.interface';
 import { CustomerController } from './controllers/customer.controller';
 import { CustomerService } from './services/customer.service';
@@ -13,7 +13,7 @@ import { Module } from '@nestjs/common';
     PrismaService,
     {
       provide: CustomerRepository,
-      useClass: InMemoryCustomerRepository,
+      useClass: PrismaCustomerRepository,
     },
   ],
 })
