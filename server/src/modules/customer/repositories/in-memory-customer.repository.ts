@@ -22,7 +22,7 @@ export class InMemoryCustomerRepository implements CustomerRepository {
     const index = this.customers.findIndex((item) => item.id === customerId);
 
     if (index === -1) {
-      throw new Error(`Customer with ID ${customerId} not found.`);
+      return null;
     }
 
     const customer = this.customers[index];
@@ -69,7 +69,7 @@ export class InMemoryCustomerRepository implements CustomerRepository {
     const index = this.customers.findIndex((item) => item.id === customerId);
 
     if (index === -1) {
-      throw new Error(`Customer with ID ${customerId} not found.`);
+      return null;
     }
 
     const existing = this.customers[index];
@@ -105,7 +105,7 @@ export class InMemoryCustomerRepository implements CustomerRepository {
     const index = this.customers.findIndex((item) => item.id === customerId);
 
     if (index === -1) {
-      throw new Error(`Customer with ID ${customerId} not found.`);
+      return null;
     }
 
     this.customers[index].balance = updateBalanceDto.balance;
@@ -117,7 +117,7 @@ export class InMemoryCustomerRepository implements CustomerRepository {
     const index = this.customers.findIndex((item) => item.id === customerId);
 
     if (index === -1) {
-      throw new Error(`Customer with ID ${customerId} not found.`);
+      return null;
     }
 
     const [deletedCustomer] = this.customers.splice(index, 1);

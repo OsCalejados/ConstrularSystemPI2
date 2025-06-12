@@ -16,7 +16,7 @@ export const productFormSchema = z.object({
     .min(0, { message: 'A quantidade deve ser maior ou igual a 0.' }),
   costPrice: z
     .number({ message: 'Campo obrigatório.' })
-    .positive({ message: 'O preço de custo deve ser maior que 0.' }),
+    .min(0, { message: 'O preço de custo deve ser maior que 0.' }),
   profitMargin: z
     .number({ message: 'Campo obrigatório.' })
     .min(0, { message: 'A margem deve ser maior ou igual a 0.' })

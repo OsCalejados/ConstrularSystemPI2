@@ -20,7 +20,7 @@ services:
     backend:
         build:
             context: .
-            dockerfile: Dockerfile.dev
+            dockerfile: Dockerfile.juan
         environment:
             DATABASE_HOST: ${DATABASE_HOST:-postgres-pi2}
             DATABASE_PORT: ${DATABASE_PORT:-5432}
