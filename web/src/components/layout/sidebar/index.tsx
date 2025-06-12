@@ -46,7 +46,12 @@ const items: MenuItem[] = [
   },
   {
     title: 'Estoque',
-    url: '/products',
+    url: '/stock/products',
+    icon: Package,
+  },
+  {
+    title: 'Movimentações',
+    url: '/stock/movements',
     icon: Package,
   },
   {
