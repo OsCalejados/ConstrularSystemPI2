@@ -2,13 +2,13 @@ import { IsNotEmpty } from 'class-validator';
 
 export class OrderItemDto {
   @IsNotEmpty()
-  productId: string;
+  productId: number;
 
   @IsNotEmpty()
   quantity: number;
 
   @IsNotEmpty()
-  unit_price: number;
+  unitPrice: number;
 
   @IsNotEmpty()
   total: number;

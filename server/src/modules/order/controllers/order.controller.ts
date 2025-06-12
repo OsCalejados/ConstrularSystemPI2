@@ -1,4 +1,3 @@
-import { DeleteOrdersDto } from '../dtos/delete-orders.dto';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { OrderService } from '../services/order.service';
@@ -90,12 +89,5 @@ export class OrderController {
     const id = parseInt(orderId);
 
     await this.orderService.deleteOrder(id);
-  }
-
-  @Delete()
-  async deleteOrders(@Body() deleteOrdersDto: DeleteOrdersDto) {
-    const { orderIds } = deleteOrdersDto;
-
-    return await this.orderService.deleteOrders(orderIds);
   }
 }

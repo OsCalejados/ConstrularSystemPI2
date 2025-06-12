@@ -8,6 +8,8 @@ export class CreateOrderDto {
   @IsNotEmpty()
   customerId: number;
 
+  notes: string;
+
   @IsEnum(OrderType)
   type: OrderType;
 
@@ -19,13 +21,13 @@ export class CreateOrderDto {
   discount: number;
 
   @IsEnum(PaymentMethod)
-  payment_method: PaymentMethod;
+  paymentMethod: PaymentMethod;
 
   paid: boolean;
 
   installments: number;
 
-  amount_paid: number;
+  amountPaid: number;
 
   @IsNotEmpty()
   items: OrderItemDto[];

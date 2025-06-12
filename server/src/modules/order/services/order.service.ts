@@ -1,19 +1,20 @@
-import { OrderRepository } from '../repositories/order.repository';
 import { CustomerRepository } from '@src/modules/customer/interfaces/customer.repository.interface';
+import { IOrderRepository } from '../interfaces/order.repository.interface';
+import { UpdateStatusDto } from '../dtos/update-status';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
-import { Injectable } from '@nestjs/common';
-import { UpdateStatusDto } from '../dtos/update-status';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { IOrderService } from '../interfaces/order.service.interface';
+import { Injectable } from '@nestjs/common';
 import { Order } from '@prisma/client';
 
 @Injectable()
 export class OrderService implements IOrderService {
   constructor(
-    private orderRepository: OrderRepository,
+    private orderRepository: IOrderRepository,
     private customerRepository: CustomerRepository,
   ) {}
+
   async getOrdersByProductId(productId: number): Promise<Order[]> {
     // TODO
     //find order_item by productId

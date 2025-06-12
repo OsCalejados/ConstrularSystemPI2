@@ -41,7 +41,7 @@ const items: MenuItem[] = [
   },
   {
     title: 'Pedidos',
-    url: '/orders',
+    url: '/orders/installments',
     icon: Tags,
   },
   {

@@ -11,13 +11,13 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   name     String
-  username String  @unique
+  username String @unique
   password String
-  role     String  @default("SELLER") // ADMINISTRATOR
-  
-  Order    Order[]
+  role     String @default("SELLER") // ADMINISTRATOR
+
+  Order Order[]
 
   @@map("users")
 }
@@ -68,22 +68,22 @@ model Product {
 }
 
 model Order {
-  id            Int      @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   customerId    Int?
   sellerId      Int
+  notes         String?
   type          String
   status        String
   total         Decimal
-  discount      Decimal  @default(0.00)
+  discount      Decimal     @default(0.00)
   paymentMethod String?
-  paid          Boolean  @default(false)
+  paid          Boolean     @default(false)
   installments  Int? // Usado quando pagamento em cartão de crédito
   amountPaid    Decimal? // Usado quando pagamento em dinheiro
-  createdAt     DateTime
-
-  customer Customer?   @relation(fields: [customerId], references: [id])
-  seller   User        @relation(fields: [sellerId], references: [id])
-  items    OrderItem[]
+  createdAt     DateTime    @default(now())
+  customer      Customer?   @relation(fields: [customerId], references: [id])
+  seller        User        @relation(fields: [sellerId], references: [id])
+  items         OrderItem[]
 
   @@map("orders")
 }

@@ -1,4 +1,4 @@
-import { OrderRepository } from 'src/modules/order/repositories/order.repository';
+import { OrderRepository } from '@src/modules/order/repositories/prisma-order.repository';
 import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { PaymentRepository } from '../repositories/payment.repository';
 import { Injectable } from '@nestjs/common';
