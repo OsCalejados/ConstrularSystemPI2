@@ -18,6 +18,10 @@ export abstract class IOrderRepository {
     options?: FindOrderOptions,
   ): Promise<OrderDto>;
 
+  abstract findByCustomer(customerId: number): Promise<OrderDto[]>;
+
+  abstract findByProductId(productId: number): Promise<OrderDto[]>;
+
   abstract create(order: CreateOrderDto, sellerId: number): Promise<OrderDto>;
 
   abstract update(orderId: number, order: UpdateOrderDto): Promise<OrderDto>;

@@ -40,6 +40,30 @@ export class PrismaOrderRepository implements IOrderRepository {
     return OrderMapper.toDto(order);
   }
 
+  async findByCustomer(customerId: number): Promise<OrderDto[]> {
+    const orders = await this.prisma.order.findMany({
+      where: {
+        customerId,
+      },
+    });
+
+    return orders.map((order) => OrderMapper.toDto(order));
+  }
+
+  async findByProductId(productId: number): Promise<OrderDto[]> {
+    const orders = await this.prisma.order.findMany({
+      where: {
+        items: {
+          some: {
+            productId,
+          },
+        },
+      },
+    });
+
+    return orders.map((order) => OrderMapper.toDto(order));
+  }
+
   async create(order: CreateOrderDto, sellerId: number): Promise<OrderDto> {
     const createdOrder = await this.prisma.order.create({
       data: {
@@ -52,8 +76,16 @@ export class PrismaOrderRepository implements IOrderRepository {
         paymentMethod: order.paymentMethod,
         paid: order.paid,
         notes: order.notes,
-        customerId: order.customerId,
-        sellerId: sellerId,
+        seller: {
+          connect: {
+            id: sellerId,
+          },
+        },
+        customer: {
+          connect: {
+            id: order.customerId ?? null,
+          },
+        },
         items: {
           createMany: {
             data: order.items,
@@ -61,34 +93,37 @@ export class PrismaOrderRepository implements IOrderRepository {
         },
       },
     });
-
     return OrderMapper.toDto(createdOrder);
   }
 
   async update(orderId: number, order: UpdateOrderDto): Promise<OrderDto> {
-    const updatedOrder = await this.prisma.order.update({
-      where: {
-        id: orderId,
-      },
-      data: {
-        status: order.status,
-        total: order.total,
-        type: order.type,
-        discount: order.discount,
-        amountPaid: order.amountPaid,
-        installments: order.installments,
-        paymentMethod: order.paymentMethod,
-        paid: order.paid,
-        notes: order.notes,
-        customerId: order.customerId,
-        items: {
-          deleteMany: {},
-          createMany: {
-            data: order.items,
-          },
-        },
-      },
+    const updatedOrder = await this.prisma.order.findUnique({
+      where: { id: orderId },
     });
+
+    // const updatedOrder = await this.prisma.order.update({
+    //   where: {
+    //     id: orderId,
+    //   },
+    //   data: {
+    //     status: order.status,
+    //     total: order.total,
+    //     type: order.type,
+    //     discount: order.discount,
+    //     amountPaid: order.amountPaid,
+    //     installments: order.installments,
+    //     paymentMethod: order.paymentMethod,
+    //     paid: order.paid,
+    //     notes: order.notes,
+    //     customerId: order.customerId,
+    //     items: {
+    //       deleteMany: {},
+    //       createMany: {
+    //         data: order.items,
+    //       },
+    //     },
+    //   },
+    // });
 
     return OrderMapper.toDto(updatedOrder);
   }

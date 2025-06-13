@@ -6,7 +6,7 @@ import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { IOrderService } from '../interfaces/order.service.interface';
 import { Injectable } from '@nestjs/common';
-import { Order } from '@prisma/client';
+import { OrderDto } from '../dtos/order.dto';
 
 @Injectable()
 export class OrderService implements IOrderService {
@@ -15,31 +15,13 @@ export class OrderService implements IOrderService {
     private customerRepository: CustomerRepository,
   ) {}
 
-  async getOrdersByProductId(productId: number): Promise<Order[]> {
-    // TODO
-    //find order_item by productId
-    // then find order by order_item.orderId
-    // if not find return empty array
-    // else return orders
-    return [];
-    const ordersItems =
-      await this.orderRepository.findOrderItemByProduct(productId);
-    if (!ordersItems || ordersItems.length === 0) {
-      return [];
-    }
-    const orderIds = ordersItems.map((item) => item.orderId);
-    return Promise.all(
-      orderIds.map((orderId) => this.orderRepository.findById(orderId)),
-    );
-  }
-
-  async getAllOrders() {
+  async getAllOrders(): Promise<OrderDto[]> {
     const orders = await this.orderRepository.findAll();
 
     return orders;
   }
 
-  async getOrderById(orderId: number) {
+  async getOrderById(orderId: number): Promise<OrderDto> {
     const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
@@ -49,39 +31,38 @@ export class OrderService implements IOrderService {
     return order;
   }
 
-  async getOrdersByCustomer(
-    customerId: number,
-    page: number = 1,
-    pageSize: number = 12,
-    status?: string,
-  ) {
+  async getOrdersByCustomer(customerId: number): Promise<OrderDto[]> {
     const costumer = this.customerRepository.findById(customerId);
 
     if (!costumer) {
       throw new Error(`Customer not found`);
     }
 
-    return await this.orderRepository.findByCustomer(
-      customerId,
-      page,
-      pageSize,
-      status,
-    );
+    return await this.orderRepository.findByCustomer(customerId);
   }
 
-  async createOrder(order: CreateOrderDto) {
+  async getOrdersByProductId(productId: number): Promise<OrderDto[]> {
+    const orders = await this.orderRepository.findByProductId(productId);
+
+    return orders;
+  }
+
+  async createOrder(
+    order: CreateOrderDto,
+    sellerId: number,
+  ): Promise<OrderDto> {
     const costumer = this.customerRepository.findById(order.customerId);
 
     if (!costumer) {
       throw new Error(`Customer not found`);
     }
 
-    const createdOrder = await this.orderRepository.create(order);
+    const createdOrder = await this.orderRepository.create(order, sellerId);
 
     return createdOrder;
   }
 
-  async updateOrder(orderId: number, order: UpdateOrderDto) {
+  async updateOrder(orderId: number, order: UpdateOrderDto): Promise<OrderDto> {
     const existingOrder = await this.orderRepository.findById(orderId);
 
     if (!existingOrder) {
@@ -93,7 +74,10 @@ export class OrderService implements IOrderService {
     return updatedOrder;
   }
 
-  async updateNotes(orderId: number, updateStatusDto: UpdateNotesDto) {
+  async updateNotes(
+    orderId: number,
+    updateStatusDto: UpdateNotesDto,
+  ): Promise<OrderDto> {
     const existingOrder = await this.orderRepository.findById(orderId);
 
     if (!existingOrder) {
@@ -108,7 +92,10 @@ export class OrderService implements IOrderService {
     return updatedOrder;
   }
 
-  async updateStatus(orderId: number, updateStatusDto: UpdateStatusDto) {
+  async updateStatus(
+    orderId: number,
+    updateStatusDto: UpdateStatusDto,
+  ): Promise<OrderDto> {
     const existingOrder = await this.orderRepository.findById(orderId);
 
     if (!existingOrder) {
@@ -123,25 +110,13 @@ export class OrderService implements IOrderService {
     return updatedOrder;
   }
 
-  async deleteOrder(orderId: number) {
+  async deleteOrder(orderId: number): Promise<void> {
     const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
       throw new Error(`Order not found`);
     }
 
-    await this.orderRepository.delete(orderId);
-  }
-
-  async deleteOrders(orderIds: number[]) {
-    for (const orderId of orderIds) {
-      const existingOrder = await this.orderRepository.findById(orderId);
-
-      if (!existingOrder) {
-        throw new Error(`Order with ID ${orderId} not found`);
-      }
-    }
-
-    await this.orderRepository.deleteMany(orderIds);
+    await this.orderRepository.deleteById(orderId);
   }
 }

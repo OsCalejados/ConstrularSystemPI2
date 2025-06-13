@@ -1,5 +1,8 @@
-import { CreateOrderDto } from '../dtos/create-order.dto';
+import { UpdateStatusDto } from '../dtos/update-status';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
+import { UpdateNotesDto } from '../dtos/update-notes';
+import { CreateOrderDto } from '../dtos/create-order.dto';
+import { CurrentUserId } from '@src/common/decorators/current-user-id.decorator';
 import { OrderService } from '../services/order.service';
 import {
   Controller,
@@ -9,10 +12,7 @@ import {
   Post,
   Put,
   Get,
-  Query,
 } from '@nestjs/common';
-import { UpdateStatusDto } from '../dtos/update-status';
-import { UpdateNotesDto } from '../dtos/update-notes';
 
 @Controller('orders')
 export class OrderController {
@@ -31,27 +31,18 @@ export class OrderController {
   }
 
   @Get('customer/:id')
-  async getOrdersByCustomer(
-    @Param('id') customerId: string,
-    @Query('page') page: string,
-    @Query('pageSize') pageSize: string,
-    @Query('status') status?: string,
-  ) {
+  async getOrdersByCustomer(@Param('id') customerId: string) {
     const id = parseInt(customerId);
-    const pageNumber = page ? parseInt(page) : 1;
-    const pageSizeNumber = pageSize ? parseInt(pageSize) : 12;
 
-    return await this.orderService.getOrdersByCustomer(
-      id,
-      pageNumber,
-      pageSizeNumber,
-      status,
-    );
+    return await this.orderService.getOrdersByCustomer(id);
   }
 
   @Post()
-  async createOrder(@Body() createOrderDto: CreateOrderDto) {
-    return await this.orderService.createOrder(createOrderDto);
+  async createOrder(
+    @Body() createOrderDto: CreateOrderDto,
+    @CurrentUserId() userId: number,
+  ) {
+    return await this.orderService.createOrder(createOrderDto, userId);
   }
 
   @Put(':id')

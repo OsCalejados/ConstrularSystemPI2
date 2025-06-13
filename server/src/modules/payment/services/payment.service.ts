@@ -1,17 +1,17 @@
-import { OrderRepository } from '@src/modules/order/repositories/prisma-order.repository';
-import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { PaymentRepository } from '../repositories/payment.repository';
+import { CreatePaymentDto } from '../dtos/create-payment.dto';
+import { IOrderService } from '@src/modules/order/interfaces/order.service.interface';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PaymentService {
   constructor(
     private paymentRepository: PaymentRepository,
-    private orderRepository: OrderRepository,
+    private orderService: IOrderService,
   ) {}
 
   async createPayment(payment: CreatePaymentDto) {
-    const order = this.orderRepository.findById(payment.orderId);
+    const order = this.orderService.getOrderById(payment.orderId);
 
     if (!order) {
       throw new Error(`Order not found`);
