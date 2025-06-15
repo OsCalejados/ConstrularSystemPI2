@@ -3,7 +3,7 @@
 import Breadcrumb from '@/components/ui/breadcrumb'
 import Link from 'next/link'
 
-import { costumerColumns } from '@/components/tables/customer-columns'
+import { costumerColumns } from '@/components/tables/customers-columns'
 import { CustomersTable } from '@/components/tables/customers-table'
 import { getCustomers } from '@/services/customer-service'
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr'
@@ -29,7 +29,7 @@ export default function Customers() {
         <div className="flex justify-between items-center">
           <h2 className="font-medium">Clientes</h2>
           <Button className="bg-primary gap-1 hover:bg-primary-hover" asChild>
-            <Link href="customers/create">
+            <Link href="/customers/create">
               <PlusIcon size={20} weight="bold" className="text-white" />
               <span>Novo cliente</span>
             </Link>

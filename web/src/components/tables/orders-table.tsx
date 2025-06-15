@@ -1,6 +1,5 @@
 'use client'
 
-import TableMoreActions from '../dropdown-menus/table-more-actions'
 import CustomPagination from '../ui/pagination'
 import TableSearchField from '../ui/table-search-field'
 import React from 'react'
@@ -26,17 +25,16 @@ import {
   TableRow,
   Table,
 } from '@/components/shadcnui/table'
-import { Customer } from '@/types/customer'
 import { Order } from '@/types/order'
 
-type DataType = Customer | Order
+type DataType = Order
 
 interface DataTableProps<TData extends DataType, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-export function DataTable<TData extends DataType, TValue>({
+export function OrdersTable<TData extends DataType, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -73,26 +71,19 @@ export function DataTable<TData extends DataType, TValue>({
 
   return (
     <div>
-      <div className="flex justify-between items-center">
-        <TableSearchField
-          placeholder="Buscar por nome..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className="flex-1 max-w-sm"
-        />
-
-        <TableMoreActions
-          data={table
-            .getFilteredSelectedRowModel()
-            .rows.map((row) => row.original)}
-        />
-      </div>
-
       <div className="rounded-md border">
+        <div className="px-4 flex items-center justify-between">
+          <TableSearchField
+            placeholder="Buscar por nome..."
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            onChange={(event) =>
+              table.getColumn('name')?.setFilterValue(event.target.value)
+            }
+            className="w-full max-w-sm"
+          />
+        </div>
         <Table>
-          <TableHeader className="bg-table-header">
+          <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -152,12 +143,8 @@ export function DataTable<TData extends DataType, TValue>({
         </Table>
       </div>
 
-      <div className="mt-2 flex-1 text-sm text-secondary text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} de{' '}
-        {table.getFilteredRowModel().rows.length} linhas selecionadas.
-      </div>
-
       <CustomPagination
+        className="mt-4"
         previousPage={table.previousPage}
         nextPage={table.nextPage}
         firstPage={table.firstPage}

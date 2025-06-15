@@ -1,8 +1,8 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { OrderStatus } from '../../../common/enums/order-status.enum';
-import { OrderItemDto } from './order-item.dto';
-import { OrderType } from 'src/common/enums/order-type.enum';
 import { PaymentMethod } from 'src/common/enums/payment-method.enum';
+import { OrderItemDto } from './order-item.dto';
+import { OrderStatus } from '../../../common/enums/order-status.enum';
+import { OrderType } from 'src/common/enums/order-type.enum';
 
 export class CreateOrderDto {
   @IsNotEmpty()
@@ -18,6 +18,8 @@ export class CreateOrderDto {
 
   total: number;
 
+  netTotal: number;
+
   discount: number;
 
   @IsEnum(PaymentMethod)
@@ -29,6 +31,6 @@ export class CreateOrderDto {
 
   amountPaid: number;
 
-  @IsNotEmpty()
+  // @IsNotEmpty()
   items: OrderItemDto[];
 }

@@ -1,15 +1,39 @@
 import { OrderFormData } from '@/types/validations'
-import { api } from '@/lib/axios'
 import { OrderStatus } from '@/enums/order-status'
+import { api } from '@/lib/axios'
 
-export async function getOrders() {
-  const response = await api.get('orders')
+interface FindOrderOptions {
+  includePayments?: boolean
+  includeProducts?: boolean
+  includeCustomer?: boolean
+  includeSeller?: boolean
+}
+
+export async function getOrders(options?: FindOrderOptions) {
+  const response = await api.get('orders', {
+    params: {
+      includePayments: options?.includePayments,
+      includeProducts: options?.includeProducts,
+      includeCustomer: options?.includeCustomer,
+      includeSeller: options?.includeSeller,
+    },
+  })
 
   return response.data
 }
 
-export async function getOrderById(orderId: number | string) {
-  const response = await api.get(`orders/${orderId}`)
+export async function getOrderById(
+  orderId: number | string,
+  options?: FindOrderOptions,
+) {
+  const response = await api.get(`orders/${orderId}`, {
+    params: {
+      includePayments: options?.includePayments,
+      includeProducts: options?.includeProducts,
+      includeCustomer: options?.includeCustomer,
+      includeSeller: options?.includeSeller,
+    },
+  })
 
   return response.data
 }

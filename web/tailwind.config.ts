@@ -18,7 +18,10 @@ const config: Config = {
         secondary: '#5C5E64',
         terciary: '#71717A',
         placeholder: '#ABB0B4',
-        contrast: '#f46801',
+        contrast: {
+          DEFAULT: '#f46801',
+          hover: '#dc5e01',
+        },
       },
       colors: {
         currency: '#43B682',

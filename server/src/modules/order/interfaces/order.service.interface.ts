@@ -3,19 +3,24 @@ import { UpdateNotesDto } from '../dtos/update-notes';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { OrderDto } from '../dtos/order.dto';
+import { FindOrderOptions } from './find-order-options.interface';
 
 export abstract class IOrderService {
-  abstract getAllOrders(): Promise<OrderDto[]>;
+  abstract getAllOrders(options?: FindOrderOptions): Promise<OrderDto[]>;
 
-  abstract getOrderById(orderId: number): Promise<OrderDto>;
+  abstract getOrderById(
+    orderId: number,
+    options?: FindOrderOptions,
+  ): Promise<OrderDto>;
 
-  abstract getOrdersByProductId(productId: number): Promise<OrderDto[]>;
+  abstract getOrdersByProductId(
+    productId: number,
+    options?: FindOrderOptions,
+  ): Promise<OrderDto[]>;
 
   abstract getOrdersByCustomer(
     customerId: number,
-    page?: number,
-    pageSize?: number,
-    status?: string,
+    options?: FindOrderOptions,
   ): Promise<OrderDto[]>;
 
   abstract createOrder(

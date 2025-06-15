@@ -18,6 +18,8 @@ export class UpdateOrderDto {
 
   total: number;
 
+  netTotal: number;
+
   discount: number;
 
   @IsEnum(PaymentMethod)

@@ -1,37 +1,36 @@
 import OrderOptions from '../dropdown-menus/order-options'
 
-import { OrderStatus } from '@/enums/order-status'
 import { ArrowUpDown } from 'lucide-react'
 import { formatDate } from '@/utils/format-date'
 import { ColumnDef } from '@tanstack/react-table'
-import { Checkbox } from '../shadcnui/checkbox'
 import { Button } from '../shadcnui/button'
 import { Order } from '@/types/order'
+import { formatCurrency } from '@/utils/format-currency'
 
-export const orderColumns: ColumnDef<Order>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-        onClick={(event) => event.stopPropagation()}
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+export const installmentOrdersColumns: ColumnDef<Order>[] = [
+  // {
+  //   id: 'select',
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && 'indeterminate')
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //       onClick={(event) => event.stopPropagation()}
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: 'id',
     header: ({ column }) => {
@@ -48,7 +47,7 @@ export const orderColumns: ColumnDef<Order>[] = [
     },
     cell: ({ row }) => {
       const orderId = row.getValue('id') as number
-      const formattedOrderId = `#${orderId.toString().padStart(4, '0')}`
+      const formattedOrderId = `#${orderId.toString().padStart(6, '0')}`
 
       return <span className="font-medium">{formattedOrderId}</span>
     },
@@ -56,15 +55,25 @@ export const orderColumns: ColumnDef<Order>[] = [
   {
     header: 'Cliente',
     accessorKey: 'name',
-    accessorFn: (row) => row.customer.name,
+    accessorFn: (row) => row.customer?.name ?? '-',
+  },
+  {
+    header: 'Valor',
+    accessorKey: 'total',
+    cell: ({ row }) => {
+      const total = parseFloat(row.getValue('total'))
+      const formatted = formatCurrency(total)
+
+      return <div>{formatted}</div>
+    },
   },
   {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
-      const status = row.getValue('status') as OrderStatus
+      const paid = Boolean(row.getValue('paid'))
 
-      if (status === OrderStatus.PENDING) {
+      if (!paid) {
         return (
           <div className="bg-status-pending rounded-full bg-opacity-25 px-4 w-fit border border-status-pending flex gap-2 items-center justify-center h-8">
             <div className="w-2 h-2 rounded-full bg-status-pending" />

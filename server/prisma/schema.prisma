@@ -68,36 +68,49 @@ model Product {
 }
 
 model Order {
-  id            Int         @id @default(autoincrement())
-  customerId    Int?
-  sellerId      Int
-  notes         String?
-  type          String
-  status        String
-  total         Decimal
-  discount      Decimal     @default(0.00)
-  paymentMethod String?
-  paid          Boolean     @default(false)
-  installments  Int? // Usado quando pagamento em cartão de crédito
-  amountPaid    Decimal? // Usado quando pagamento em dinheiro
-  createdAt     DateTime    @default(now())
-  customer      Customer?   @relation(fields: [customerId], references: [id])
-  seller        User        @relation(fields: [sellerId], references: [id])
-  items         OrderItem[]
+  id        Int      @id @default(autoincrement())
+  notes     String?
+  type      String
+  status    String
+  netTotal  Decimal
+  total     Decimal
+  discount  Decimal  @default(0.00)
+  paid      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  customer   Customer?      @relation(fields: [customerId], references: [id])
+  seller     User           @relation(fields: [sellerId], references: [id])
+  items      OrderItem[]
+  payments   OrderPayment[]
+  customerId Int?
+  sellerId   Int
 
   @@map("orders")
 }
 
 model OrderItem {
   id        Int     @id @default(autoincrement())
-  orderId   Int
-  productId Int
   quantity  Decimal
   unitPrice Decimal
   total     Decimal
 
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  orderId   Int
+  productId Int
 
   @@map("order_items")
+}
+
+model OrderPayment {
+  id            Int      @id @default(autoincrement())
+  amount        Decimal
+  paymentMethod String // CASH | DEBIT | CREDIT | PIX
+  installments  Int? // Caso cartão, define quantas parcelas
+  paidAt        DateTime @default(now())
+
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
+
+  @@map("order_payments")
 }

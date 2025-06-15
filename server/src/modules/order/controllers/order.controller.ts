@@ -12,29 +12,39 @@ import {
   Post,
   Put,
   Get,
+  Query,
 } from '@nestjs/common';
+import { FindOrderOptionsDto } from '../dtos/find-order-options.dto';
 
 @Controller('orders')
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
   @Get()
-  async getAllOrders() {
-    return await this.orderService.getAllOrders();
+  async getAllOrders(@Query() query: FindOrderOptionsDto) {
+    return await this.orderService.getAllOrders({ ...query });
   }
 
   @Get(':id')
-  async getOrderById(@Param('id') orderId: string) {
+  async getOrderById(
+    @Param('id') orderId: string,
+    @Query() query: FindOrderOptionsDto,
+  ) {
     const id = parseInt(orderId);
 
-    return await this.orderService.getOrderById(id);
+    return await this.orderService.getOrderById(id, {
+      ...query,
+    });
   }
 
   @Get('customer/:id')
-  async getOrdersByCustomer(@Param('id') customerId: string) {
+  async getOrdersByCustomer(
+    @Param('id') customerId: string,
+    @Query() query: FindOrderOptionsDto,
+  ) {
     const id = parseInt(customerId);
 
-    return await this.orderService.getOrdersByCustomer(id);
+    return await this.orderService.getOrdersByCustomer(id, { ...query });
   }
 
   @Post()

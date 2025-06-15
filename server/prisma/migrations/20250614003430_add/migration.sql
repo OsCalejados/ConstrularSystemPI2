@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "orders" ADD COLUMN     "notes" TEXT,
+ALTER COLUMN "createdAt" SET DEFAULT CURRENT_TIMESTAMP;
