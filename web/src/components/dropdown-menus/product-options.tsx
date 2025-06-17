@@ -87,7 +87,7 @@ export default function ProductOptions({
           {showViewItem && (
             <DropdownMenuItem asChild>
               <Link
-                href={`/products/${product.id}`}
+                href={`/stock/products/${product.id}`}
                 onClick={(event) => event.stopPropagation()}
                 className="gap-2"
               >
@@ -102,7 +102,7 @@ export default function ProductOptions({
           {/* Edit option */}
           <DropdownMenuItem asChild>
             <Link
-              href={`/products/edit/${product.id}`}
+              href={`/stock/products/edit/${product.id}`}
               onClick={(event) => event.stopPropagation()}
               className="gap-2"
             >

@@ -4,7 +4,7 @@ import CustomPagination from '../ui/pagination'
 import TableSearchField from '../ui/table-search-field'
 import React from 'react'
 
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import {
   getPaginationRowModel,
   ColumnFiltersState,
@@ -39,7 +39,6 @@ export function ProductsTable<TData extends DataType, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const router = useRouter()
-  const pathname = usePathname()
 
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [rowSelection, setRowSelection] = React.useState({})
@@ -112,7 +111,9 @@ export function ProductsTable<TData extends DataType, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
                   className="cursor-pointer"
-                  onClick={() => router.push(`${pathname}/${row.original.id}`)}
+                  onClick={() =>
+                    router.push(`/stock/products/${row.original.id}`)
+                  }
                 >
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
