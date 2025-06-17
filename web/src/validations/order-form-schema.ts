@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const itemSchema = z.object({
+export const itemSchema = z.object({
   name: z.string().min(1, { message: 'Campo obrigatório.' }),
   unit: z.enum(['KG', 'MT', 'UN'], {
     message: 'Selecione uma opção.',
@@ -8,6 +8,13 @@ const itemSchema = z.object({
   quantity: z
     .number({ message: 'Campo obrigatório.' })
     .positive({ message: 'A quantidade deve ser maior que 0.' }),
+})
+
+export const paymentSchema = z.object({
+  amount: z.number().positive('O valor deve ser maior que zero.'),
+  method: z.enum(['CASH', 'CREDIT_CARD', 'PIX'], {
+    message: 'Selecione um método de pagamento.',
+  }),
 })
 
 export const orderFormSchema = z.object({

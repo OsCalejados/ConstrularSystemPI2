@@ -7,8 +7,11 @@ import { productFormSchema } from '@/validations/product-form-schema'
 import { z } from 'zod'
 import { notesFormSchema } from '@/validations/notes-form-schema'
 import { loginFormSchema } from '@/validations/login-form-schema'
+import { installmentOrderSchema } from '@/validations/installment-order-schema'
 
 export type OrderFormData = z.infer<typeof orderFormSchema>
+
+export type InstallmentOrderFormData = z.infer<typeof installmentOrderSchema>
 
 export type CustomerFormData = z.infer<typeof customerFormSchema>
 

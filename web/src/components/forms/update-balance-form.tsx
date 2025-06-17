@@ -2,17 +2,16 @@
 
 import InputError from '../ui/input-error'
 
+import { Controller, useForm } from 'react-hook-form'
 import { balanceFormSchema } from '@/validations/balance-form-schema'
 import { currencyToFloat } from '@/utils/currency-to-float'
 import { BalanceFormData } from '@/types/validations'
+import { useQueryClient } from '@tanstack/react-query'
 import { formatCurrency } from '@/utils/format-currency'
-import { currencyMask } from '@/utils/currency-mask'
+import { updateBalance } from '@/services/customer-service'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
 import { Label } from '../shadcnui/label'
 import { Input } from '../shadcnui/input'
-import { updateBalance } from '@/services/customer-service'
-import { useQueryClient } from '@tanstack/react-query'
 
 interface UpdateBalanceFormProps {
   balance: number
@@ -28,35 +27,22 @@ export default function UpdateBalanceForm({
     resolver: zodResolver(balanceFormSchema),
     mode: 'onSubmit',
     defaultValues: {
-      balance: formatCurrency(balance),
+      balance,
     },
   })
 
   const {
-    register,
-    setValue,
+    control,
     handleSubmit,
     formState: { errors },
   } = balanceForm
 
   const onSubmit = async (data: BalanceFormData) => {
-    const { balance } = data
-
-    const formattedBalance = currencyToFloat(balance)
-
-    await updateBalance(customerId, formattedBalance)
+    await updateBalance(customerId, data)
 
     await queryClient.invalidateQueries({
       queryKey: ['customerById'],
     })
-  }
-
-  const handleEnterKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      const currentValue = event.currentTarget.value
-      const formattedValue = formatCurrency(currencyToFloat(currentValue))
-      setValue('balance', formattedValue)
-    }
   }
 
   return (
@@ -64,14 +50,20 @@ export default function UpdateBalanceForm({
       <Label htmlFor="balance" className="text-right">
         Saldo
       </Label>
-      <Input
-        id="balance"
-        type="text"
-        className="col-span-3"
-        {...register('balance', {
-          onChange: currencyMask,
-        })}
-        onKeyDown={handleEnterKey}
+      <Controller
+        name="balance"
+        control={control}
+        render={({ field }) => (
+          <Input
+            {...field}
+            className="mt-1"
+            value={field.value ? formatCurrency(field.value) : 'R$ 0,00'}
+            onChange={(e) => {
+              const float = currencyToFloat(e.target.value)
+              field.onChange(float)
+            }}
+          />
+        )}
       />
       <InputError error={errors.balance?.message?.toString()} />
     </form>

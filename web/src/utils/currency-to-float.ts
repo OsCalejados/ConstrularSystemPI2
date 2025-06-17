@@ -1,9 +1,9 @@
 export function currencyToFloat(value: string | number) {
   if (typeof value === 'string') {
-    const cleanedValue = value.replace(/[R$\s.]/g, '').replace(',', '.')
-    const floatValue = parseFloat(cleanedValue)
+    const onlyDigits = value.replace(/\D/g, '')
+    const floatValue = Number(onlyDigits) / 100
 
-    return floatValue
+    return isNaN(floatValue) ? 0 : floatValue
   }
 
   return value

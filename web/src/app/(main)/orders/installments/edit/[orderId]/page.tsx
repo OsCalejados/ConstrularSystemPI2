@@ -47,7 +47,7 @@ export default function EditOrder() {
     resolver: zodResolver(orderFormSchema),
     mode: 'onSubmit',
     defaultValues: {
-      customerId: order?.customer.id.toString(),
+      customerId: order?.customer?.id,
       notes: order?.notes ?? '',
       status: order?.status,
       items: order?.items ?? [
@@ -98,7 +98,7 @@ export default function EditOrder() {
   useEffect(() => {
     if (order) {
       const initialValues = {
-        customerId: order.customer.id.toString(),
+        customerId: order.customer?.id,
         notes: order.notes || '',
         status: order.status,
         items: order.items,

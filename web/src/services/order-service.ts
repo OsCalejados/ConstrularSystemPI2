@@ -1,4 +1,4 @@
-import { OrderFormData } from '@/types/validations'
+import { InstallmentOrderFormData, OrderFormData } from '@/types/validations'
 import { OrderStatus } from '@/enums/order-status'
 import { api } from '@/lib/axios'
 
@@ -51,16 +51,10 @@ export async function getOrdersByCustomer(
   return response.data
 }
 
-export async function createOrder(orderFormData: OrderFormData) {
-  const { customerId: id, ...data } = orderFormData
-  const customerId = parseInt(id)
+export async function createOrder(orderFormData: InstallmentOrderFormData) {
+  console.log(orderFormData)
 
-  const body = {
-    customerId,
-    ...data,
-  }
-
-  const response = await api.post('orders', body)
+  const response = await api.post('orders', orderFormData)
 
   console.log(response.data)
 }

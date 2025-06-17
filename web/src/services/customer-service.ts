@@ -1,4 +1,4 @@
-import { CustomerFormData } from '@/types/validations'
+import { BalanceFormData, CustomerFormData } from '@/types/validations'
 import { api } from '@/lib/axios'
 
 export async function getCustomers() {
@@ -45,8 +45,14 @@ export async function updateCustomer(
   console.log(response.data)
 }
 
-export async function updateBalance(customerId: number, balance: number) {
-  const response = await api.put(`customers/${customerId}/balance`, { balance })
+export async function updateBalance(
+  customerId: number,
+  balanceFormData: BalanceFormData,
+) {
+  const response = await api.put(
+    `customers/${customerId}/balance`,
+    balanceFormData,
+  )
 
   console.log(response.data)
 }
