@@ -132,65 +132,85 @@ export default function ProductForm({
         <div className="mt-2 grid grid-cols-1 gap-4">
           <div>
             <Label htmlFor="costPrice">Preço de custo</Label>
-            <Input
-              placeholder="0,00"
-              type="number"
-              step="0.01"
-              id="costPrice"
-              readOnly={readOnly}
-              {...register('costPrice', {
-                valueAsNumber: true,
-              })}
-              className="mt-1"
-            />
+            <div className="relative mt-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                R$
+              </span>
+              <Input
+                placeholder="0,00"
+                type="number"
+                step="0.01"
+                id="costPrice"
+                readOnly={readOnly}
+                {...register('costPrice', {
+                  valueAsNumber: true,
+                })}
+                className="pl-8"
+              />
+            </div>
             <InputError error={errors.costPrice?.message?.toString()} />
           </div>
 
           <div>
             <Label htmlFor="profitMargin">Margem (%)</Label>
-            <Input
-              placeholder="0,00%"
-              type="number"
-              step="0.01"
-              id="profitMargin"
-              readOnly={readOnly}
-              {...register('profitMargin', {
-                valueAsNumber: true,
-              })}
-              className="mt-1"
-            />
+            <div className="relative mt-1">
+              <Input
+                placeholder="0,00"
+                type="number"
+                step="0.01"
+                id="profitMargin"
+                readOnly={readOnly}
+                {...register('profitMargin', {
+                  valueAsNumber: true,
+                })}
+                className="pr-8"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+                %
+              </span>
+            </div>
             <InputError error={errors.profitMargin?.message?.toString()} />
           </div>
 
           <div>
             <Label htmlFor="salePrice">Preço de venda</Label>
-            <Input
-              placeholder="0,00"
-              type="number"
-              step="0.01"
-              id="salePrice"
-              readOnly={readOnly}
-              {...register('salePrice', {
-                valueAsNumber: true,
-              })}
-              className="mt-1 bg-gray-50"
-            />
+            <div className="relative mt-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                R$
+              </span>
+              <Input
+                placeholder="0,00"
+                type="number"
+                step="0.01"
+                id="salePrice"
+                readOnly={readOnly}
+                {...register('salePrice', {
+                  valueAsNumber: true,
+                })}
+                className="pl-8 bg-gray-50"
+              />
+            </div>
             <InputError error={errors.salePrice?.message?.toString()} />
           </div>
 
           <div>
             <Label htmlFor="profit">Lucro</Label>
-            <Input
-              placeholder="0,00"
-              type="number"
-              step="0.01"
-              id="profit"
-              {...register('profit', {
-                valueAsNumber: true,
-              })}
-              className="mt-1 bg-gray-50"
-              readOnly={readOnly}
-            />
+            <div className="relative mt-1">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                R$
+              </span>
+              <Input
+                placeholder="0,00"
+                type="number"
+                step="0.01"
+                id="profit"
+                {...register('profit', {
+                  valueAsNumber: true,
+                })}
+                className="pl-8 bg-gray-50"
+                readOnly={readOnly}
+              />
+            </div>
             <InputError error={errors.profit?.message?.toString()} />
           </div>
         </div>
