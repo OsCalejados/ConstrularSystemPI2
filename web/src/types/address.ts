@@ -1,6 +1,6 @@
 export interface Address {
   // TODO: Adicionar os tipos reais para essas propriedades.
-  landmark: unknown
+  landmark: boolean
   district: unknown
   id: number
   city?: string
