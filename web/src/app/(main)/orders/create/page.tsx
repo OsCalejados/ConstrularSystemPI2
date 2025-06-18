@@ -28,16 +28,17 @@ import { Customer } from '@/types/customer'
 import { getCustomers } from '@/services/customer-service'
 import { toast } from '@/hooks/use-toast'
 // import { Suspense } from 'react'
+import { Suspense } from 'react'
 
-// export default function CreateOrderPage() {
-//   return (
-//     <Suspense fallback={<div>Carregando...</div>}>
-//       <CreateOrder />
-//     </Suspense>
-//   )
-// }
+export default function CreateOrderPage() {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <CreateOrder />
+    </Suspense>
+  )
+}
 
-export default function CreateOrder() {
+function CreateOrder() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
