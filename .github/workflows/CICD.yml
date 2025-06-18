@@ -1,110 +1,110 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [ dev ]
-  pull_request:
-    branches: [ dev ]
+    push:
+        branches: [dev]
+    pull_request:
+        branches: [dev]
 
 jobs:
-  # Job 1: Testar o Backend
-  test-backend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    # Job 1: Testar o Backend
+    test-backend:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./server
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-    - name: Set up Node.js for Backend
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: server/package-lock.json
+            - name: Set up Node.js for Backend
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+                  cache-dependency-path: server/package-lock.json
 
-    - name: Install Backend Dependencies
-      run: npm install
-    
-    # Adicionado JWT_SECRET para os testes e removidos testes duplicados
-    - name: Run Backend Tests (Unit, Integration, E2E)
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      run: |
-        npm run test
-        npm run test:e2e
-    
-    - name: Run Backend Lint Test
-      run: npm run lint
-      
-  # Job 2: Testar o Frontend
-  test-frontend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./web
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+            - name: Install Backend Dependencies
+              run: npm install
 
-    - name: Set up Node.js for Frontend
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: web/package-lock.json
+            # Adicionado JWT_SECRET para os testes e removidos testes duplicados
+            - name: Run Backend Tests (Unit, Integration, E2E)
+              env:
+                  DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
+                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+              run: |
+                  npm run test
+                  npm run test:e2e
 
-    - name: Install Frontend Dependencies
-      run: npm install
+            - name: Run Backend Lint Test
+              run: npm run lint
 
-    - name: Run Frontend Tests (Lint & Build)
-      run: npm run lint && npm run next:build
+    # Job 2: Testar o Frontend
+    test-frontend:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./web
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-  # Job 3: Fazer o deploy do Backend para o ambiente de DEV
-  deploy-backend-dev:
-    needs: [test-backend] # Depende APENAS dos testes do backend
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
-    steps:
-    - name: Trigger Render DEV Deploy
-      run: curl "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+            - name: Set up Node.js for Frontend
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+                  cache-dependency-path: web/package-lock.json
 
-  # Job 4: Fazer o deploy do Frontend para o ambiente de DEV
-  deploy-frontend-dev:
-    needs: [test-backend, test-frontend] # SÓ EXECUTA SE AMBOS OS TESTES PASSAREM
-    runs-on: ubuntu-latest
-    # ATUALIZADO: Condição para rodar na branch 'dev'
-    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
-    
-    defaults:
-      run:
-        working-directory: ./web # Comandos são executados na pasta do frontend
+            - name: Install Frontend Dependencies
+              run: npm install
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+            - name: Run Frontend Tests (Lint & Build)
+              run: npm run next:lint && npm run next:build
 
-      - name: Set up Node.js for Netlify CLI
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: web/package-lock.json
+    # Job 3: Fazer o deploy do Backend para o ambiente de DEV
+    deploy-backend-dev:
+        needs: [test-backend] # Depende APENAS dos testes do backend
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+        steps:
+            - name: Trigger Render DEV Deploy
+              run: curl "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
 
-      - name: Install Netlify CLI
-        run: npm install -g netlify-cli
+    # Job 4: Fazer o deploy do Frontend para o ambiente de DEV
+    deploy-frontend-dev:
+        needs: [test-backend, test-frontend] # SÓ EXECUTA SE AMBOS OS TESTES PASSAREM
+        runs-on: ubuntu-latest
+        # ATUALIZADO: Condição para rodar na branch 'dev'
+        if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
 
-      - name: Install Frontend Dependencies
-        run: npm install
-        
-      - name: Build Frontend Application
-        run: npm run next:build
+        defaults:
+            run:
+                working-directory: ./web # Comandos são executados na pasta do frontend
 
-      - name: Deploy to Netlify Preview
-        env:
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        # ATUALIZADO: Removida a flag '--prod' para criar um deploy de preview
-        run: netlify deploy --dir=.next
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js for Netlify CLI
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+                  cache-dependency-path: web/package-lock.json
+
+            - name: Install Netlify CLI
+              run: npm install -g netlify-cli
+
+            - name: Install Frontend Dependencies
+              run: npm install
+
+            - name: Build Frontend Application
+              run: npm run next:build
+
+            - name: Deploy to Netlify Preview
+              env:
+                  NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+                  NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+              # ATUALIZADO: Removida a flag '--prod' para criar um deploy de preview
+              run: netlify deploy --dir=.next
