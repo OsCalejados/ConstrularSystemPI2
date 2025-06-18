@@ -1,7 +1,7 @@
 import { Prisma, Product } from '@prisma/client';
 import { CreateProductDto } from '@src/modules/product/dtos/create-product.dto';
-import { ProductService } from '../../src/modules/product/services/product.service';
-import { IProductRepository } from '../../src/modules/product/interfaces/product.repository.interface';
+import { ProductService } from '@src/modules/product/services/product.service';
+import { IProductRepository } from '@src/modules/product/interfaces/product.repository.interface';
 import { IOrderService } from '@src/modules/order/interfaces/order.service.interface';
 import { MeasureUnit } from '@src/common/enums/measure-unit.enum';
 import { ProductDto } from '@src/modules/product/dtos/product.dto';

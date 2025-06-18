@@ -1,6 +1,6 @@
-import { CreateCustomerDto } from 'src/modules/customer/dtos/create-customer.dto';
-import { UpdateCustomerDto } from 'src/modules/customer/dtos/update-customer.dto';
-import { UpdateBalanceDto } from 'src/modules/customer/dtos/update-balance.dto';
+import { CreateCustomerDto } from '@src/modules/customer/dtos/create-customer.dto';
+import { UpdateCustomerDto } from '@src/modules/customer/dtos/update-customer.dto';
+import { UpdateBalanceDto } from '@src/modules/customer/dtos/update-balance.dto';
 
 export class CustomerFactory {
   static createCustomer(
