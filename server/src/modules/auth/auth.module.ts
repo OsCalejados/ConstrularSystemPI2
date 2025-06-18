@@ -1,7 +1,7 @@
 import { UserRepository } from '../user/repositories/user.repository';
 import { AuthController } from './controllers/auth.controller';
 import { PassportModule } from '@nestjs/passport';
-import { PrismaService } from 'src/common/services/prisma.service';
+import { PrismaService } from '@src/common/services/prisma.service';
 import { LocalStrategy } from './strategies/local.strategy';
 import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
