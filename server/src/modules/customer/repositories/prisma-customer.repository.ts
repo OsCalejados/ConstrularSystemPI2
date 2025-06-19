@@ -1,7 +1,7 @@
 import { CreateCustomerDto } from '../dtos/create-customer.dto';
 import { UpdateCustomerDto } from '../dtos/update-customer.dto';
 import { UpdateBalanceDto } from '../dtos/update-balance.dto';
-import { PrismaService } from '@src/common/services/prisma.service';
+import { PrismaService } from '../../../common/services/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { CustomerRepository } from '../interfaces/customer.repository.interface';
 import { CustomerMapper } from '../mappers/customer.mapper';

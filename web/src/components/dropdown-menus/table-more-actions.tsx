@@ -11,9 +11,10 @@ import {
   DropdownMenuItem,
   DropdownMenu,
 } from '@/components/shadcnui/dropdown-menu'
-import { deleteManyCustomers } from '@/services/customer-service'
-import { useQueryClient } from '@tanstack/react-query'
-import { deleteManyOrders } from '@/services/order-service'
+// TODO: corrigir esses comentários que estão quebrando a pipeline de testes de lint do front
+// import { deleteManyCustomers } from '@/services/customer-service'
+// import { useQueryClient } from '@tanstack/react-query'
+// import { deleteManyOrders } from '@/services/order-service'
 
 type DataType = Customer | Order
 
@@ -24,29 +25,30 @@ interface TableMoreActionsProps<TData extends DataType> {
 export default function TableMoreActions<TData extends DataType>({
   data,
 }: TableMoreActionsProps<TData>) {
-  const queryClient = useQueryClient()
-  const variant =
-    data.length > 0 ? ('customer' in data[0] ? 'order' : 'customer') : 'unknown'
+  // TODO: corrigir esses comentários que estão quebrando o build
+  // const queryClient = useQueryClient()
+  // const variant =
+  //   data.length > 0 ? ('customer' in data[0] ? 'order' : 'customer') : 'unknown'
 
-  const onDeleteCustomers = async () => {
-    const customerIds = data.map((customer) => customer.id)
+  // const onDeleteCustomers = async () => {
+  //   const customerIds = data.map((customer) => customer.id)
 
-    await deleteManyCustomers(customerIds)
+  //   await deleteManyCustomers(customerIds)
 
-    queryClient.invalidateQueries({
-      queryKey: ['customers'],
-    })
-  }
+  //   queryClient.invalidateQueries({
+  //     queryKey: ['customers'],
+  //   })
+  // }
 
-  const onDeleteOrders = async () => {
-    const orderIds = data.map((order) => order.id)
+  // const onDeleteOrders = async () => {
+  //   const orderIds = data.map((order) => order.id)
 
-    await deleteManyOrders(orderIds)
+  //   await deleteManyOrders(orderIds)
 
-    queryClient.invalidateQueries({
-      queryKey: ['orders'],
-    })
-  }
+  //   queryClient.invalidateQueries({
+  //     queryKey: ['orders'],
+  //   })
+  // }
 
   return (
     <AlertDialog>

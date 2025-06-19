@@ -1,7 +1,7 @@
 import { LocalAuthGuard } from '../guards/local-auth.guard';
-import { CurrentUserId } from 'src/common/decorators/current-user-id.decorator';
+import { CurrentUserId } from '@src/common/decorators/current-user-id.decorator';
 import { AuthService } from '../services/auth.service';
-import { isPublic } from 'src/common/decorators/is-public.decorator';
+import { isPublic } from '@src/common/decorators/is-public.decorator';
 import {
   Controller,
   HttpCode,

@@ -2,7 +2,7 @@ import { getSession } from '@/app/_actions/auth'
 import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: `http://localhost:${process.env.NEXT_PUBLIC_API_PORT ?? 3001}/`,
+  baseURL: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/',
 })
 
 api.interceptors.request.use(

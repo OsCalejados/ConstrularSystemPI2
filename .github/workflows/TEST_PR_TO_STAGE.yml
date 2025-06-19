@@ -1,0 +1,61 @@
+name: Test Pipeline
+
+on:
+    pull_request:
+        branches: [dev]
+
+jobs:
+    # Job 1: Testar o Backend
+    test-backend:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./server
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js for Backend
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+                  cache-dependency-path: server/package-lock.json
+
+            - name: Install Backend Dependencies
+              run: npm install
+
+            # Adicionado JWT_SECRET para os testes e removidos testes duplicados
+            - name: Run Backend Tests (Unit, Integration, E2E)
+              env:
+                  DATABASE_URL: ${{ secrets.DATABASE_URL_TEST }}
+                  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+              run: |
+                  npm run test
+                  npm run test:e2e
+
+            - name: Run Backend Lint Test
+              run: npm run lint
+
+    # Job 2: Testar o Frontend
+    test-frontend:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./web
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js for Frontend
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+                  cache-dependency-path: web/package-lock.json
+
+            - name: Install Frontend Dependencies
+              run: npm install
+
+            - name: Run Frontend Tests (Lint & Build)
+              run: npm run next:lint && npm run next:build
