@@ -1,6 +1,5 @@
 'use client'
 
-import { DiscountFormData } from '@/types/validations'
 import ApplyDiscountForm from '../forms/apply-discount-form'
 import { Button } from '../shadcnui/button'
 import {
@@ -13,20 +12,23 @@ import {
   Dialog,
   DialogDescription,
 } from '@/components/shadcnui/dialog'
+import { useState } from 'react'
 
 interface ApplyDiscountDialogProps {
   children?: React.ReactNode
-  subtotal: number
   discount?: number
-  onConfirm: (data: DiscountFormData) => void
+  subtotal: number
+  onConfirm: (discount: number) => void
 }
 
 export default function ApplyDiscountDialog({
   children,
   subtotal,
-  discount,
   onConfirm,
+  discount = 0,
 }: ApplyDiscountDialogProps) {
+  const [localDiscount, setLocalDiscount] = useState<number>(discount)
+
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -38,8 +40,8 @@ export default function ApplyDiscountDialog({
         <DialogDescription>teste</DialogDescription>
         <ApplyDiscountForm
           subtotal={subtotal}
-          onSubmit={onConfirm}
           defaultValue={discount}
+          onChange={setLocalDiscount}
         />
 
         <DialogFooter>
@@ -49,8 +51,7 @@ export default function ApplyDiscountDialog({
 
           <DialogClose asChild>
             <Button
-              type="submit"
-              form="discount-form"
+              onClick={() => onConfirm(localDiscount)}
               className="bg-primary hover:bg-primary-hover"
             >
               Aplicar

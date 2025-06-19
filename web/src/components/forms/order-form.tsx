@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcnui/select'
-import { DiscountFormData, InstallmentOrderFormData } from '@/types/validations'
+import { InstallmentOrderFormData } from '@/types/validations'
 import { PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react/dist/ssr'
 import { getProducts } from '@/services/product-service'
 import { useQuery } from '@tanstack/react-query'
@@ -98,8 +98,8 @@ export default function OrderForm({ onSubmit }: OrderFormProps) {
     updateOrderTotals()
   }, [watchedItems, updateOrderTotals])
 
-  const updateDiscount = (data: DiscountFormData) => {
-    setValue('discount', data.percentage ?? 0)
+  const updateDiscount = (discount: number) => {
+    setValue('discount', discount)
   }
 
   if (!customers || !products) return null
@@ -155,6 +155,9 @@ export default function OrderForm({ onSubmit }: OrderFormProps) {
                             setValue(
                               `items.${index}.unitPrice`,
                               Number(product.salePrice),
+                              {
+                                shouldValidate: true,
+                              },
                             )
 
                             const quantity =
@@ -372,31 +375,6 @@ export default function OrderForm({ onSubmit }: OrderFormProps) {
               className="mt-1"
             />
             <InputError error={errors.notes?.message?.toString()} />
-          </div>
-
-          <div>
-            <Label htmlFor="status">Status *</Label>
-            <Controller
-              name="status"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  name={field.name}
-                  defaultValue={field.value}
-                  onValueChange={field.onChange}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Selecione o status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="OPEN">Aberto</SelectItem>
-                    <SelectItem value="COMPLETED">Completo</SelectItem>
-                    <SelectItem value="CANCELED">Cancelado</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            <InputError error={errors.status?.message?.toString()} />
           </div>
         </div>
       </div>

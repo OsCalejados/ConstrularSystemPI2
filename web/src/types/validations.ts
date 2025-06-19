@@ -1,14 +1,13 @@
+import { installmentOrderSchema } from '@/validations/installment-order-schema'
 import { customerFormSchema } from '@/validations/customer-form-schema'
+import { productFormSchema } from '@/validations/product-form-schema'
 import { balanceFormSchema } from '@/validations/balance-form-schema'
 import { paymentFormSchema } from '@/validations/payment-form-schema'
 import { statusFormSchema } from '@/validations/status-form-schema'
 import { orderFormSchema } from '@/validations/order-form-schema'
-import { productFormSchema } from '@/validations/product-form-schema'
-import { z } from 'zod'
 import { notesFormSchema } from '@/validations/notes-form-schema'
 import { loginFormSchema } from '@/validations/login-form-schema'
-import { installmentOrderSchema } from '@/validations/installment-order-schema'
-import { discountFormSchema } from '@/validations/discount-form-schema'
+import { z } from 'zod'
 
 export type OrderFormData = z.infer<typeof orderFormSchema>
 
@@ -19,8 +18,6 @@ export type CustomerFormData = z.infer<typeof customerFormSchema>
 export type BalanceFormData = z.infer<typeof balanceFormSchema>
 
 export type PaymentFormData = z.infer<typeof paymentFormSchema>
-
-export type DiscountFormData = z.infer<typeof discountFormSchema>
 
 export type StatusFormData = z.infer<typeof statusFormSchema>
 

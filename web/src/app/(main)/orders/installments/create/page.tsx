@@ -11,7 +11,6 @@ import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
 import { getCustomers } from '@/services/customer-service'
 import { getProducts } from '@/services/product-service'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { OrderStatus } from '@/enums/order-status'
 import { createOrder } from '@/services/order-service'
 import { OrderType } from '@/enums/order-type'
 import { useRouter } from 'next/navigation'
@@ -40,10 +39,8 @@ export default function CreateOrder() {
     mode: 'onSubmit',
     defaultValues: {
       type: OrderType.INSTALLMENT,
-      status: OrderStatus.OPEN,
       notes: '',
       customerId: undefined,
-      paid: false,
       total: 0,
       subtotal: 0,
       discount: 0,
