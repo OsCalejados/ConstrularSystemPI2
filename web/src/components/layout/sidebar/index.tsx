@@ -90,7 +90,7 @@ export default function Sidebar() {
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <HardHatIcon weight="fill" className="size-4" />
                 </div>
-                <h1 className="text-xl font-bold">Socifit</h1>
+                <h1 className="text-xl font-bold">Constrular</h1>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

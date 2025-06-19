@@ -1,7 +1,7 @@
 import InputError from '../ui/input-error'
 
 import { useFormContext } from 'react-hook-form'
-import { phoneMask } from '@/utils/phone-mask'
+import { phoneMask } from '@/utils/mask/phone'
 import { Input } from '../shadcnui/input'
 import { Label } from '../shadcnui/label'
 import { CustomerFormData } from '@/types/validations'

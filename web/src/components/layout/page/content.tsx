@@ -7,7 +7,12 @@ interface ContentProps {
 
 export default function Content({ children, className }: ContentProps) {
   return (
-    <div className={cn('py-2 gap-4 flex flex-col text-strong', className)}>
+    <div
+      className={cn(
+        'pt-2 pb-14 gap-4 h-full flex flex-col text-strong',
+        className,
+      )}
+    >
       {children}
     </div>
   )

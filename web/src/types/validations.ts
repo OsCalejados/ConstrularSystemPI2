@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { notesFormSchema } from '@/validations/notes-form-schema'
 import { loginFormSchema } from '@/validations/login-form-schema'
 import { installmentOrderSchema } from '@/validations/installment-order-schema'
+import { discountFormSchema } from '@/validations/discount-form-schema'
 
 export type OrderFormData = z.infer<typeof orderFormSchema>
 
@@ -18,6 +19,8 @@ export type CustomerFormData = z.infer<typeof customerFormSchema>
 export type BalanceFormData = z.infer<typeof balanceFormSchema>
 
 export type PaymentFormData = z.infer<typeof paymentFormSchema>
+
+export type DiscountFormData = z.infer<typeof discountFormSchema>
 
 export type StatusFormData = z.infer<typeof statusFormSchema>
 

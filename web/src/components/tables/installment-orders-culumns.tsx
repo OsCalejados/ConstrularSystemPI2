@@ -1,11 +1,11 @@
 import OrderOptions from '../dropdown-menus/order-options'
 
 import { ArrowUpDown } from 'lucide-react'
-import { formatDate } from '@/utils/format-date'
+import { formatDate } from '@/utils/format/format-date'
 import { ColumnDef } from '@tanstack/react-table'
 import { Button } from '../shadcnui/button'
 import { Order } from '@/types/order'
-import { formatCurrency } from '@/utils/format-currency'
+import { formatCurrency } from '@/utils/format/format-currency'
 
 export const installmentOrdersColumns: ColumnDef<Order>[] = [
   // {

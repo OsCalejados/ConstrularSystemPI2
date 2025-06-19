@@ -1,4 +1,4 @@
-export function currencyToFloat(value: string | number) {
+export function parseCurrency(value: string | number) {
   if (typeof value === 'string') {
     const onlyDigits = value.replace(/\D/g, '')
     const floatValue = Number(onlyDigits) / 100

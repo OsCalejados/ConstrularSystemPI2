@@ -1,6 +1,6 @@
 import CustomerOptions from '../dropdown-menus/customer-options'
 
-import { formatCurrency } from '@/utils/format-currency'
+import { formatCurrency } from '@/utils/format/format-currency'
 import { ArrowUpDown } from 'lucide-react'
 import { ColumnDef } from '@tanstack/react-table'
 import { Customer } from '@/types/customer'

@@ -2,7 +2,7 @@ import OrderOptions from '@/components/dropdown-menus/order-options'
 import Link from 'next/link'
 
 import { OrderStatus } from '@/enums/order-status'
-import { formatDate } from '@/utils/format-date'
+import { formatDate } from '@/utils/format/format-date'
 import { Order } from '@/types/order'
 
 interface CardProps {

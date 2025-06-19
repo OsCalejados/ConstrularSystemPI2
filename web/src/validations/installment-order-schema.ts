@@ -10,7 +10,7 @@ export const installmentOrderSchema = z.object({
   customerId: z.number({ message: 'Campo obrigatório.' }),
   paid: z.boolean(),
   total: z.number().nonnegative(),
-  netTotal: z.number().nonnegative(),
+  subtotal: z.number().nonnegative(),
   discount: z.number().nonnegative().default(0),
   items: z.array(itemSchema).min(1, 'Adicione pelo menos um item.'),
 })

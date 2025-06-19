@@ -2,9 +2,9 @@ import InputError from '../ui/input-error'
 
 import { paymentFormSchema } from '@/validations/payment-form-schema'
 import { PaymentFormData } from '@/types/validations'
-import { currencyToFloat } from '@/utils/currency-to-float'
-import { formatCurrency } from '@/utils/format-currency'
-import { currencyMask } from '@/utils/currency-mask'
+import { parseCurrency } from '@/utils/parse/currency'
+import { formatCurrency } from '@/utils/format/format-currency'
+import { currencyMask } from '@/utils/mask/currency'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Label } from '../shadcnui/label'
@@ -35,7 +35,7 @@ export default function AddPaymentForm({ orderId }: AddPaymentFormProps) {
   const onSubmit = async (data: PaymentFormData) => {
     const { value } = data
 
-    const formattedValue = currencyToFloat(value)
+    const formattedValue = parseCurrency(value)
 
     await createPayment(orderId, formattedValue)
 
@@ -47,7 +47,7 @@ export default function AddPaymentForm({ orderId }: AddPaymentFormProps) {
   const handleEnterKey = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       const currentValue = event.currentTarget.value
-      const formattedValue = formatCurrency(currencyToFloat(currentValue))
+      const formattedValue = formatCurrency(parseCurrency(currentValue))
       setValue('value', formattedValue)
     }
   }

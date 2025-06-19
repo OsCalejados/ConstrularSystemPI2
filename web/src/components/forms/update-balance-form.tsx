@@ -4,10 +4,10 @@ import InputError from '../ui/input-error'
 
 import { Controller, useForm } from 'react-hook-form'
 import { balanceFormSchema } from '@/validations/balance-form-schema'
-import { currencyToFloat } from '@/utils/currency-to-float'
+import { parseCurrency } from '@/utils/parse/currency'
 import { BalanceFormData } from '@/types/validations'
 import { useQueryClient } from '@tanstack/react-query'
-import { formatCurrency } from '@/utils/format-currency'
+import { formatCurrency } from '@/utils/format/format-currency'
 import { updateBalance } from '@/services/customer-service'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Label } from '../shadcnui/label'
@@ -59,7 +59,7 @@ export default function UpdateBalanceForm({
             className="mt-1"
             value={field.value ? formatCurrency(field.value) : 'R$ 0,00'}
             onChange={(e) => {
-              const float = currencyToFloat(e.target.value)
+              const float = parseCurrency(e.target.value)
               field.onChange(float)
             }}
           />

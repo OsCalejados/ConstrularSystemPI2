@@ -45,7 +45,7 @@ export default function CreateOrder() {
       customerId: undefined,
       paid: false,
       total: 0,
-      netTotal: 0,
+      subtotal: 0,
       discount: 0,
       items: [
         {
@@ -142,7 +142,7 @@ export default function CreateOrder() {
           </div>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 h-full">
           <FormProvider {...orderForm}>
             <OrderForm onSubmit={onSubmit} />
           </FormProvider>
