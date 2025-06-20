@@ -4,10 +4,10 @@ declare global {
   interface Window {
     electron: {
       ipcRenderer: {
-        send: (channel: string, data: any) => void
+        send: (channel: string, data: unknown) => void
         on: (
           channel: string,
-          listener: (event: any, ...args: any[]) => void,
+          listener: (event: unknown, ...args: unknown[]) => void,
         ) => void
       }
     }
