@@ -17,6 +17,7 @@ import {
   DropdownMenu,
 } from '@/components/shadcnui/dropdown-menu'
 import { TrashSimpleIcon, EyeIcon } from '@phosphor-icons/react/dist/ssr'
+import { toast } from '@/hooks/use-toast'
 
 interface MovementOptionsProps {
   movement: Movement
@@ -33,13 +34,24 @@ export default function MovementOptions({
   const queryClient = useQueryClient()
 
   const onDelete = async () => {
-    await deleteMovement(movement.id)
+    try {
+      await deleteMovement(movement.id)
 
-    queryClient.invalidateQueries({
-      queryKey: ['movements'],
-    })
+      queryClient.invalidateQueries({
+        queryKey: ['movements'],
+      })
 
-    router.replace('/stock/movements')
+      toast({
+        title: 'Movimentação excluída com sucesso',
+      })
+
+      router.replace('/stock/movements')
+    } catch (error) {
+      toast({
+        title: 'Erro ao excluir movimentação',
+        variant: 'destructive',
+      })
+    }
   }
 
   const deleteDialog = useDialog()
@@ -87,7 +99,7 @@ export default function MovementOptions({
       </DropdownMenu>
 
       <AlertDialog {...deleteDialog.props}>
-        <DeleteDialog onConfirm={onDelete} variant="customer" />
+        <DeleteDialog onConfirm={onDelete} variant="movement" />
       </AlertDialog>
     </>
   )

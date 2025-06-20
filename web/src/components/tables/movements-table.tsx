@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import {
   getPaginationRowModel,
   ColumnFiltersState,
@@ -24,7 +24,6 @@ import {
 import { Movement } from '@/types/movement'
 import CustomPagination from '../ui/pagination'
 import TableSearchField from '../ui/table-search-field'
-import { movementColumns } from './movement-columns'
 
 type DataType = Movement
 
@@ -38,6 +37,7 @@ export function MovementsTable<TData extends DataType, TValue>({
   data,
 }: MovementsTableProps<TData, TValue>) {
   const router = useRouter()
+  const pathname = usePathname()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -61,7 +61,7 @@ export function MovementsTable<TData extends DataType, TValue>({
     },
     initialState: {
       pagination: {
-        pageSize: 12,
+        pageSize: 6,
       },
     },
   })
@@ -107,6 +107,8 @@ export function MovementsTable<TData extends DataType, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
+                  className="cursor-pointer"
+                  onClick={() => router.push(`${pathname}/${row.original.id}`)}
                 >
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
@@ -129,7 +131,7 @@ export function MovementsTable<TData extends DataType, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Nenhuma movimentação encontrada.
+                  Nenhum resultado encontrado.
                 </TableCell>
               </TableRow>
             )}
