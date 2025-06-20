@@ -3,31 +3,21 @@
 import AddPaymentDialog from '@/components/dialogs/add-payment-dialog'
 import UpdateStatusForm from '@/components/forms/update-status-form'
 import UpdateNotesForm from '@/components/forms/update-notes-form'
-import OrderOptions from '@/components/dropdown-menus/order-options'
 
-import { NotesFormData, StatusFormData } from '@/types/validations'
+import { NotesFormData } from '@/types/validations'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Order as TOder } from '@/types/order'
 import { formatCurrency } from '@/utils/format/format-currency'
 import { deletePayment } from '@/services/payment-service'
 import { OrderStatus } from '@/enums/order-status'
-import { formatDate } from '@/utils/format/format-date'
 import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { Payment } from '@/types/payment'
+import { useState } from 'react'
 import { Button } from '@/components/shadcnui/button'
 import { Input } from '@/components/shadcnui/input'
 import { Label } from '@/components/shadcnui/label'
 import { Page } from '@/components/layout/page'
 import { TrashIcon, User } from 'lucide-react'
 import {
-  EnvelopeSimple,
-  ClockClockwise,
-  PencilSimple,
-  MapPin,
-  Wallet,
-  Trash,
-  Phone,
   CaretLeftIcon,
   PencilSimpleIcon,
   MapPinIcon,
@@ -36,32 +26,15 @@ import {
   WalletIcon,
   ClockClockwiseIcon,
 } from '@phosphor-icons/react/dist/ssr'
-import {
-  getOrderById,
-  updateStatus,
-  updateNotes,
-} from '@/services/order-service'
+import { getOrderById, updateNotes } from '@/services/order-service'
 import Breadcrumb from '@/components/ui/breadcrumb'
 import CustomerOptions from '@/components/dropdown-menus/customer-options'
 import { Customer } from '@/types/customer'
 import router from 'next/router'
-import ApplyDiscountDialog from '@/components/dialogs/apply-discount'
-import InputError from '@/components/ui/input-error'
-import { products } from '@/data/products'
 import { formatPercentage } from '@/utils/format/format-percentage'
-import { parseCurrency } from '@/utils/parse/currency'
-import { parseNumber } from '@/utils/parse/number'
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@radix-ui/react-select'
-import { Controller } from 'react-hook-form'
+import { Payment } from '@/types/payment'
 
 export default function Order() {
-  // const [editStatus, setEditStatus] = useState(false)
   const [editNotes, setEditNotes] = useState(false)
   const queryClient = useQueryClient()
 
@@ -73,6 +46,7 @@ export default function Order() {
       getOrderById(orderId as string, {
         includeCustomer: true,
         includeProducts: true,
+        includePayments: true,
       }),
   })
 
@@ -89,25 +63,13 @@ export default function Order() {
     customer?.address.reference,
   ].filter(Boolean)
 
-  // const onPaymentDelete = async (payment: Payment) => {
-  //   await deletePayment(payment.id)
+  const onPaymentDelete = async (payment: Payment) => {
+    await deletePayment(payment.id)
 
-  //   await queryClient.invalidateQueries({
-  //     queryKey: ['orderById'],
-  //   })
-  // }
-
-  // const onStatusUpdate = async (data: StatusFormData) => {
-  //   const { status } = data
-
-  //   await updateStatus(order.id, status as OrderStatus)
-
-  //   await queryClient.invalidateQueries({
-  //     queryKey: ['orderById'],
-  //   })
-
-  //   setEditStatus(false)
-  // }
+    await queryClient.invalidateQueries({
+      queryKey: ['orderById'],
+    })
+  }
 
   const onNotesUpdate = async (data: NotesFormData) => {
     const { notes } = data
@@ -279,7 +241,7 @@ export default function Order() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 flex-[2] px-6 py-4 text-primary">
+          <div className="flex flex-col gap-4 flex-[2] px-6 pb-4 text-primary">
             <div className="border-primary flex h-fit flex-col gap-4 border px-6 pt-4 pb-6 rounded-xl text-primary">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium">Notas</h4>
@@ -379,137 +341,26 @@ export default function Order() {
             <div className="border-primary flex h-fit flex-col gap-4 border px-6 pt-4 pb-6 rounded-xl text-primary">
               <h4 className="font-medium">Controle de pagamentos</h4>
 
-              <div className="flex justify-between">
+              {/* <div className="flex justify-between">
                 <span>Valor restante</span>
                 <span className="text-currency font-medium">
                   {formatCurrency(order.total)}
                 </span>
               </div>
-              <div className="border-t-1 border-dashed border my-2 border-gray-300" />
-            </div>
-          </div>
-        </div>
-      </Page.Content>
 
-      {/* <div className="mt-4">
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div>esquerda</div>
-          <div className="flex flex-col gap-4 flex-[2]">
-            <div className="border-primary flex h-fit flex-col gap-4 border px-6 pt-4 pb-6 rounded-xl text-primary">
-              <div className="flex items-center justify-between">
-                <h2 className="font-medium">Notas</h2>
-                {!editNotes && (
-                  <Button
-                    variant="ghost"
-                    className="h-8 w-8 p-0 text-terciary"
-                    onClick={() => setEditNotes(true)}
-                  >
-                    <PencilSimple size={16} />
-                  </Button>
-                )}
+              <div className="border-t-1 border-dashed border my-2 border-gray-300" /> */}
+
+              <div className="flex justify-end items-center">
+                <AddPaymentDialog orderId={order.id}>
+                  <button className="text-contrast hover:text-contrast-hover text-sm text-right">
+                    Adicionar pagamento
+                  </button>
+                </AddPaymentDialog>
               </div>
-
-              {!editNotes ? (
-                <p className="text-terciary text-sm">
-                  {!order.notes || order.notes === ''
-                    ? 'Nenhuma nota especificada.'
-                    : order.notes}
-                </p>
-              ) : (
-                <UpdateNotesForm
-                  notes={order.notes ?? ''}
-                  onSubmit={onNotesUpdate}
-                />
-              )}
-            </div>
-
-            <div className="border-primary flex h-fit flex-col gap-4 border px-6 pt-4 pb-6 rounded-xl text-primary">
-              <h2 className="font-medium">Cliente</h2>
-              <ul className="flex flex-col gap-2">
-                <li className="flex gap-2 text-sm items-center">
-                  <User size={16} />
-                  <span className="text-terciary">{customer.name}</span>
-                </li>
-                <li>
-                  <div className="flex gap-2 text-sm items-center">
-                    <MapPin size={16} className="min-w-4 min-h-4" />
-                    <span className="text-terciary">
-                      {address.length === 0 && !customer.address.landmark
-                        ? 'Endereço não informado'
-                        : address.length > 0
-                          ? address.join(', ')
-                          : customer.address.landmark}
-                    </span>
-                  </div>
-                  {customer.address.landmark && address.length > 0 && (
-                    <div className="flex gap-2 text-sm items-center">
-                      <div className="min-w-4 min-h-4" />
-                      <span className="text-terciary">
-                        {customer.address.landmark}
-                      </span>
-                    </div>
-                  )}
-                </li>
-                <li className="flex gap-2 text-sm items-center">
-                  <Phone size={16} />
-                  <span className="text-terciary">
-                    {!customer.phone || customer.phone === ''
-                      ? 'Telefone não informado.'
-                      : customer.phone}
-                  </span>
-                </li>
-                <li className="flex gap-2 text-sm items-center">
-                  <EnvelopeSimple size={16} />
-                  <span className="text-terciary">
-                    {!customer.email || customer.email === ''
-                      ? 'E-mail não informado.'
-                      : customer.email}
-                  </span>
-                </li>
-                <li className="flex gap-2 text-sm items-center">
-                  <Wallet size={16} />
-                  <span className="text-terciary">
-                    {formatCurrency(customer.balance)}
-                  </span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="border-primary flex h-fit flex-col gap-4 border px-6 pt-4 pb-6 rounded-xl text-primary">
-              <div className="flex items-center justify-between">
-                <h2 className="font-medium">Status</h2>
-                {!editStatus && (
-                  <Button
-                    variant="ghost"
-                    className="h-8 w-8 p-0 text-terciary"
-                    onClick={() => setEditStatus(true)}
-                  >
-                    <PencilSimple size={16} />
-                  </Button>
-                )}
-              </div>
-
-              {!editStatus ? (
-                <div className="flex gap-2 text-sm items-center">
-                  <ClockClockwise size={16} />
-                  <span>
-                    {order.status === OrderStatus.PENDING ? 'Pendente' : 'Pago'}
-                  </span>
-                </div>
-              ) : (
-                <UpdateStatusForm
-                  status={order.status}
-                  onSubmit={onStatusUpdate}
-                />
-              )}
-            </div>
-
-            <div className="border-primary flex h-fit flex-col gap-4 border px-6 pt-4 pb-6 rounded-xl text-primary">
-              <h2 className="font-medium">Controle de pagamento</h2>
 
               <div>
                 {!order.payments || order.payments.length === 0 ? (
-                  <p className="text-terciary text-sm">
+                  <p className="text-terciary text-sm text-center">
                     Nenhum registro de pagamento encontrado.
                   </p>
                 ) : (
@@ -519,47 +370,39 @@ export default function Order() {
                       className="flex gap-2 text-sm items-center text-terciary"
                     >
                       <span className="flex-1">Pagamento {index + 1}</span>
-                      <span>{formatCurrency(payment.value)}</span>
+                      <span>{formatCurrency(payment.netAmount)}</span>
                       <Button
                         variant="ghost"
                         className="h-8 w-8 p-0"
                         onClick={() => onPaymentDelete(payment)}
                       >
-                        <Trash size={16} />
+                        <TrashIcon size={16} />
                       </Button>
                     </div>
                   ))
                 )}
               </div>
 
-              <div className="flex justify-end items-center">
-                <AddPaymentDialog orderId={order.id}>
-                  <button className="text-button-primary hover:text-button-primary-hover text-sm text-right px-[10px]">
-                    Adicionar pagamento
-                  </button>
-                </AddPaymentDialog>
+              <div className="h-px bg-border my-4" />
+
+              <div className="items-center justify-center flex flex-col gap-2">
+                <span className="text-currency font-medium text-2xl">
+                  {formatCurrency(
+                    order.total -
+                      (order.payments
+                        ? order.payments?.reduce(
+                            (total, payment) => total + payment.netAmount,
+                            0,
+                          )
+                        : 0),
+                  )}
+                </span>
+                <span className="text-sm text-terciary">Valor restante</span>
               </div>
-
-              {order.payments && order.payments.length > 0 && (
-                <>
-                  <div className="h-px bg-border my-4" />
-
-                  <div className="items-center justify-center flex">
-                    <span className="text-currency font-medium text-2xl">
-                      {formatCurrency(
-                        order.payments?.reduce(
-                          (total, payment) => total + payment.value,
-                          0,
-                        ),
-                      )}
-                    </span>
-                  </div>
-                </>
-              )}
             </div>
           </div>
         </div>
-      </div> */}
+      </Page.Content>
     </Page.Container>
   )
 }

@@ -1,4 +1,5 @@
-import { Customer, Order, OrderItem, User } from '@prisma/client';
+import { Customer, Order, OrderItem, OrderPayment, User } from '@prisma/client';
+import { OrderPaymentMapper } from './order-payment.mapper';
 import { OrderItemMapper } from './order-item.mapper';
 import { CustomerMapper } from '@src/modules/customer/mappers/customer.mapper';
 import { OrderStatus } from '@src/common/enums/order-status.enum';
@@ -7,9 +8,10 @@ import { OrderType } from '@src/common/enums/order-type.enum';
 import { OrderDto } from '../dtos/order.dto';
 
 type OrderDetails = Order & {
+  payments?: OrderPayment[] | null | undefined;
   customer?: Customer | null | undefined;
-  items?: OrderItem[] | null | undefined;
   seller?: User | null | undefined;
+  items?: OrderItem[] | null | undefined;
 };
 
 export class OrderMapper {
@@ -32,6 +34,9 @@ export class OrderMapper {
         : undefined,
       items: order.items
         ? order.items.map((product) => OrderItemMapper.toDto(product))
+        : undefined,
+      payments: order.payments
+        ? order.payments.map((payment) => OrderPaymentMapper.toDto(payment))
         : undefined,
     };
   }

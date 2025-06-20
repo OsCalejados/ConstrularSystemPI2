@@ -48,8 +48,6 @@ export class PrismaOrderRepository implements IOrderRepository {
       },
     });
 
-    console.log(order);
-
     return OrderMapper.toDto(order);
   }
 

@@ -17,7 +17,7 @@ export class OrderDto {
   createdAt: Date;
   customerId: number;
   sellerId: number;
-  payments?: OrderPaymentDto;
+  payments?: OrderPaymentDto[];
   customer?: CustomerDto;
   seller?: UserDto;
   items?: OrderItemDto[];
