@@ -1,10 +1,17 @@
-import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { PaymentService } from '../services/payment.service';
 
 @Controller('payments')
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
+
+  @Get(':orderId')
+  async getPaymentsByOrderId(@Param('orderId') orderId: string) {
+    const id = parseInt(orderId);
+
+    return await this.paymentService.getByOrder(id);
+  }
 
   @Post()
   async createPayment(@Body() createPaymentDto: CreatePaymentDto) {

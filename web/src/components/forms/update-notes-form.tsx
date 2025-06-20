@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { NotesFormData } from '@/types/validations'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '../shadcnui/button'
-import { Check } from '@phosphor-icons/react/dist/ssr'
+import { CheckIcon } from '@phosphor-icons/react/dist/ssr'
 
 import { notesFormSchema } from '@/validations/notes-form-schema'
 import { Textarea } from '../shadcnui/textarea'
@@ -45,9 +45,9 @@ export default function UpdateNotesForm({
           />
           <Button
             type="submit"
-            className="bg-button-primary gap-1 hover:bg-button-primary-hover px-0 min-w-10"
+            className="bg-primary gap-1 hover:bg-primary-hover px-0 min-w-10"
           >
-            <Check className="h-4 w-4" weight="bold" />
+            <CheckIcon className="h-4 w-4" weight="bold" />
           </Button>
         </div>
         <InputError error={errors.notes?.message?.toString()} />

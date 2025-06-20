@@ -105,6 +105,7 @@ model OrderItem {
 model OrderPayment {
   id            Int      @id @default(autoincrement())
   amount        Decimal
+  change        Decimal?
   paymentMethod String // CASH | DEBIT | CREDIT | PIX
   installments  Int? // Caso cartão, define quantas parcelas
   paidAt        DateTime @default(now())

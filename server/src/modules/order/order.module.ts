@@ -9,13 +9,18 @@ import { InstallmentOrderStrategy } from './strategies/installment.strategy';
 import { QuoteOrderStrategy } from './strategies/quote.strategy';
 import { SaleOrderStrategy } from './strategies/sale.strategy';
 import { CustomerModule } from '../customer/customer.module';
+import { PaymentController } from './controllers/payment.controller';
+import { PaymentService } from './services/payment.service';
+import { IPaymentRepository } from './interfaces/payment.repository.interface';
+import { PrismaPaymentRepository } from './repositories/payment.repository';
 
 @Module({
   imports: [CustomerModule],
-  controllers: [OrderController],
+  controllers: [OrderController, PaymentController],
   providers: [
     OrderService,
     PrismaService,
+    PaymentService,
     SaleOrderStrategy,
     QuoteOrderStrategy,
     InstallmentOrderStrategy,
@@ -26,6 +31,10 @@ import { CustomerModule } from '../customer/customer.module';
     {
       provide: IOrderRepository,
       useClass: PrismaOrderRepository,
+    },
+    {
+      provide: IPaymentRepository,
+      useClass: PrismaPaymentRepository,
     },
     {
       provide: 'ORDER_STRATEGIES',

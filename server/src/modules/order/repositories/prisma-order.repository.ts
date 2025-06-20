@@ -31,9 +31,17 @@ export class PrismaOrderRepository implements IOrderRepository {
     const order = await this.prisma.order.findUnique({
       include: {
         payments: options?.includePayments ?? false,
-        customer: options?.includeCustomer ?? false,
+        customer: {
+          include: {
+            address: options?.includeCustomer ?? false,
+          },
+        },
         seller: options?.includeSeller ?? false,
-        items: options?.includeProducts ?? false,
+        items: {
+          include: {
+            product: options?.includeProducts ?? false,
+          },
+        },
       },
       where: {
         id: orderId,

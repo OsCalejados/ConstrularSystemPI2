@@ -1,6 +1,9 @@
+import { ProductDto } from '@src/modules/product/dtos/product.dto';
 import { IsNotEmpty } from 'class-validator';
 
 export class OrderItemDto {
+  id: number;
+
   @IsNotEmpty()
   productId: number;
 
@@ -12,4 +15,6 @@ export class OrderItemDto {
 
   @IsNotEmpty()
   total: number;
+
+  product: ProductDto;
 }
