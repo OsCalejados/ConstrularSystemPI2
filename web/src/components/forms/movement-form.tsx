@@ -158,7 +158,9 @@ export default function MovementForm({
             type="button"
             variant="outline"
             className="w-full justify-center gap-2"
-            onClick={() => append({ name: '', unit: 'UN', quantity: 1 })}
+            onClick={() =>
+              append({ name: '', unit: MeasureUnit.UN, quantity: 1 })
+            }
             disabled={readOnly}
           >
             <PlusCircle size={20} />
