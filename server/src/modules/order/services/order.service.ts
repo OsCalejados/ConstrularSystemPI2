@@ -1,5 +1,6 @@
 import { FindOrderOptions } from '../interfaces/find-order-options.interface';
 import { IOrderRepository } from '../interfaces/order.repository.interface';
+import { CustomerService } from '@src/modules/customer/services/customer.service';
 import { UpdateStatusDto } from '../dtos/update-status';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
@@ -13,7 +14,6 @@ import {
   Injectable,
   Inject,
 } from '@nestjs/common';
-import { CustomerService } from '@src/modules/customer/services/customer.service';
 
 @Injectable()
 export class OrderService implements IOrderService {

@@ -134,14 +134,18 @@ export default function CreateOrder() {
               type="submit"
               form="order-form"
             >
-              <span>Cadastrar pedido</span>
+              <span>Cadastrar</span>
             </Button>
           </div>
         </div>
 
         <div className="mt-4 h-full">
           <FormProvider {...orderForm}>
-            <OrderForm onSubmit={onSubmit} />
+            <OrderForm
+              onSubmit={onSubmit}
+              customers={customers}
+              products={products}
+            />
           </FormProvider>
         </div>
       </Page.Content>

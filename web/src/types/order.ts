@@ -1,8 +1,8 @@
 import { OrderStatus } from '@/enums/order-status'
 import { OrderType } from '@/enums/order-type'
+import { OrderItem } from './order-item'
 import { Customer } from './customer'
 import { Payment } from './payment'
-import { Product } from './product'
 import { User } from './user'
 
 export interface Order {
@@ -12,12 +12,12 @@ export interface Order {
   status: OrderStatus
   total: number
   discount: number
-  netTotal: number
+  subtotal: number
   paid: boolean
   createdAt: Date
   customerId: number
   sellerId: number
-  items?: Product[]
+  items?: OrderItem[]
   seller?: User
   customer?: Customer
   payments?: Payment[]

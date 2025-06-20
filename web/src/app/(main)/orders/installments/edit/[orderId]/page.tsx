@@ -1,33 +1,27 @@
 'use client'
 
 import CancelDialog from '@/components/dialogs/cancel-dialog'
-import InputError from '@/components/ui/input-error'
+import Breadcrumb from '@/components/ui/breadcrumb'
+import OrderForm from '@/components/forms/order-form'
 
-import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { getOrderById, updateOrder } from '@/services/order-service'
+import { InstallmentOrderFormData } from '@/types/validations'
+import { installmentOrderSchema } from '@/validations/installment-order-schema'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useParams, useRouter } from 'next/navigation'
-import { orderFormSchema } from '@/validations/order-form-schema'
-import { OrderFormData } from '@/types/validations'
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
 import { getCustomers } from '@/services/customer-service'
+import { getProducts } from '@/services/product-service'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { Textarea } from '@/components/shadcnui/textarea'
+import { OrderType } from '@/enums/order-type'
 import { useQuery } from '@tanstack/react-query'
 import { Customer } from '@/types/customer'
+import { Product } from '@/types/product'
 import { Button } from '@/components/shadcnui/button'
 import { Order } from '@/types/order'
 import { toast } from '@/hooks/use-toast'
-import { Trash } from '@phosphor-icons/react/dist/ssr'
-import { Input } from '@/components/shadcnui/input'
-import { Label } from '@/components/shadcnui/label'
 import { Page } from '@/components/layout/page'
-import {
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-  SelectItem,
-  Select,
-} from '@/components/shadcnui/select'
 
 export default function EditOrder() {
   const { orderId } = useParams()
@@ -38,23 +32,36 @@ export default function EditOrder() {
     queryFn: getCustomers,
   })
 
-  const { data: order } = useQuery<Order>({
-    queryKey: ['orderById'],
-    queryFn: () => getOrderById(orderId as string),
+  const { data: products } = useQuery<Product[]>({
+    queryKey: ['products'],
+    queryFn: getProducts,
   })
 
-  const orderForm = useForm<OrderFormData>({
-    resolver: zodResolver(orderFormSchema),
+  const { data: order } = useQuery<Order>({
+    queryKey: ['orderById'],
+    queryFn: () =>
+      getOrderById(orderId as string, {
+        includeProducts: true,
+        includeCustomer: true,
+      }),
+    enabled: !!orderId,
+  })
+
+  const orderForm = useForm<InstallmentOrderFormData>({
+    resolver: zodResolver(installmentOrderSchema),
     mode: 'onSubmit',
     defaultValues: {
-      customerId: order?.customer?.id,
+      type: OrderType.INSTALLMENT,
       notes: order?.notes ?? '',
-      status: order?.status,
+      customerId: order?.customer?.id ?? undefined,
+      total: order?.total ?? 0,
+      subtotal: order?.subtotal ?? 0,
+      discount: order?.discount ?? 0,
       items: order?.items ?? [
         {
-          name: '',
+          productId: undefined,
+          unitPrice: 0,
           quantity: 1,
-          unit: 'UN',
         },
       ],
     },
@@ -62,22 +69,10 @@ export default function EditOrder() {
 
   const {
     reset,
-    control,
-    register,
-    clearErrors,
-    handleSubmit,
-    formState: { errors, isDirty },
+    formState: { isDirty },
   } = orderForm
 
-  const { fields, append, remove } = useFieldArray({
-    rules: {
-      minLength: 1,
-    },
-    name: 'items',
-    control,
-  })
-
-  const onSubmit = async (data: OrderFormData) => {
+  const onSubmit = async (data: InstallmentOrderFormData) => {
     try {
       await updateOrder(orderId as string, data)
 
@@ -85,36 +80,78 @@ export default function EditOrder() {
         title: 'Pedido editado com sucesso',
       })
 
-      reset(data)
       router.back()
     } catch (error) {
       toast({
-        title: 'Erro ao editar produto',
+        title: 'Erro ao editar pedido',
         variant: 'destructive',
       })
     }
   }
 
   useEffect(() => {
+    console.log('order.customer', order?.customer)
+    console.log('order.customer?.id', order?.customer?.id)
     if (order) {
-      const initialValues = {
-        customerId: order.customer?.id,
-        notes: order.notes || '',
-        status: order.status,
-        items: order.items,
-      }
+      console.log(order.customer?.id)
 
-      reset(initialValues)
+      reset({
+        type: OrderType.INSTALLMENT,
+        notes: order.notes ?? '',
+        customerId: order.customer?.id ?? undefined,
+        total: order.total,
+        subtotal: order.subtotal,
+        discount: order.discount,
+        items: order.items ?? [
+          {
+            productId: undefined,
+            unitPrice: 0,
+            quantity: 1,
+          },
+        ],
+      })
     }
-  }, [order, customers, reset])
+  }, [order, customers, products, reset])
 
-  if (!customers || !order) return null
+  if (!customers || !order || !products) return null
 
   return (
     <Page.Container>
       <Page.Header>
+        <Breadcrumb
+          currentPage="Editar pedido"
+          parents={[
+            {
+              name: 'Pedidos',
+              path: '/orders',
+            },
+            {
+              name: 'Pedidos a prazo',
+              path: '/orders/installments',
+            },
+          ]}
+        />
+      </Page.Header>
+      <Page.Content>
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl">Editar pedido</h1>
+          <div className="flex gap-2">
+            {isDirty ? (
+              <CancelDialog>
+                <Button className="w-8 h-8" variant="outline">
+                  <CaretLeftIcon size={20} />
+                </Button>
+              </CancelDialog>
+            ) : (
+              <Button
+                onClick={() => router.back()}
+                className="w-8 h-8"
+                variant="outline"
+              >
+                <CaretLeftIcon size={20} />
+              </Button>
+            )}
+            <h2 className="font-medium">Editar pedido</h2>
+          </div>
           <div className="flex gap-2">
             {isDirty ? (
               <CancelDialog>
@@ -129,203 +166,25 @@ export default function EditOrder() {
             )}
 
             <Button
-              className="bg-button-primary hover:bg-button-primary-hover"
+              className="bg-primary hover:bg-primary-hover"
               type="submit"
               form="order-form"
             >
-              <span>Editar pedido</span>
+              <span>Editar</span>
             </Button>
           </div>
         </div>
-      </Page.Header>
 
-      <div className="mt-4">
-        <form
-          className="flex flex-col lg:flex-row gap-4"
-          id="order-form"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          {/* Items */}
-          <div className="border-primary h-fit flex flex-col gap-4 flex-[3] border p-6 pt-4 rounded-xl text-primary">
-            <div className="flex justify-between items-center">
-              <h2 className="font-medium">Produtos</h2>
-              <button
-                type="button"
-                onClick={() => {
-                  append({
-                    name: '',
-                    quantity: NaN,
-                    unit: 'UN',
-                  })
-                  clearErrors()
-                }}
-                className="text-button-primary hover:text-button-primary-hover text-sm"
-              >
-                Adicionar novo item personalizado
-              </button>
-            </div>
-            <div className="mt-2 flex flex-col gap-4">
-              {fields.map((field, index) => (
-                <div key={field.id} className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <Label htmlFor={`name.${index}`}>Nome *</Label>
-                    <Input
-                      placeholder="Insira o nome"
-                      id={`name.${index}`}
-                      {...register(`items.${index}.name`)}
-                      className="mt-1"
-                    />
-                    {errors.items?.[index]?.name?.message ? (
-                      <InputError
-                        error={errors.items?.[index]?.name?.message?.toString()}
-                      />
-                    ) : (
-                      <InputError error="placeholder" className="opacity-0" />
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor={`unit.${index}`}>Unidade *</Label>
-                    <Controller
-                      name={`items.${index}.unit`}
-                      control={control}
-                      render={({ field }) => (
-                        <Select
-                          name={field.name}
-                          defaultValue={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger className="mt-1">
-                            <SelectValue placeholder="Selecione uma opção" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="UN">UN</SelectItem>
-                            <SelectItem value="MT">MT</SelectItem>
-                            <SelectItem value="KG">KG</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.items?.[index]?.unit?.message ? (
-                      <InputError
-                        error={errors.items?.[index]?.unit?.message?.toString()}
-                      />
-                    ) : (
-                      <InputError error="placeholder" className="opacity-0" />
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor={`quantity.${index}`}>Quantidade *</Label>
-
-                    <Input
-                      type="number"
-                      placeholder="Insira a quantidade"
-                      id={`quantity.${index}`}
-                      {...register(`items.${index}.quantity`, {
-                        valueAsNumber: true,
-                      })}
-                      className="mt-1"
-                    />
-
-                    {errors.items?.[index]?.quantity?.message ? (
-                      <InputError
-                        error={errors.items?.[
-                          index
-                        ]?.quantity?.message?.toString()}
-                        className="text-wrap"
-                      />
-                    ) : (
-                      <InputError error="placeholder" className="opacity-0" />
-                    )}
-                  </div>
-
-                  {fields.length > 1 && (
-                    <Button
-                      variant="ghost"
-                      className="h-10 w-10 p-0"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash size={24} className="text-terciary" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Order Details */}
-          <div className="border-primary flex h-fit flex-col gap-4 flex-[2] border px-6 py-4 rounded-xl text-primary">
-            <h2 className="font-medium">Detalhes do Pedido</h2>
-            <div className="mt-2 flex flex-col gap-4">
-              <div>
-                <Label htmlFor="customerId">Cliente *</Label>
-                <Controller
-                  name="customerId"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      name={field.name}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o cliente" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {customers.map((customer) => (
-                          <SelectItem
-                            key={customer.id}
-                            value={customer.id.toString()}
-                          >
-                            {customer.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                <InputError error={errors.customerId?.message?.toString()} />
-              </div>
-
-              <div>
-                <Label htmlFor="notes">Notas</Label>
-                <Textarea
-                  placeholder="Insira notas sobre o pedido..."
-                  id="notes"
-                  {...register('notes')}
-                  className="mt-1"
-                />
-                <InputError error={errors.notes?.message?.toString()} />
-              </div>
-
-              <div>
-                <Label htmlFor="status">Status *</Label>
-                <Controller
-                  name="status"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      name={field.name}
-                      defaultValue={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="PENDING">Pendente</SelectItem>
-                        <SelectItem value="PAID">Pago</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                <InputError error={errors.status?.message?.toString()} />
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
+        <div className="mt-4 h-full">
+          <FormProvider {...orderForm}>
+            <OrderForm
+              onSubmit={onSubmit}
+              customers={customers}
+              products={products}
+            />
+          </FormProvider>
+        </div>
+      </Page.Content>
     </Page.Container>
   )
 }

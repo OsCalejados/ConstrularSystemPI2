@@ -3,9 +3,9 @@ import Link from 'next/link'
 
 import {
   Eye,
-  PencilSimple,
-  Printer,
-  TrashSimple,
+  PencilSimpleIcon,
+  PrinterIcon,
+  TrashSimpleIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import { MoreHorizontal, MoreVertical } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -108,18 +108,18 @@ export default function OrderOptions({
               }}
               className="gap-2"
             >
-              <Printer size={16} />
+              <PrinterIcon size={16} />
               <span>Imprimir</span>
             </DropdownMenuItem>
           )}
           {/* Edit option */}
           <DropdownMenuItem asChild>
             <Link
-              href={`/orders/edit/${order.id}`}
+              href={`/orders/installments/edit/${order.id}`}
               onClick={(event) => event.stopPropagation()}
               className="gap-2"
             >
-              <PencilSimple size={16} />
+              <PencilSimpleIcon size={16} />
               <span>Editar</span>
             </Link>
           </DropdownMenuItem>
@@ -131,7 +131,7 @@ export default function OrderOptions({
               className="w-full text-danger gap-2"
               onClick={(event) => event.stopPropagation()}
             >
-              <TrashSimple size={16} />
+              <TrashSimpleIcon size={16} />
               <span>Excluir</span>
             </AlertDialogTrigger>
           </DropdownMenuItem>

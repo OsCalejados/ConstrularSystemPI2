@@ -20,11 +20,8 @@ import {
 } from '@/components/shadcnui/select'
 import { InstallmentOrderFormData } from '@/types/validations'
 import { PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react/dist/ssr'
-import { getProducts } from '@/services/product-service'
-import { useQuery } from '@tanstack/react-query'
 import { Product } from '@/types/product'
 import { Customer } from '@/types/customer'
-import { getCustomers } from '@/services/customer-service'
 import { formatCurrency } from '@/utils/format/format-currency'
 import { parseCurrency } from '@/utils/parse/currency'
 import { useCallback, useEffect, useMemo } from 'react'
@@ -33,19 +30,15 @@ import { formatPercentage } from '@/utils/format/format-percentage'
 
 interface OrderFormProps {
   onSubmit: (data: InstallmentOrderFormData) => Promise<void>
+  customers: Customer[]
+  products: Product[]
 }
 
-export default function OrderForm({ onSubmit }: OrderFormProps) {
-  const { data: customers } = useQuery<Customer[]>({
-    queryKey: ['customers'],
-    queryFn: getCustomers,
-  })
-
-  const { data: products } = useQuery<Product[]>({
-    queryKey: ['products'],
-    queryFn: getProducts,
-  })
-
+export default function OrderForm({
+  onSubmit,
+  customers,
+  products,
+}: OrderFormProps) {
   const {
     control,
     register,
@@ -63,7 +56,7 @@ export default function OrderForm({ onSubmit }: OrderFormProps) {
     control,
   })
 
-  const watchedItems = useWatch({ control, name: 'items' })
+  const watchedItems = useWatch({ control, name: 'items', defaultValue: [] })
 
   const quantityTotal = useMemo(() => {
     return watchedItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
@@ -102,7 +95,7 @@ export default function OrderForm({ onSubmit }: OrderFormProps) {
     setValue('discount', discount)
   }
 
-  if (!customers || !products) return null
+  // if (!customers || !products) return null
 
   return (
     <form
@@ -341,27 +334,33 @@ export default function OrderForm({ onSubmit }: OrderFormProps) {
             <Controller
               name="customerId"
               control={control}
-              render={({ field }) => (
-                <Select
-                  name={field.name}
-                  value={field.value?.toString()}
-                  onValueChange={(value) => field.onChange(Number(value))}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Selecione o cliente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {customers.map((customer) => (
-                      <SelectItem
-                        key={customer.id}
-                        value={customer.id.toString()}
-                      >
-                        {customer.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
+              render={({ field }) => {
+                console.log('Customer Select value:', field.value)
+
+                return (
+                  <Select
+                    name={field.name}
+                    value={field.value ? field.value.toString() : ''}
+                    onValueChange={(value) => {
+                      if (Number(value)) field.onChange(Number(value))
+                    }}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Selecione o cliente" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {customers.map((customer) => (
+                        <SelectItem
+                          key={customer.id}
+                          value={customer.id.toString()}
+                        >
+                          {customer.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )
+              }}
             />
             <InputError error={errors.customerId?.message?.toString()} />
           </div>
