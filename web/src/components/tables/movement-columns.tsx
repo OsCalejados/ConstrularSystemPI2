@@ -5,6 +5,7 @@ import { Movement } from '@/types/movement'
 import Badge from '../ui/badge'
 import { Button } from '../shadcnui/button'
 import { ArrowUpDown } from 'lucide-react'
+import MovementOptions from '../dropdown-menus/movement-options'
 
 export const movementColumns: ColumnDef<Movement>[] = [
   {
@@ -71,6 +72,11 @@ export const movementColumns: ColumnDef<Movement>[] = [
   },
   {
     id: 'actions',
-    cell: () => <Button variant="ghost">•••</Button>,
+    cell: ({ row }) => {
+      const movement = row.original
+      return (
+        <MovementOptions movement={movement} variant="ghost" showViewItem />
+      )
+    },
   },
 ]

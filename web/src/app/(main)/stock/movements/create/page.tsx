@@ -13,9 +13,20 @@ import { Button } from '@/components/shadcnui/button'
 import { toast } from '@/hooks/use-toast'
 import { Page } from '@/components/layout/page'
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
+import { MeasureUnit } from '@/enums/measure-unit'
+import { createMovement } from '@/services/movement-service'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 export default function CreateMovement() {
   const router = useRouter()
+  const queryClient = useQueryClient()
+
+  const { mutateAsync: createMovementMutation } = useMutation({
+    mutationFn: createMovement,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['movements'] })
+    },
+  })
 
   const movementForm = useForm<MovementFormData>({
     resolver: zodResolver(movementFormSchema),
@@ -23,7 +34,7 @@ export default function CreateMovement() {
     defaultValues: {
       description: '',
       type: 'Entrada',
-      products: [{ name: '', unit: 'UN', quantity: 1 }],
+      products: [{ name: '', unit: MeasureUnit.UN, quantity: 1 }],
     },
   })
 
@@ -33,12 +44,19 @@ export default function CreateMovement() {
   } = movementForm
 
   const onSubmit = async (data: MovementFormData) => {
-    // Aqui você pode chamar o serviço de criação de movimentação futuramente
-    toast({
-      title: 'Movimentação cadastrada com sucesso',
-    })
-    reset()
-    router.back()
+    try {
+      await createMovementMutation(data)
+      toast({
+        title: 'Movimentação cadastrada com sucesso',
+      })
+      reset()
+      router.back()
+    } catch (error) {
+      toast({
+        title: 'Erro ao cadastrar movimentação',
+        variant: 'destructive',
+      })
+    }
   }
 
   return (
