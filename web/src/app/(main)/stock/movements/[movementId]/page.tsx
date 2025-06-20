@@ -1,6 +1,5 @@
 'use client'
 
-
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { getMovementById } from '@/services/movement-service'
