@@ -17,7 +17,7 @@ export class CustomerService {
     return customers;
   }
 
-  async getCustomerById(customerId: number, includeAddress: boolean) {
+  async getCustomerById(customerId: number, includeAddress?: boolean) {
     const customer = await this.customerRepository.findById(customerId, {
       includeAddress: includeAddress,
     });

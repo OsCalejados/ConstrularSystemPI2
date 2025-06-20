@@ -1,8 +1,6 @@
 import { FindOrderOptions } from '../interfaces/find-order-options.interface';
 import { IOrderRepository } from '../interfaces/order.repository.interface';
 import { UpdateStatusDto } from '../dtos/update-status';
-import { CreateOrderDto } from '../dtos/create-order.dto';
-import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { PrismaService } from '@src/common/services/prisma.service';
 import { OrderMapper } from '../mappers/order.mapper';
@@ -71,12 +69,12 @@ export class PrismaOrderRepository implements IOrderRepository {
     return orders.map((order) => OrderMapper.toDto(order));
   }
 
-  async create(order: CreateOrderDto, sellerId: number): Promise<OrderDto> {
+  async create(order: OrderDto, sellerId: number): Promise<OrderDto> {
     const createdOrder = await this.prisma.order.create({
       data: {
         status: order.status,
         total: order.total,
-        netTotal: order.netTotal,
+        subtotal: order.subtotal,
         type: order.type,
         discount: order.discount,
         paid: order.paid,
@@ -101,7 +99,7 @@ export class PrismaOrderRepository implements IOrderRepository {
     return OrderMapper.toDto(createdOrder);
   }
 
-  async update(orderId: number, order: UpdateOrderDto): Promise<OrderDto> {
+  async update(orderId: number, order: OrderDto): Promise<OrderDto> {
     const updatedOrder = await this.prisma.order.update({
       where: {
         id: orderId,
@@ -111,7 +109,7 @@ export class PrismaOrderRepository implements IOrderRepository {
         total: order.total,
         type: order.type,
         discount: order.discount,
-        netTotal: order.netTotal,
+        subtotal: order.subtotal,
         paid: order.paid,
         notes: order.notes,
         customerId: order.customerId,

@@ -1,14 +1,19 @@
 import { BadRequestException } from '@nestjs/common';
+import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { OrderItemDto } from '../dtos/order-item.dto';
-import { UpdateOrderDto } from '../dtos/update-order.dto';
+import { OrderType } from '@src/common/enums/order-type.enum';
+import { OrderDto } from '../dtos/order.dto';
 
 export abstract class OrderStrategy {
-  abstract validateCreate(order: CreateOrderDto): void;
-  abstract validateUpdate(order: UpdateOrderDto): void;
+  type: OrderType;
 
-  abstract applyBusinessRulesOnCreate(order: CreateOrderDto): void;
-  abstract applyBusinessRulesOnUpdate(order: UpdateOrderDto): void;
+  abstract createOrder(
+    dto: CreateOrderDto,
+    sellerId: number,
+  ): Promise<OrderDto>;
+
+  abstract updateOrder(orderId: number, dto: UpdateOrderDto): Promise<OrderDto>;
 
   protected validateItems(items: OrderItemDto[]) {
     if (!items || items.length === 0) {
@@ -45,7 +50,7 @@ export abstract class OrderStrategy {
       0,
     );
 
-    if (itemsTotal !== Number(order.total)) {
+    if (itemsTotal !== Number(order.subtotal)) {
       throw new BadRequestException(
         `Order total (${order.total}) does not match sum of item totals (${itemsTotal})`,
       );
@@ -55,25 +60,10 @@ export abstract class OrderStrategy {
       throw new BadRequestException('Discount cannot be negative');
     }
 
-    if (order.discount > order.total) {
+    if (order.discount > order.subtotal) {
       throw new BadRequestException(
         'Discount cannot be greater than total order amount',
       );
     }
-  }
-
-  protected validatePayments(order: CreateOrderDto | UpdateOrderDto) {
-    // order.payments.forEach((payment) => {
-    //   if (payment.amount <= 0) {
-    //     throw new BadRequestException(
-    //       'Payment amount must be greater than zero',
-    //     );
-    //   }
-    //   if (new Date(payment.paidAt) < new Date(order.createdAt || new Date())) {
-    //     throw new BadRequestException(
-    //       'Payment date cannot be before order creation date',
-    //     );
-    //   }
-    // });
   }
 }

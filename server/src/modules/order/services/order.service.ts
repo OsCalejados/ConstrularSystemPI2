@@ -1,7 +1,3 @@
-import { InstallmentOrderStrategy } from '../strategies/installment.strategy';
-import { CustomerRepository } from '@src/modules/customer/interfaces/customer.repository.interface';
-import { QuoteOrderStrategy } from '../strategies/quote.strategy';
-import { SaleOrderStrategy } from '../strategies/sale.strategy';
 import { FindOrderOptions } from '../interfaces/find-order-options.interface';
 import { IOrderRepository } from '../interfaces/order.repository.interface';
 import { UpdateStatusDto } from '../dtos/update-status';
@@ -10,19 +6,22 @@ import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { IOrderService } from '../interfaces/order.service.interface';
 import { OrderStrategy } from '../strategies/order.strategy';
-import { OrderType } from '@src/common/enums/order-type.enum';
 import { OrderDto } from '../dtos/order.dto';
 import {
   BadRequestException,
   NotFoundException,
   Injectable,
+  Inject,
 } from '@nestjs/common';
+import { CustomerService } from '@src/modules/customer/services/customer.service';
 
 @Injectable()
 export class OrderService implements IOrderService {
   constructor(
-    private orderRepository: IOrderRepository,
-    private customerRepository: CustomerRepository,
+    @Inject('ORDER_STRATEGIES')
+    private readonly strategies: OrderStrategy[],
+    private readonly orderRepository: IOrderRepository,
+    private readonly customerService: CustomerService,
   ) {}
 
   async getAllOrders(options?: FindOrderOptions): Promise<OrderDto[]> {
@@ -48,7 +47,7 @@ export class OrderService implements IOrderService {
     customerId: number,
     options?: FindOrderOptions,
   ): Promise<OrderDto[]> {
-    const costumer = this.customerRepository.findById(customerId);
+    const costumer = this.customerService.getCustomerById(customerId);
 
     if (!costumer) {
       throw new NotFoundException(`Customer not found`);
@@ -73,35 +72,25 @@ export class OrderService implements IOrderService {
     order: CreateOrderDto,
     sellerId: number,
   ): Promise<OrderDto> {
-    const costumer = this.customerRepository.findById(order.customerId);
+    const strategy = this.strategies.find((s) => s.type === order.type);
 
-    if (!costumer) {
-      throw new NotFoundException(`Customer not found`);
+    if (!strategy) {
+      throw new BadRequestException(`Invalid order type: ${order.type}`);
     }
 
-    const strategy = this.getStrategy(order.type);
-
-    strategy.validateCreate(order);
-    strategy.applyBusinessRulesOnCreate(order);
-
-    const createdOrder = await this.orderRepository.create(order, sellerId);
+    const createdOrder = strategy.createOrder(order, sellerId);
 
     return createdOrder;
   }
 
   async updateOrder(orderId: number, order: UpdateOrderDto): Promise<OrderDto> {
-    const existingOrder = await this.orderRepository.findById(orderId);
+    const strategy = this.strategies.find((s) => s.type === order.type);
 
-    if (!existingOrder) {
-      throw new NotFoundException(`Order not found`);
+    if (!strategy) {
+      throw new BadRequestException(`Invalid order type: ${order.type}`);
     }
 
-    const strategy = this.getStrategy(order.type);
-
-    strategy.validateUpdate(order);
-    strategy.applyBusinessRulesOnUpdate(order);
-
-    const updatedOrder = await this.orderRepository.update(orderId, order);
+    const updatedOrder = strategy.updateOrder(orderId, order);
 
     return updatedOrder;
   }
@@ -150,18 +139,5 @@ export class OrderService implements IOrderService {
     }
 
     await this.orderRepository.deleteById(orderId);
-  }
-
-  private getStrategy(type: OrderType): OrderStrategy {
-    switch (type) {
-      case OrderType.INSTALLMENT:
-        return new InstallmentOrderStrategy();
-      case OrderType.QUOTE:
-        return new QuoteOrderStrategy();
-      case OrderType.SALE:
-        return new SaleOrderStrategy();
-      default:
-        throw new BadRequestException(`Invalid order type`);
-    }
   }
 }

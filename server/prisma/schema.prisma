@@ -72,7 +72,7 @@ model Order {
   notes     String?
   type      String
   status    String
-  netTotal  Decimal
+  subtotal  Decimal
   total     Decimal
   discount  Decimal  @default(0.00)
   paid      Boolean  @default(false)

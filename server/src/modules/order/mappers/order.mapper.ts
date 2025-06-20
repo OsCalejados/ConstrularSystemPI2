@@ -22,7 +22,7 @@ export class OrderMapper {
       discount: Number(order.discount),
       paid: order.paid,
       total: Number(order.total),
-      netTotal: Number(order.netTotal),
+      subtotal: Number(order.subtotal),
       createdAt: order.createdAt,
       customerId: order.customerId,
       sellerId: order.sellerId,

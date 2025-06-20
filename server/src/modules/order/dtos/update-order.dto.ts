@@ -1,36 +1,25 @@
-import { IsEnum, IsNotEmpty } from 'class-validator';
-import { PaymentMethod } from '@src/common/enums/payment-method.enum';
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { OrderItemDto } from './order-item.dto';
-import { OrderStatus } from '../../../common/enums/order-status.enum';
 import { OrderType } from '@src/common/enums/order-type.enum';
+import { OrderPaymentDto } from './order-payment.dto';
 
 export class UpdateOrderDto {
-  @IsNotEmpty()
-  customerId: number;
+  total: number;
+
+  subtotal: number;
+
+  discount: number;
 
   notes: string;
+
+  customerId: number;
 
   @IsEnum(OrderType)
   type: OrderType;
 
-  @IsEnum(OrderStatus)
-  status: OrderStatus;
-
-  total: number;
-
-  netTotal: number;
-
-  discount: number;
-
-  @IsEnum(PaymentMethod)
-  paymentMethod: PaymentMethod;
-
-  paid: boolean;
-
-  installments: number;
-
-  amountPaid: number;
-
   @IsNotEmpty()
   items: OrderItemDto[];
+
+  @IsOptional()
+  payments: OrderPaymentDto[];
 }

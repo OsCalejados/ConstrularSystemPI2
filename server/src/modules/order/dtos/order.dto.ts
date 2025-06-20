@@ -12,7 +12,7 @@ export class OrderDto {
   status: OrderStatus;
   total: number;
   discount: number;
-  netTotal: number;
+  subtotal: number;
   paid: boolean;
   createdAt: Date;
   customerId: number;
