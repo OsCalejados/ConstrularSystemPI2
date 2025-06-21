@@ -13,6 +13,10 @@ import {
 } from '../shadcnui/select'
 import { useEffect } from 'react'
 import { MeasureUnit } from '@/enums/measure-unit'
+import { formatCurrency } from '@/utils/format/format-currency'
+import { parseCurrency } from '@/utils/parse/currency'
+import { percentageMask } from '@/utils/mask/percentage'
+import { formatPercentage } from '@/utils/format/format-percentage'
 
 interface ProductFormProps {
   onSubmit: (data: ProductFormData) => Promise<void>
@@ -34,6 +38,8 @@ export default function ProductForm({
 
   const costPrice = watch('costPrice')
   const profitMargin = watch('profitMargin')
+  const salePrice = watch('salePrice')
+  const profit = watch('profit')
 
   // Calcular preço de venda e lucro automaticamente
   useEffect(() => {
@@ -45,6 +51,26 @@ export default function ProductForm({
       setValue('salePrice', salePrice)
     }
   }, [costPrice, profitMargin, setValue])
+
+  useEffect(() => {
+    if (costPrice && salePrice) {
+      const newProfit = salePrice - costPrice
+      const newMargin = costPrice > 0 ? (newProfit / costPrice) * 100 : 0
+
+      setValue('profit', newProfit)
+      setValue('profitMargin', newMargin)
+    }
+  }, [salePrice, costPrice, setValue])
+
+  useEffect(() => {
+    if (costPrice && profit) {
+      const newSalePrice = costPrice + profit
+      const newMargin = costPrice > 0 ? (profit / costPrice) * 100 : 0
+
+      setValue('salePrice', newSalePrice)
+      setValue('profitMargin', newMargin)
+    }
+  }, [profit, costPrice, setValue])
 
   return (
     <form
@@ -132,64 +158,85 @@ export default function ProductForm({
         <div className="mt-2 grid grid-cols-1 gap-4">
           <div>
             <Label htmlFor="costPrice">Preço de custo</Label>
-            <Input
-              placeholder="0,00"
-              type="number"
-              step="0.01"
-              id="costPrice"
-              readOnly={readOnly}
-              {...register('costPrice', {
-                valueAsNumber: true,
-              })}
-              className="mt-1"
+            <Controller
+              name="costPrice"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  className="mt-1"
+                  readOnly={readOnly}
+                  value={field.value ? formatCurrency(field.value) : 'R$ 0,00'}
+                  onChange={(e) => {
+                    const float = parseCurrency(e.target.value)
+                    field.onChange(float)
+                  }}
+                />
+              )}
             />
             <InputError error={errors.costPrice?.message?.toString()} />
           </div>
 
           <div>
             <Label htmlFor="profitMargin">Margem (%)</Label>
-            <Input
-              placeholder="0,00%"
-              type="number"
-              step="0.01"
-              id="profitMargin"
-              readOnly={readOnly}
-              {...register('profitMargin', {
-                valueAsNumber: true,
-              })}
-              className="mt-1"
+            <Controller
+              name="profitMargin"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  className="mt-1"
+                  readOnly={readOnly}
+                  value={field.value ? formatPercentage(field.value) : '% 0,00'}
+                  onChange={(e) => {
+                    percentageMask(e)
+                    const float = parseCurrency(e.target.value)
+                    field.onChange(float)
+                  }}
+                />
+              )}
             />
             <InputError error={errors.profitMargin?.message?.toString()} />
           </div>
 
           <div>
             <Label htmlFor="salePrice">Preço de venda</Label>
-            <Input
-              placeholder="0,00"
-              type="number"
-              step="0.01"
-              id="salePrice"
-              readOnly={readOnly}
-              {...register('salePrice', {
-                valueAsNumber: true,
-              })}
-              className="mt-1 bg-gray-50"
+            <Controller
+              name="salePrice"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  className="mt-1"
+                  readOnly={readOnly}
+                  value={field.value ? formatCurrency(field.value) : 'R$ 0,00'}
+                  onChange={(e) => {
+                    const float = parseCurrency(e.target.value)
+                    field.onChange(float)
+                  }}
+                />
+              )}
             />
             <InputError error={errors.salePrice?.message?.toString()} />
           </div>
 
           <div>
             <Label htmlFor="profit">Lucro</Label>
-            <Input
-              placeholder="0,00"
-              type="number"
-              step="0.01"
-              id="profit"
-              {...register('profit', {
-                valueAsNumber: true,
-              })}
-              className="mt-1 bg-gray-50"
-              readOnly={readOnly}
+            <Controller
+              name="profit"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  className="mt-1"
+                  readOnly={readOnly}
+                  value={field.value ? formatCurrency(field.value) : 'R$ 0,00'}
+                  onChange={(e) => {
+                    const float = parseCurrency(e.target.value)
+                    field.onChange(float)
+                  }}
+                />
+              )}
             />
             <InputError error={errors.profit?.message?.toString()} />
           </div>

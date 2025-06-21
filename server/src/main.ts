@@ -4,7 +4,6 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { execSync } from 'child_process';
 
 dotenv.config();
 const backendPort = process.env.BACKEND_PORT ?? 3001;
@@ -14,8 +13,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
       transform: true,
     }),
   );
@@ -35,22 +32,6 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, documentFactory);
-
-  try {
-    Logger.log('Attempting to apply Prisma migrations...', 'Prisma');
-    execSync('npx prisma migrate deploy', { stdio: 'inherit' });
-    Logger.log(
-      'Prisma migrations applied successfully (or were already up-to-date).',
-      'Prisma',
-    );
-  } catch (error) {
-    Logger.error(
-      'Failed to apply Prisma migrations. Application will exit.',
-      error.stderr?.toString() || error.message,
-      'Prisma',
-    );
-    process.exit(1);
-  }
 
   await app.listen(backendPort);
 }

@@ -1,14 +1,20 @@
 import { Prisma, Product } from '@prisma/client';
 
-export interface IProductRepository {
-  findAll(): Promise<Product[]>;
-  findById(productId: number): Promise<Product | null>;
-  create(data: Prisma.ProductCreateInput): Promise<Product>;
-  update(
+export abstract class IProductRepository {
+  abstract findAll(): Promise<Product[]>;
+
+  abstract findById(productId: number): Promise<Product | null>;
+
+  abstract create(data: Prisma.ProductCreateInput): Promise<Product>;
+
+  abstract update(
     productId: number,
     data: Prisma.ProductUpdateInput,
   ): Promise<Product | null>;
-  delete(productId: number): Promise<void>;
-  existsByName(productName: string): Promise<boolean>;
-  getAllByName(productName: string): Promise<Product[]>;
+
+  abstract delete(productId: number): Promise<void>;
+
+  abstract existsByName(productName: string): Promise<boolean>;
+
+  abstract getAllByName(productName: string): Promise<Product[]>;
 }

@@ -1,7 +1,11 @@
+import { ApiBody, ApiResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { IProductService } from '../interfaces/product.service.interface';
+import { CreateProductDto } from '../dtos/create-product.dto';
+import { UpdateProductDto } from '../dtos/update-product.dto';
+import { ProductDto } from '../dtos/product.dto';
 import {
   Controller,
   Get,
-  Inject,
   Param,
   Post,
   Body,
@@ -11,17 +15,10 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiBody, ApiResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
-import { IProductService } from '../interfaces/product.service.interface';
-import { CreateProductDto } from '../dtos/create-product.dto';
-import { UpdateProductDto } from '../dtos/update-product.dto';
-import { ProductDto } from '../dtos/product.dto';
 
 @Controller('products')
 export class ProductController {
-  constructor(
-    @Inject('IProductService') private productService: IProductService,
-  ) {}
+  constructor(private productService: IProductService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all products' })

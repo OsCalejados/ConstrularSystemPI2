@@ -2,13 +2,17 @@ import { CreateProductDto } from '../dtos/create-product.dto';
 import { UpdateProductDto } from '../dtos/update-product.dto';
 import { ProductDto } from '../dtos/product.dto';
 
-export interface IProductService {
-  getAllProducts(): Promise<ProductDto[]>;
-  getProductById(productId: number): Promise<ProductDto | null>;
-  createProduct(data: CreateProductDto): Promise<ProductDto>;
-  updateProduct(
+export abstract class IProductService {
+  abstract getAllProducts(): Promise<ProductDto[]>;
+
+  abstract getProductById(productId: number): Promise<ProductDto | null>;
+
+  abstract createProduct(data: CreateProductDto): Promise<ProductDto>;
+
+  abstract updateProduct(
     productId: number,
     data: UpdateProductDto,
   ): Promise<ProductDto | null>;
-  deleteProduct(productId: number): Promise<void>;
+
+  abstract deleteProduct(productId: number): Promise<void>;
 }

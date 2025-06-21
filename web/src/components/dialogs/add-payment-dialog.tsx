@@ -16,11 +16,13 @@ import {
 interface AddPaymentDialogProps {
   children?: React.ReactNode
   orderId: number
+  remainingAmount: number
 }
 
 export default function AddPaymentDialog({
   children,
   orderId,
+  remainingAmount,
 }: AddPaymentDialogProps) {
   return (
     <Dialog>
@@ -31,7 +33,7 @@ export default function AddPaymentDialog({
         </DialogHeader>
 
         {/* Form */}
-        <AddPaymentForm orderId={orderId} />
+        <AddPaymentForm orderId={orderId} remainingAmount={remainingAmount} />
 
         <DialogFooter>
           <DialogClose asChild>
@@ -41,7 +43,7 @@ export default function AddPaymentDialog({
           <DialogClose asChild>
             <Button
               type="submit"
-              form="balance-form"
+              form="payment-form"
               className="bg-primary hover:bg-primary-hover"
             >
               Adicionar

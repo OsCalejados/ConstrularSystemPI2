@@ -16,5 +16,6 @@ import { Module } from '@nestjs/common';
       useClass: PrismaCustomerRepository,
     },
   ],
+  exports: [CustomerService],
 })
 export class CustomerModule {}

@@ -5,18 +5,17 @@ import { Module } from '@nestjs/common';
 import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
 import { AppController } from './app.controller';
-// import { APP_GUARD } from '@nestjs/core';
-// import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
-// import { PaymentModule } from './payment/payment.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [AuthModule, CustomerModule, UserModule, ProductModule, OrderModule],
   controllers: [AppController],
   providers: [
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: JwtAuthGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
   ],
 })
 export class AppModule {}

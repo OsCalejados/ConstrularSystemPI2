@@ -10,7 +10,6 @@ import { HttpStatus } from '@nestjs/common';
 import { ProductService } from '@src/modules/product/services/product.service';
 import { ProductRepository } from '@src/modules/product/repositories/product.repository';
 import { OrderService } from '@src/modules/order/services/order.service';
-import { OrderRepository } from '@src/modules/order/repositories/order.repository';
 import { IOrderService } from '@src/modules/order/interfaces/order.service.interface';
 import { CustomerRepository } from '@src/modules/customer/interfaces/customer.repository.interface';
 import { PrismaCustomerRepository } from '@src/modules/customer/repositories/prisma-customer.repository';
@@ -22,10 +21,12 @@ import { AppException } from '@src/common/exceptions/app.exception';
 import { OrderStatus } from '@src/common/enums/order-status.enum';
 import { MeasureUnit } from '@src/common/enums/measure-unit.enum';
 import { ProductDto } from '@src/modules/product/dtos/product.dto';
+import { IOrderRepository } from '@src/modules/order/interfaces/order.repository.interface';
+import { PrismaOrderRepository } from '@src/modules/order/repositories/prisma-order.repository';
 
 describe('ProductService (Integration)', () => {
   let productService: ProductService;
-  let orderRepository: OrderRepository;
+  let orderRepository: IOrderRepository;
   let customerRepository: CustomerRepository;
   let prismaTestClient: PrismaClient;
   let container: StartedTestContainer;
@@ -93,7 +94,7 @@ describe('ProductService (Integration)', () => {
         PrismaService,
         { provide: 'IProductRepository', useClass: ProductRepository },
         { provide: 'IOrderService', useClass: OrderService },
-        OrderRepository,
+        { provide: IOrderRepository, useClass: PrismaOrderRepository },
         { provide: CustomerRepository, useClass: PrismaCustomerRepository },
       ],
     }).compile();
@@ -101,7 +102,7 @@ describe('ProductService (Integration)', () => {
 
     productService = module.get<ProductService>(ProductService);
     orderServiceInstance = module.get<IOrderService>('IOrderService');
-    orderRepository = module.get<OrderRepository>(OrderRepository);
+    orderRepository = module.get<IOrderRepository>(IOrderRepository);
     customerRepository = module.get<CustomerRepository>(CustomerRepository);
 
     console.log('[ProductService Integration] Service instances obtained.');
