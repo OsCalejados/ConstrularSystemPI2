@@ -1,5 +1,5 @@
 import { ProductFormData } from '@/types/validations'
-import { api } from '@/lib/axios'
+import api from '@/lib/axios'
 
 export async function getProducts() {
   const response = await api.get('products')

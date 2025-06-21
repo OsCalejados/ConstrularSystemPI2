@@ -1,5 +1,5 @@
 import { BalanceFormData, CustomerFormData } from '@/types/validations'
-import { api } from '@/lib/axios'
+import api from '@/lib/axios'
 
 export async function getCustomers() {
   const response = await api.get('customers')
