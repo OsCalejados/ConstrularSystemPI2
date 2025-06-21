@@ -1,32 +1,28 @@
-import { IsEnum, IsNotEmpty } from 'class-validator';
-import { OrderStatus } from '../../../common/enums/order-status.enum';
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { OrderItemDto } from './order-item.dto';
-import { OrderType } from '@src/common/enums/order-type.enum';
-import { PaymentMethod } from '@src/common/enums/payment-method.enum';
+import { OrderType } from 'src/common/enums/order-type.enum';
+import { OrderPaymentDto } from './order-payment.dto';
 
 export class CreateOrderDto {
-  @IsNotEmpty()
+  total: number;
+
+  subtotal: number;
+
+  discount: number;
+
+  notes: string;
+
   customerId: number;
 
   @IsEnum(OrderType)
   type: OrderType;
 
-  @IsEnum(OrderStatus)
-  status: OrderStatus;
-
-  total: number;
-
-  discount: number;
-
-  @IsEnum(PaymentMethod)
-  payment_method: PaymentMethod;
-
-  paid: boolean;
-
-  installments: number;
-
-  amount_paid: number;
-
   @IsNotEmpty()
   items: OrderItemDto[];
+
+  @IsOptional()
+  payments: OrderPaymentDto[];
+
+  @IsOptional()
+  useBalance: boolean;
 }

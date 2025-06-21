@@ -3,7 +3,7 @@
 import Breadcrumb from '@/components/ui/breadcrumb'
 import Link from 'next/link'
 
-import { productColumns } from '@/components/tables/product-columns'
+import { productColumns } from '@/components/tables/products-columns'
 import { ProductsTable } from '@/components/tables/products-table'
 import { getProducts } from '@/services/product-service'
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr'

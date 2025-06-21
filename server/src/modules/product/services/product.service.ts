@@ -12,8 +12,8 @@ import { AppException } from '@src/common/exceptions/app.exception';
 @Injectable()
 export class ProductService implements IProductService {
   constructor(
-    @Inject('IProductRepository') private productRepository: IProductRepository,
-    @Inject('IOrderService') private orderService: IOrderService,
+    private productRepository: IProductRepository,
+    private orderService: IOrderService,
   ) {}
 
   async getAllProducts(): Promise<ProductDto[]> {

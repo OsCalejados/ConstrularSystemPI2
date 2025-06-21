@@ -1,58 +1,58 @@
-import { DeleteOrdersDto } from '../dtos/delete-orders.dto';
-import { CreateOrderDto } from '../dtos/create-order.dto';
+import { FindOrderOptionsDto } from '../dtos/find-order-options.dto';
+import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
+import { UpdateNotesDto } from '../dtos/update-notes';
+import { CreateOrderDto } from '../dtos/create-order.dto';
+import { CurrentUserId } from '@src/common/decorators/current-user-id.decorator';
 import { OrderService } from '../services/order.service';
 import {
   Controller,
   Delete,
   Param,
+  Query,
   Body,
   Post,
   Put,
   Get,
-  Query,
 } from '@nestjs/common';
-import { UpdateStatusDto } from '../dtos/update-status';
-import { UpdateNotesDto } from '../dtos/update-notes';
 
 @Controller('orders')
 export class OrderController {
   constructor(private orderService: OrderService) {}
 
   @Get()
-  async getAllOrders() {
-    return await this.orderService.getAllOrders();
+  async getAllOrders(@Query() query: FindOrderOptionsDto) {
+    return await this.orderService.getAllOrders({ ...query });
   }
 
   @Get(':id')
-  async getOrderById(@Param('id') orderId: string) {
+  async getOrderById(
+    @Param('id') orderId: string,
+    @Query() query: FindOrderOptionsDto,
+  ) {
     const id = parseInt(orderId);
 
-    return await this.orderService.getOrderById(id);
+    return await this.orderService.getOrderById(id, {
+      ...query,
+    });
   }
 
   @Get('customer/:id')
   async getOrdersByCustomer(
     @Param('id') customerId: string,
-    @Query('page') page: string,
-    @Query('pageSize') pageSize: string,
-    @Query('status') status?: string,
+    @Query() query: FindOrderOptionsDto,
   ) {
     const id = parseInt(customerId);
-    const pageNumber = page ? parseInt(page) : 1;
-    const pageSizeNumber = pageSize ? parseInt(pageSize) : 12;
 
-    return await this.orderService.getOrdersByCustomer(
-      id,
-      pageNumber,
-      pageSizeNumber,
-      status,
-    );
+    return await this.orderService.getOrdersByCustomer(id, { ...query });
   }
 
   @Post()
-  async createOrder(@Body() createOrderDto: CreateOrderDto) {
-    return await this.orderService.createOrder(createOrderDto);
+  async createOrder(
+    @Body() createOrderDto: CreateOrderDto,
+    @CurrentUserId() userId: number,
+  ) {
+    return await this.orderService.createOrder(createOrderDto, userId);
   }
 
   @Put(':id')
@@ -75,16 +75,6 @@ export class OrderController {
     return await this.orderService.updateNotes(id, updateNotesDto);
   }
 
-  @Put(':id/status')
-  async updateStatus(
-    @Param('id') orderId: string,
-    @Body() updateStatusDto: UpdateStatusDto,
-  ) {
-    const id = parseInt(orderId);
-
-    return await this.orderService.updateStatus(id, updateStatusDto);
-  }
-
   @Delete(':id')
   async deleteOrder(@Param('id') orderId: string) {
     const id = parseInt(orderId);
@@ -92,10 +82,33 @@ export class OrderController {
     await this.orderService.deleteOrder(id);
   }
 
-  @Delete()
-  async deleteOrders(@Body() deleteOrdersDto: DeleteOrdersDto) {
-    const { orderIds } = deleteOrdersDto;
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
+  @Post(':id/payments')
+  async addPayment(
+    @Param('id') orderId: string,
+    @Body() createPaymentDto: CreatePaymentDto,
+  ) {
+    const id = parseInt(orderId);
 
-    return await this.orderService.deleteOrders(orderIds);
+    return await this.orderService.addPayment(id, createPaymentDto);
+  }
+
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
+  @Delete(':orderId/payments/:paymentId')
+  async deletePayment(
+    @Param('orderId') orderId: string,
+    @Param('paymentId') paymentId: string,
+  ) {
+    const orderIdParsed = parseInt(orderId);
+    const paymentIdParsed = parseInt(paymentId);
+
+    return await this.orderService.deletePayment(
+      orderIdParsed,
+      paymentIdParsed,
+    );
   }
 }

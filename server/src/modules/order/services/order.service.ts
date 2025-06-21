@@ -1,48 +1,47 @@
-import { OrderRepository } from '../repositories/order.repository';
-import { CustomerRepository } from '@src/modules/customer/interfaces/customer.repository.interface';
+import { FindOrderOptions } from '../interfaces/find-order-options.interface';
+import { IOrderRepository } from '../interfaces/order.repository.interface';
+import { CreatePaymentDto } from '../dtos/create-payment.dto';
+import { CustomerService } from '@src/modules/customer/services/customer.service';
+import { UpdateStatusDto } from '../dtos/update-status';
+import { PaymentService } from './payment.service';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
-import { Injectable } from '@nestjs/common';
-import { UpdateStatusDto } from '../dtos/update-status';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { IOrderService } from '../interfaces/order.service.interface';
-import { Order } from '@prisma/client';
+import { OrderStrategy } from '../strategies/order.strategy';
+import { OrderStatus } from '@src/common/enums/order-status.enum';
+import { OrderDto } from '../dtos/order.dto';
+import {
+  BadRequestException,
+  NotFoundException,
+  Injectable,
+  Inject,
+} from '@nestjs/common';
 
 @Injectable()
 export class OrderService implements IOrderService {
   constructor(
-    private orderRepository: OrderRepository,
-    private customerRepository: CustomerRepository,
+    @Inject('ORDER_STRATEGIES')
+    private readonly strategies: OrderStrategy[],
+    private readonly orderRepository: IOrderRepository,
+    private readonly customerService: CustomerService,
+    private readonly paymentService: PaymentService,
   ) {}
-  async getOrdersByProductId(productId: number): Promise<Order[]> {
-    // TODO
-    //find order_item by productId
-    // then find order by order_item.orderId
-    // if not find return empty array
-    // else return orders
-    return [];
-    const ordersItems =
-      await this.orderRepository.findOrderItemByProduct(productId);
-    if (!ordersItems || ordersItems.length === 0) {
-      return [];
-    }
-    const orderIds = ordersItems.map((item) => item.orderId);
-    return Promise.all(
-      orderIds.map((orderId) => this.orderRepository.findById(orderId)),
-    );
-  }
 
-  async getAllOrders() {
-    const orders = await this.orderRepository.findAll();
+  async getAllOrders(options?: FindOrderOptions): Promise<OrderDto[]> {
+    const orders = await this.orderRepository.findAll(options);
 
     return orders;
   }
 
-  async getOrderById(orderId: number) {
-    const order = await this.orderRepository.findById(orderId);
+  async getOrderById(
+    orderId: number,
+    options?: FindOrderOptions,
+  ): Promise<OrderDto> {
+    const order = await this.orderRepository.findById(orderId, options);
 
     if (!order) {
-      throw new Error(`Order not found`);
+      throw new NotFoundException(`Order not found`);
     }
 
     return order;
@@ -50,53 +49,64 @@ export class OrderService implements IOrderService {
 
   async getOrdersByCustomer(
     customerId: number,
-    page: number = 1,
-    pageSize: number = 12,
-    status?: string,
-  ) {
-    const costumer = this.customerRepository.findById(customerId);
+    options?: FindOrderOptions,
+  ): Promise<OrderDto[]> {
+    const costumer = this.customerService.getCustomerById(customerId);
 
     if (!costumer) {
-      throw new Error(`Customer not found`);
+      throw new NotFoundException(`Customer not found`);
     }
 
-    return await this.orderRepository.findByCustomer(
-      customerId,
-      page,
-      pageSize,
-      status,
-    );
+    return await this.orderRepository.findByCustomer(customerId, options);
   }
 
-  async createOrder(order: CreateOrderDto) {
-    const costumer = this.customerRepository.findById(order.customerId);
+  async getOrdersByProductId(
+    productId: number,
+    options?: FindOrderOptions,
+  ): Promise<OrderDto[]> {
+    const orders = await this.orderRepository.findByProductId(
+      productId,
+      options,
+    );
 
-    if (!costumer) {
-      throw new Error(`Customer not found`);
+    return orders;
+  }
+
+  async createOrder(
+    order: CreateOrderDto,
+    sellerId: number,
+  ): Promise<OrderDto> {
+    const strategy = this.strategies.find((s) => s.type === order.type);
+
+    if (!strategy) {
+      throw new BadRequestException(`Invalid order type: ${order.type}`);
     }
 
-    const createdOrder = await this.orderRepository.create(order);
+    const createdOrder = strategy.createOrder(order, sellerId);
 
     return createdOrder;
   }
 
-  async updateOrder(orderId: number, order: UpdateOrderDto) {
-    const existingOrder = await this.orderRepository.findById(orderId);
+  async updateOrder(orderId: number, order: UpdateOrderDto): Promise<OrderDto> {
+    const strategy = this.strategies.find((s) => s.type === order.type);
 
-    if (!existingOrder) {
-      throw new Error(`Order not found`);
+    if (!strategy) {
+      throw new BadRequestException(`Invalid order type: ${order.type}`);
     }
 
-    const updatedOrder = await this.orderRepository.update(orderId, order);
+    const updatedOrder = strategy.updateOrder(orderId, order);
 
     return updatedOrder;
   }
 
-  async updateNotes(orderId: number, updateStatusDto: UpdateNotesDto) {
+  async updateNotes(
+    orderId: number,
+    updateStatusDto: UpdateNotesDto,
+  ): Promise<OrderDto> {
     const existingOrder = await this.orderRepository.findById(orderId);
 
     if (!existingOrder) {
-      throw new Error(`Order not found`);
+      throw new NotFoundException(`Order not found`);
     }
 
     const updatedOrder = await this.orderRepository.updateNotes(
@@ -107,11 +117,14 @@ export class OrderService implements IOrderService {
     return updatedOrder;
   }
 
-  async updateStatus(orderId: number, updateStatusDto: UpdateStatusDto) {
+  async updateStatus(
+    orderId: number,
+    updateStatusDto: UpdateStatusDto,
+  ): Promise<OrderDto> {
     const existingOrder = await this.orderRepository.findById(orderId);
 
     if (!existingOrder) {
-      throw new Error(`Order not found`);
+      throw new NotFoundException(`Order not found`);
     }
 
     const updatedOrder = await this.orderRepository.updateStatus(
@@ -122,25 +135,81 @@ export class OrderService implements IOrderService {
     return updatedOrder;
   }
 
-  async deleteOrder(orderId: number) {
+  async deleteOrder(orderId: number): Promise<void> {
     const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
-      throw new Error(`Order not found`);
+      throw new NotFoundException(`Order not found`);
     }
 
-    await this.orderRepository.delete(orderId);
+    await this.orderRepository.deleteById(orderId);
   }
 
-  async deleteOrders(orderIds: number[]) {
-    for (const orderId of orderIds) {
-      const existingOrder = await this.orderRepository.findById(orderId);
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
+  async addPayment(
+    orderId: number,
+    createPaymentDto: CreatePaymentDto,
+  ): Promise<void> {
+    const order = await this.orderRepository.findById(orderId);
 
-      if (!existingOrder) {
-        throw new Error(`Order with ID ${orderId} not found`);
-      }
+    if (!order) {
+      throw new NotFoundException(`Order not found`);
     }
 
-    await this.orderRepository.deleteMany(orderIds);
+    await this.orderRepository.addPayment(orderId, createPaymentDto);
+
+    const isFullyPaid = await this.verifyStatus(orderId);
+
+    if (isFullyPaid) {
+      await this.orderRepository.updateStatus(orderId, {
+        status: OrderStatus.COMPLETED,
+      });
+
+      await this.orderRepository.updateIsPaid(orderId, true);
+    }
+  }
+
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
+  async deletePayment(orderId: number, paymentId: number): Promise<void> {
+    const order = await this.orderRepository.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundException(`Order not found`);
+    }
+
+    const payment = await this.paymentService.getById(paymentId);
+
+    if (!payment) {
+      throw new NotFoundException(`Order not found`);
+    }
+
+    await this.orderRepository.deletePayment(paymentId);
+
+    const isFullyPaid = await this.verifyStatus(orderId);
+
+    if (order.status === OrderStatus.COMPLETED && !isFullyPaid) {
+      await this.orderRepository.updateStatus(orderId, {
+        status: OrderStatus.OPEN,
+      });
+
+      await this.orderRepository.updateIsPaid(orderId, false);
+    }
+  }
+
+  private async verifyStatus(orderId: number): Promise<boolean> {
+    const order = await this.orderRepository.findById(orderId, {
+      includePayments: true,
+    });
+
+    const totalPayments = order.payments.reduce(
+      (sum, payment) => sum + payment.amount,
+      0,
+    );
+
+    return totalPayments >= order.total;
   }
 }

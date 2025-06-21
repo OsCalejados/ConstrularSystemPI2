@@ -1,27 +1,50 @@
-import { CustomerRepository } from '../customer/interfaces/customer.repository.interface';
-import { OrderRepository } from './repositories/order.repository';
+import { InstallmentOrderStrategy } from './strategies/installment.strategy';
+import { PrismaPaymentRepository } from './repositories/prisma-payment.repository';
+import { PrismaOrderRepository } from './repositories/prisma-order.repository';
+import { IPaymentRepository } from './interfaces/payment.repository.interface';
+import { QuoteOrderStrategy } from './strategies/quote.strategy';
+import { SaleOrderStrategy } from './strategies/sale.strategy';
+import { IOrderRepository } from './interfaces/order.repository.interface';
 import { OrderController } from './controllers/order.controller';
-import { PrismaService } from '@src/common/services/prisma.service';
+import { PaymentService } from './services/payment.service';
+import { CustomerModule } from '../customer/customer.module';
+import { IOrderService } from './interfaces/order.service.interface';
+import { PrismaService } from 'src/common/services/prisma.service';
 import { OrderService } from './services/order.service';
 import { Module } from '@nestjs/common';
-import { PrismaCustomerRepository } from '../customer/repositories/prisma-customer.repository';
 
 @Module({
-  imports: [],
+  imports: [CustomerModule],
   controllers: [OrderController],
   providers: [
-    OrderRepository,
-    PrismaService,
     OrderService,
+    PrismaService,
+    PaymentService,
+    SaleOrderStrategy,
+    QuoteOrderStrategy,
+    InstallmentOrderStrategy,
     {
-      provide: 'IOrderService',
+      provide: IOrderService,
       useExisting: OrderService,
     },
     {
-      provide: CustomerRepository,
-      useClass: PrismaCustomerRepository,
+      provide: IOrderRepository,
+      useClass: PrismaOrderRepository,
+    },
+    {
+      provide: IPaymentRepository,
+      useClass: PrismaPaymentRepository,
+    },
+    {
+      provide: 'ORDER_STRATEGIES',
+      useFactory: (
+        sale: SaleOrderStrategy,
+        quote: QuoteOrderStrategy,
+        installment: InstallmentOrderStrategy,
+      ) => [sale, quote, installment],
+      inject: [SaleOrderStrategy, QuoteOrderStrategy, InstallmentOrderStrategy],
     },
   ],
-  exports: [OrderService, 'IOrderService'],
+  exports: [OrderService, IOrderService, IOrderRepository],
 })
 export class OrderModule {}

@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 import { Customer as TCustomer } from '@/types/customer'
 import { getCustomerById } from '@/services/customer-service'
-import { formatCurrency } from '@/utils/format-currency'
+import { formatCurrency } from '@/utils/format/format-currency'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/shadcnui/button'
