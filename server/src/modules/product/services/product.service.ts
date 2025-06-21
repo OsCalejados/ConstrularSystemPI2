@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { IProductService } from '../interfaces/product.service.interface';
 import { IProductRepository } from '../interfaces/product.repository.interface';
 import { IOrderService } from '@src/modules/order/interfaces/order.service.interface';

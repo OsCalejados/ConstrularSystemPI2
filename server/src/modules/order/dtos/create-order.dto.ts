@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { OrderItemDto } from './order-item.dto';
-import { OrderType } from 'src/common/enums/order-type.enum';
 import { OrderPaymentDto } from './order-payment.dto';
+import { OrderItemDto } from './order-item.dto';
+import { OrderType } from '@src/common/enums/order-type.enum';
 
 export class CreateOrderDto {
   total: number;
