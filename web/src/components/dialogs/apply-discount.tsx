@@ -10,7 +10,6 @@ import {
   DialogClose,
   DialogTitle,
   Dialog,
-  DialogDescription,
 } from '@/components/shadcnui/dialog'
 import { useState } from 'react'
 
@@ -37,7 +36,6 @@ export default function ApplyDiscountDialog({
           <DialogTitle>Aplicar desconto</DialogTitle>
         </DialogHeader>
 
-        <DialogDescription>teste</DialogDescription>
         <ApplyDiscountForm
           subtotal={subtotal}
           defaultValue={discount}
