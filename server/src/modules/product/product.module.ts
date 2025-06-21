@@ -3,7 +3,7 @@ import { ProductRepository } from './repositories/product.repository';
 import { ProductController } from './controllers/product.controller';
 import { IProductService } from './interfaces/product.service.interface';
 import { ProductService } from './services/product.service';
-import { PrismaService } from 'src/common/services/prisma.service';
+import { PrismaService } from '@src/common/services/prisma.service';
 import { OrderModule } from '../order/order.module';
 import { Module } from '@nestjs/common';
 

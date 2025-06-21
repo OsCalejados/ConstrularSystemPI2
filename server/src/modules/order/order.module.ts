@@ -9,7 +9,7 @@ import { OrderController } from './controllers/order.controller';
 import { PaymentService } from './services/payment.service';
 import { CustomerModule } from '../customer/customer.module';
 import { IOrderService } from './interfaces/order.service.interface';
-import { PrismaService } from 'src/common/services/prisma.service';
+import { PrismaService } from '@src/common/services/prisma.service';
 import { OrderService } from './services/order.service';
 import { Module } from '@nestjs/common';
 
