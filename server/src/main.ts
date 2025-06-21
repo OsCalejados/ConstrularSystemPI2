@@ -19,7 +19,6 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter(app.get(HttpAdapterHost)));
   app.enableCors({
     origin: '*',
-    credentials: true,
   });
 
   const config = new DocumentBuilder()
