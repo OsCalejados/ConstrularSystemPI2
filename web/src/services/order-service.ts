@@ -1,6 +1,6 @@
 import { InstallmentOrderFormData, PaymentFormData } from '@/types/validations'
 import { OrderStatus } from '@/enums/order-status'
-import { api } from '@/lib/axios'
+import api from '@/lib/axios'
 
 interface FindOrderOptions {
   includePayments?: boolean

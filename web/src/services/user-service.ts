@@ -1,6 +1,6 @@
 import { getSession } from '@/app/_actions/auth'
 import { User } from '@/types/user'
-import { api } from '@/lib/axios'
+import api from '@/lib/axios'
 
 export async function getUserBySession(): Promise<User | null> {
   const session = await getSession()
