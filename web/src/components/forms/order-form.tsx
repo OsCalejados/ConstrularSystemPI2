@@ -32,7 +32,7 @@ interface OrderFormProps {
   onSubmit: (data: InstallmentOrderFormData) => Promise<void>
   customers: Customer[]
   products: Product[]
-  showBalanceOption: boolean
+  showBalanceOption?: boolean
 }
 
 export default function OrderForm({

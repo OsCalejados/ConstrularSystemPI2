@@ -4,12 +4,9 @@ import { productFormSchema } from '@/validations/product-form-schema'
 import { balanceFormSchema } from '@/validations/balance-form-schema'
 import { paymentFormSchema } from '@/validations/payment-form-schema'
 import { statusFormSchema } from '@/validations/status-form-schema'
-import { orderFormSchema } from '@/validations/order-form-schema'
 import { notesFormSchema } from '@/validations/notes-form-schema'
 import { loginFormSchema } from '@/validations/login-form-schema'
 import { z } from 'zod'
-
-export type OrderFormData = z.infer<typeof orderFormSchema>
 
 export type InstallmentOrderFormData = z.infer<typeof installmentOrderSchema>
 
