@@ -12,4 +12,5 @@ export const installmentOrderSchema = z.object({
   subtotal: z.number().nonnegative().transform(round),
   discount: z.number().nonnegative().default(0).transform(round),
   items: z.array(itemSchema).min(1, 'Adicione pelo menos um item.'),
+  useBalance: z.boolean().default(false),
 })

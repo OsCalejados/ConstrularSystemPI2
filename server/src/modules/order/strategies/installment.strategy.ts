@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import { CustomerService } from '@src/modules/customer/services/customer.service';
 import { OrderStatus } from '@src/common/enums/order-status.enum';
+import { PaymentMethod } from '@src/common/enums/payment-method.enum';
+import { OrderPaymentDto } from '../dtos/order-payment.dto';
 
 @Injectable()
 export class InstallmentOrderStrategy extends OrderStrategy {
@@ -36,7 +38,7 @@ export class InstallmentOrderStrategy extends OrderStrategy {
       );
     }
 
-    const customer = this.customerService.getCustomerById(dto.customerId);
+    const customer = await this.customerService.getCustomerById(dto.customerId);
 
     if (!customer) {
       throw new NotFoundException('Customer not found');
@@ -44,6 +46,13 @@ export class InstallmentOrderStrategy extends OrderStrategy {
 
     this.validateItems(dto.items);
     this.validateOrderTotals(dto);
+
+    let amountToPay = undefined;
+
+    if (dto.useBalance && customer.balance > 0) {
+      amountToPay =
+        customer.balance >= dto.total ? dto.total : customer.balance;
+    }
 
     const createDto: OrderDto = {
       id: undefined,
@@ -60,10 +69,29 @@ export class InstallmentOrderStrategy extends OrderStrategy {
       createdAt: undefined,
       seller: undefined,
       customer: undefined,
-      payments: undefined,
+      payments:
+        dto.useBalance && customer.balance > 0
+          ? [
+              {
+                id: undefined,
+                installments: undefined,
+                paidAt: undefined,
+                netAmount: undefined,
+                paymentMethod: PaymentMethod.CASH,
+                change: 0,
+                amount: amountToPay,
+              } as OrderPaymentDto,
+            ]
+          : undefined,
     };
 
     const order = await this.orderRepository.create(createDto, sellerId);
+
+    if (order && amountToPay) {
+      await this.customerService.updateBalance(order.customerId, {
+        balance: customer.balance - amountToPay,
+      });
+    }
 
     return order;
   }

@@ -32,12 +32,14 @@ interface OrderFormProps {
   onSubmit: (data: InstallmentOrderFormData) => Promise<void>
   customers: Customer[]
   products: Product[]
+  showBalanceOption: boolean
 }
 
 export default function OrderForm({
   onSubmit,
   customers,
   products,
+  showBalanceOption = false,
 }: OrderFormProps) {
   const {
     control,
@@ -95,15 +97,13 @@ export default function OrderForm({
     setValue('discount', discount)
   }
 
-  // if (!customers || !products) return null
-
   return (
     <form
-      className="flex flex-col lg:flex-row gap-4 h-full"
+      className="flex flex-col lg:flex-row gap-4"
       id="order-form"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex flex-col gap-4 flex-[4] h-full">
+      <div className="flex flex-col gap-4 flex-[4]">
         {/* Items */}
         <div className="border-primary max-h-[calc(100vh-412px)] flex flex-col gap-4 border p-5 pt-4 rounded-xl text-primary">
           {/* Title */}
@@ -279,7 +279,7 @@ export default function OrderForm({
         </div>
 
         {/* Total */}
-        <div className="border-primary h-fit flex flex-col gap-4 border p-6 pt-4 rounded-xl text-primary">
+        <div className="border-primary flex flex-col gap-4 border p-6 pt-4 rounded-xl text-primary">
           <h4 className="font-medium">Conta</h4>
           <div className="flex flex-col gap-2">
             <div className="flex justify-between text-sm">
@@ -323,10 +323,9 @@ export default function OrderForm({
       </div>
 
       {/* Order Details */}
-      <div className="border-primary flex h-fit flex-col gap-4 flex-[2] border px-6 py-4 rounded-xl text-primary">
+      <div className="border-primary flex flex-col gap-4 flex-[2] border px-6 py-4 rounded-xl text-primary">
         {/* Title */}
         <h4 className="font-medium">Detalhes do pedido</h4>
-
         {/* Fields */}
         <div className="mt-2 flex flex-col gap-4">
           <div>
@@ -376,6 +375,26 @@ export default function OrderForm({
             <InputError error={errors.notes?.message?.toString()} />
           </div>
         </div>
+
+        {showBalanceOption && (
+          <div className="flex items-center gap-3">
+            <input
+              id="useBalance"
+              type="checkbox"
+              {...register('useBalance')}
+            />
+            <label
+              htmlFor="useBalance"
+              className="text-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Utilizar saldo disponível no pagamento deste pedido
+            </label>
+            {/* <Checkbox id="useBalance" {...register('useBalance')} />
+            <Label htmlFor="useBalance">
+              Utilizar saldo disponível no pagamento deste pedido
+            </Label> */}
+          </div>
+        )}
       </div>
     </form>
   )

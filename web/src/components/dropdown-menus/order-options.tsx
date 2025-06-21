@@ -50,7 +50,7 @@ export default function OrderOptions({
       queryKey: ['orders'],
     })
 
-    router.replace('/orders')
+    router.replace('/orders/installments')
   }
 
   const onPrint = () => {
@@ -74,7 +74,7 @@ export default function OrderOptions({
             </Button>
           ) : (
             <Button
-              className="bg-button-primary gap-1 hover:bg-button-primary-hover px-0 w-10"
+              className="bg-primary gap-1 hover:bg-primary-hover px-0 w-10"
               onClick={(event) => event.stopPropagation()}
             >
               <MoreVertical className="h-4 w-4" />
@@ -90,7 +90,7 @@ export default function OrderOptions({
           {showViewItem && (
             <DropdownMenuItem asChild>
               <Link
-                href={`/orders/${order.id}`}
+                href={`/orders/installments/${order.id}`}
                 onClick={(event) => event.stopPropagation()}
                 className="gap-2"
               >

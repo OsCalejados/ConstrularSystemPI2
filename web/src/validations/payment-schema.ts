@@ -5,4 +5,5 @@ export const paymentSchema = z.object({
   amount: z.number().positive({ message: 'Valor deve ser maior que zero.' }),
   paymentMethod: z.enum(Object.values(PaymentMethod) as [string, ...string[]]),
   installments: z.number().optional(),
+  change: z.number().optional(),
 })

@@ -44,6 +44,7 @@ export default function CreateOrder() {
       total: 0,
       subtotal: 0,
       discount: 0,
+      useBalance: false,
       items: [
         {
           productId: undefined,
@@ -139,12 +140,13 @@ export default function CreateOrder() {
           </div>
         </div>
 
-        <div className="mt-4 h-full">
+        <div className="mt-4">
           <FormProvider {...orderForm}>
             <OrderForm
               onSubmit={onSubmit}
               customers={customers}
               products={products}
+              showBalanceOption
             />
           </FormProvider>
         </div>

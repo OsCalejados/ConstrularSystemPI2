@@ -14,6 +14,7 @@ import {
   Injectable,
   Inject,
 } from '@nestjs/common';
+import { CreatePaymentDto } from '../dtos/create-payment.dto';
 
 @Injectable()
 export class OrderService implements IOrderService {
@@ -129,6 +130,19 @@ export class OrderService implements IOrderService {
     );
 
     return updatedOrder;
+  }
+
+  async addPayment(
+    orderId: number,
+    createPaymentDto: CreatePaymentDto,
+  ): Promise<void> {
+    const order = await this.orderRepository.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundException(`Order not found`);
+    }
+
+    await this.orderRepository.addPayment(orderId, createPaymentDto);
   }
 
   async deleteOrder(orderId: number): Promise<void> {

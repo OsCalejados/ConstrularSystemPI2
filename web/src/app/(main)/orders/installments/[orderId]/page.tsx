@@ -1,20 +1,23 @@
 'use client'
 
 import AddPaymentDialog from '@/components/dialogs/add-payment-dialog'
-import UpdateStatusForm from '@/components/forms/update-status-form'
 import UpdateNotesForm from '@/components/forms/update-notes-form'
+import Breadcrumb from '@/components/ui/breadcrumb'
 
-import { NotesFormData } from '@/types/validations'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Order as TOder } from '@/types/order'
+import { Order as TOrder } from '@/types/order'
 import { formatCurrency } from '@/utils/format/format-currency'
 import { deletePayment } from '@/services/payment-service'
+import { NotesFormData } from '@/types/validations'
 import { OrderStatus } from '@/enums/order-status'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '@/components/shadcnui/button'
 import { Input } from '@/components/shadcnui/input'
 import { Label } from '@/components/shadcnui/label'
+import { getOrderById, updateNotes } from '@/services/order-service'
+import { formatPercentage } from '@/utils/format/format-percentage'
+import { Payment } from '@/types/payment'
 import { Page } from '@/components/layout/page'
 import { TrashIcon, User } from 'lucide-react'
 import {
@@ -26,21 +29,16 @@ import {
   WalletIcon,
   ClockClockwiseIcon,
 } from '@phosphor-icons/react/dist/ssr'
-import { getOrderById, updateNotes } from '@/services/order-service'
-import Breadcrumb from '@/components/ui/breadcrumb'
-import CustomerOptions from '@/components/dropdown-menus/customer-options'
-import { Customer } from '@/types/customer'
-import router from 'next/router'
-import { formatPercentage } from '@/utils/format/format-percentage'
-import { Payment } from '@/types/payment'
+import OrderOptions from '@/components/dropdown-menus/order-options'
 
 export default function Order() {
   const [editNotes, setEditNotes] = useState(false)
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   const { orderId } = useParams()
 
-  const { data: order } = useQuery<TOder>({
+  const { data: order } = useQuery<TOrder>({
     queryKey: ['orderById'],
     queryFn: () =>
       getOrderById(orderId as string, {
@@ -51,6 +49,13 @@ export default function Order() {
   })
 
   if (!order) return null
+
+  const remainingAmount =
+    order.total -
+    (order.payments?.reduce(
+      (sum, payment) => sum + (payment.netAmount ?? 0),
+      0,
+    ) ?? 0)
 
   const customer = order.customer
 
@@ -113,28 +118,13 @@ export default function Order() {
             <h2 className="font-medium">Pedido {order.id}</h2>
           </div>
           <div className="flex gap-2">
-            <CustomerOptions
-              customer={
-                {
-                  id: 1,
-                  address: {
-                    id: 1,
-                  },
-                  balance: 0,
-                  name: 'Teste',
-                  email: 'af',
-                  orders: [],
-                } as Customer
-              }
-              variant="primary"
-              showBalanceItem
-              useLongLabel
-            />
+            <OrderOptions order={order} variant="primary" />
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-4 h-full">
-          <div className="flex flex-col gap-4 flex-[4] h-full">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Esquerda */}
+          <div className="flex flex-col gap-4 flex-[4]">
             {/* Items */}
             <div className="border-primary max-h-[calc(100vh-412px)] flex flex-col gap-4 border p-5 pt-4 rounded-xl text-primary">
               {/* Title */}
@@ -195,7 +185,7 @@ export default function Order() {
             </div>
 
             {/* Total */}
-            <div className="border-primary h-fit flex flex-col gap-4 border p-6 pt-4 rounded-xl text-primary">
+            <div className="border-primary flex flex-col gap-4 border p-6 pt-4 rounded-xl text-primary">
               <h4 className="font-medium">Conta</h4>
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between text-sm">
@@ -241,7 +231,8 @@ export default function Order() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 flex-[2] px-6 pb-4 text-primary">
+          {/* Direita */}
+          <div className="flex flex-col gap-4 flex-[2] text-primary">
             <div className="border-primary flex h-fit flex-col gap-4 border px-6 pt-4 pb-6 rounded-xl text-primary">
               <div className="flex items-center justify-between">
                 <h4 className="font-medium">Notas</h4>
@@ -341,17 +332,11 @@ export default function Order() {
             <div className="border-primary flex h-fit flex-col gap-4 border px-6 pt-4 pb-6 rounded-xl text-primary">
               <h4 className="font-medium">Controle de pagamentos</h4>
 
-              {/* <div className="flex justify-between">
-                <span>Valor restante</span>
-                <span className="text-currency font-medium">
-                  {formatCurrency(order.total)}
-                </span>
-              </div>
-
-              <div className="border-t-1 border-dashed border my-2 border-gray-300" /> */}
-
               <div className="flex justify-end items-center">
-                <AddPaymentDialog orderId={order.id}>
+                <AddPaymentDialog
+                  orderId={order.id}
+                  remainingAmount={remainingAmount}
+                >
                   <button className="text-contrast hover:text-contrast-hover text-sm text-right">
                     Adicionar pagamento
                   </button>
@@ -387,15 +372,7 @@ export default function Order() {
 
               <div className="items-center justify-center flex flex-col gap-2">
                 <span className="text-currency font-medium text-2xl">
-                  {formatCurrency(
-                    order.total -
-                      (order.payments
-                        ? order.payments?.reduce(
-                            (total, payment) => total + payment.netAmount,
-                            0,
-                          )
-                        : 0),
-                  )}
+                  {formatCurrency(remainingAmount)}
                 </span>
                 <span className="text-sm text-terciary">Valor restante</span>
               </div>

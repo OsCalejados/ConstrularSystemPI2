@@ -2,6 +2,7 @@ import { FindOrderOptions } from './find-order-options.interface';
 import { UpdateStatusDto } from '../dtos/update-status';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { OrderDto } from '../dtos/order.dto';
+import { CreatePaymentDto } from '../dtos/create-payment.dto';
 
 export abstract class IOrderRepository {
   abstract findAll(options?: FindOrderOptions): Promise<OrderDto[]>;
@@ -33,6 +34,11 @@ export abstract class IOrderRepository {
   abstract updateStatus(
     orderId: number,
     updateStatusDto: UpdateStatusDto,
+  ): Promise<OrderDto>;
+
+  abstract addPayment(
+    orderId: number,
+    createPaymentDto: CreatePaymentDto,
   ): Promise<OrderDto>;
 
   abstract deleteById(orderId: number): Promise<OrderDto>;

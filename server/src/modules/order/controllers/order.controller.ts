@@ -13,8 +13,10 @@ import {
   Put,
   Get,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { FindOrderOptionsDto } from '../dtos/find-order-options.dto';
+import { CreatePaymentDto } from '../dtos/create-payment.dto';
 
 @Controller('orders')
 export class OrderController {
@@ -75,14 +77,14 @@ export class OrderController {
     return await this.orderService.updateNotes(id, updateNotesDto);
   }
 
-  @Put(':id/status')
-  async updateStatus(
+  @Patch(':id/payment')
+  async addPayment(
     @Param('id') orderId: string,
-    @Body() updateStatusDto: UpdateStatusDto,
+    @Body() createPaymentDto: CreatePaymentDto,
   ) {
     const id = parseInt(orderId);
 
-    return await this.orderService.updateStatus(id, updateStatusDto);
+    return await this.orderService.addPayment(id, createPaymentDto);
   }
 
   @Delete(':id')

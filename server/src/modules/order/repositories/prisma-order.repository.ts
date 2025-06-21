@@ -6,6 +6,7 @@ import { PrismaService } from '@src/common/services/prisma.service';
 import { OrderMapper } from '../mappers/order.mapper';
 import { Injectable } from '@nestjs/common';
 import { OrderDto } from '../dtos/order.dto';
+import { CreatePaymentDto } from '../dtos/create-payment.dto';
 
 @Injectable()
 export class PrismaOrderRepository implements IOrderRepository {
@@ -100,8 +101,20 @@ export class PrismaOrderRepository implements IOrderRepository {
             data: order.items,
           },
         },
+        payments: order.payments
+          ? {
+              create: order.payments.map((payment) => ({
+                amount: payment.amount,
+                change: payment.change ?? 0,
+                paymentMethod: payment.paymentMethod,
+                installments: payment.installments,
+                paidAt: payment.paidAt ?? new Date(),
+              })),
+            }
+          : undefined,
       },
     });
+
     return OrderMapper.toDto(createdOrder);
   }
 
@@ -151,6 +164,29 @@ export class PrismaOrderRepository implements IOrderRepository {
       },
       data: {
         status: updateStatusDto.status,
+      },
+    });
+
+    return OrderMapper.toDto(updatedOrder);
+  }
+
+  async addPayment(
+    orderId: number,
+    createPaymentDto: CreatePaymentDto,
+  ): Promise<OrderDto> {
+    const updatedOrder = await this.prisma.order.update({
+      where: {
+        id: orderId,
+      },
+      data: {
+        payments: {
+          create: {
+            amount: createPaymentDto.amount,
+            paymentMethod: createPaymentDto.paymentMethod,
+            change: createPaymentDto.change,
+            installments: createPaymentDto.installments,
+          },
+        },
       },
     });
 

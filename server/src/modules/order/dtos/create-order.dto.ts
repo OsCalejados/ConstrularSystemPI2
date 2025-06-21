@@ -22,4 +22,7 @@ export class CreateOrderDto {
 
   @IsOptional()
   payments: OrderPaymentDto[];
+
+  @IsOptional()
+  useBalance: boolean;
 }
