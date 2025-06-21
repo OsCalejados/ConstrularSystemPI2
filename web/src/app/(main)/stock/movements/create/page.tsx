@@ -13,7 +13,6 @@ import { Button } from '@/components/shadcnui/button'
 import { toast } from '@/hooks/use-toast'
 import { Page } from '@/components/layout/page'
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
-import { MeasureUnit } from '@/enums/measure-unit'
 import { createMovement } from '@/services/movement-service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -30,11 +29,11 @@ export default function CreateMovement() {
 
   const movementForm = useForm<MovementFormData>({
     resolver: zodResolver(movementFormSchema),
-    mode: 'onTouched',
+    mode: 'onSubmit',
     defaultValues: {
+      type: undefined,
       description: '',
-      type: 'Entrada',
-      products: [{ name: '', unit: MeasureUnit.UN, quantity: 1 }],
+      items: [{ productId: undefined, quantity: 1 }],
     },
   })
 

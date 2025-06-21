@@ -1,15 +1,21 @@
+import { MovementType } from '@/enums/movement-type'
 import { z } from 'zod'
-import { MeasureUnit } from '@/enums/measure-unit'
 
 export const movementFormSchema = z.object({
   description: z.string().min(1, 'Descrição obrigatória'),
-  type: z.enum(['Entrada', 'Saída']),
-  products: z
+  type: z.enum(Object.values(MovementType) as [string, ...string[]]),
+  items: z
     .array(
       z.object({
-        name: z.string().min(1, 'Nome obrigatório'),
-        unit: z.nativeEnum(MeasureUnit),
-        quantity: z.number().min(1, 'Quantidade deve ser maior que 0'),
+        productId: z
+          .number({ message: 'Campo obrigatório.' })
+          .nullable()
+          .refine((val) => val !== null, {
+            message: 'Produto obrigatório',
+          }),
+        quantity: z
+          .number({ message: 'Campo obrigatório.' })
+          .positive({ message: 'Quantidade deve ser maior que 0.' }),
       }),
     )
     .min(1, 'Adicione pelo menos um produto'),

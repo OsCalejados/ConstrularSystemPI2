@@ -1,46 +1,40 @@
 'use client'
 
-import { useParams, useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
-import { getMovementById } from '@/services/movement-service'
-import { MovementFormData } from '@/types/validations'
-import { movementFormSchema } from '@/validations/movement-form-schema'
-import { FormProvider, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Page } from '@/components/layout/page'
-import Breadcrumb from '@/components/ui/breadcrumb'
 import MovementForm from '@/components/forms/movement-form'
-import { Button } from '@/components/shadcnui/button'
+import Breadcrumb from '@/components/ui/breadcrumb'
+
+import { useParams, useRouter } from 'next/navigation'
+import { FormProvider, useForm } from 'react-hook-form'
+import { movementFormSchema } from '@/validations/movement-form-schema'
+import { MovementFormData } from '@/types/validations'
+import { getMovementById } from '@/services/movement-service'
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
-import { MeasureUnit } from '@/enums/measure-unit'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
+import { Button } from '@/components/shadcnui/button'
+import { Page } from '@/components/layout/page'
+import LoadSpinner from '@/components/ui/load-spinner'
 
 export default function ViewMovement() {
+  const [isLoading, setIsLoading] = useState(true)
   const { movementId } = useParams()
   const router = useRouter()
 
-  const { data: movement, isLoading } = useQuery<MovementFormData | undefined>({
-    queryKey: ['movement', movementId],
-    queryFn: async () => {
-      const m = await getMovementById(movementId as string)
-      return {
-        ...m,
-        products: m.products.map((p) => ({
-          ...p,
-          unit: p.unit as MeasureUnit,
-        })),
-        type: m.status, // garante compatibilidade
-      }
-    },
-    enabled: !!movementId,
-  })
-
   const movementForm = useForm<MovementFormData>({
     resolver: zodResolver(movementFormSchema),
-    mode: 'onTouched',
-    values: movement,
+    mode: 'onSubmit',
+    defaultValues: async () => {
+      const data = await getMovementById(movementId as string)
+      setIsLoading(false)
+      return {
+        description: data.description,
+        type: data.type,
+        items: data.items,
+      }
+    },
   })
 
-  if (isLoading || !movement) return null
+  if (isLoading) return <LoadSpinner />
 
   return (
     <Page.Container>

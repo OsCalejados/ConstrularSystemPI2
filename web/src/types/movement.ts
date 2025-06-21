@@ -1,16 +1,14 @@
-export type MovementStatus = 'Entrada' | 'Saída'
+import { MovementType } from '@/enums/movement-type'
 
-export interface MovementProduct {
-  name: string
-  unit: string
+export interface MovementItem {
+  productId: number
   quantity: number
 }
 
 export interface Movement {
   id: number
   description: string
-  status: MovementStatus
-  type: MovementStatus // compatível com MovementFormData
-  date: string // ISO string
-  products: MovementProduct[]
+  type: MovementType
+  items: MovementItem[]
+  createdAt: string
 }

@@ -9,10 +9,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../shadcnui/select'
-import { PlusCircle } from '@phosphor-icons/react/dist/ssr'
+import { PlusCircleIcon, TrashIcon } from '@phosphor-icons/react/dist/ssr'
 import InputError from '../ui/input-error'
-import { MeasureUnit } from '@/enums/measure-unit'
 import { MovementFormData } from '@/types/validations'
+import { getProducts } from '@/services/product-service'
+import { Product } from '@/types/product'
+import { useQuery } from '@tanstack/react-query'
+import { parseNumber } from '@/utils/parse/number'
+import { MovementType } from '@/enums/movement-type'
 
 interface MovementFormProps {
   onSubmit: (data: MovementFormData) => Promise<void>
@@ -24,6 +28,7 @@ export default function MovementForm({
   readOnly = false,
 }: MovementFormProps) {
   const {
+    watch,
     register,
     handleSubmit,
     control,
@@ -31,8 +36,17 @@ export default function MovementForm({
   } = useFormContext<MovementFormData>()
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'products',
+    name: 'items',
   })
+
+  const { data: products } = useQuery<Product[]>({
+    queryKey: ['products'],
+    queryFn: getProducts,
+  })
+
+  const watchedItems = watch('items')
+
+  if (!products) return null
 
   return (
     <form
@@ -67,12 +81,12 @@ export default function MovementForm({
                   value={field.value}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 disabled:opacity-100 disabled:cursor-text">
                     <SelectValue placeholder="ENTRADA/SAÍDA" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Entrada">Entrada</SelectItem>
-                    <SelectItem value="Saída">Saída</SelectItem>
+                    <SelectItem value={MovementType.IN}>Entrada</SelectItem>
+                    <SelectItem value={MovementType.OUT}>Saída</SelectItem>
                   </SelectContent>
                 </Select>
               )}
@@ -85,85 +99,111 @@ export default function MovementForm({
       {/* Produtos */}
       <div className="border p-6 pt-4 rounded-xl">
         <h4 className="font-medium mb-4">Produtos</h4>
-        {fields.map((field, idx) => (
-          <div
-            key={field.id}
-            className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end mb-2"
-          >
-            <div className="md:col-span-5">
-              <Label>Nome *</Label>
-              <Input
-                placeholder="Nome do produto"
-                {...register(`products.${idx}.name` as const)}
-                readOnly={readOnly}
-              />
-              <InputError error={errors.products?.[idx]?.name?.toString()} />
-            </div>
-            <div className="md:col-span-2">
-              <Label>Unidade</Label>
-              <Controller
-                name={`products.${idx}.unit` as const}
-                control={control}
-                render={({ field }) => (
-                  <Select
+        <div className="px-1 mt-2 pb-1 flex flex-1 flex-col gap-4 overflow-y-auto">
+          {fields.map((field, idx) => {
+            const productId = watchedItems?.[idx]?.productId
+            const selectedProduct = products.find(
+              (p) => p.id === Number(productId),
+            )
+
+            return (
+              <div key={field.id} className="flex gap-4">
+                <div className="flex-1">
+                  <Label htmlFor={`productId.${idx}`}>Produto *</Label>
+                  <Controller
+                    name={`items.${idx}.productId`}
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        name={field.name}
+                        value={field.value?.toString()}
+                        disabled={readOnly}
+                        onValueChange={(value) => {
+                          field.onChange(Number(value))
+                        }}
+                      >
+                        <SelectTrigger className="mt-1 disabled:opacity-100 disabled:cursor-text">
+                          <SelectValue placeholder="Selecione o produto" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {products.map((product) => (
+                            <SelectItem
+                              key={product.id}
+                              value={product.id.toString()}
+                            >
+                              {product.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  <InputError
+                    error={errors.items?.[idx]?.productId?.message?.toString()}
+                  />
+                </div>
+
+                <div className="w-32">
+                  <Label htmlFor={`unit.${idx}`}>Unidade</Label>
+                  <Input
+                    disabled
+                    id={`unit.${idx}`}
+                    value={selectedProduct?.unit ?? ''}
+                    className="mt-1 bg-gray-100 disabled:opacity-100 disabled:cursor-text"
+                    placeholder="Unidade"
+                  />
+                </div>
+
+                <div className="w-32">
+                  <Label>Quantidade</Label>
+                  <Controller
+                    name={`items.${idx}.quantity`}
+                    control={control}
                     disabled={readOnly}
-                    name={field.name}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="UN" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(MeasureUnit).map((unit) => (
-                        <SelectItem key={unit} value={unit}>
-                          {unit}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        className="mt-1 disabled:opacity-100 disabled:cursor-text"
+                        value={field.value ?? ''}
+                        onChange={(e) => {
+                          const parsed = parseNumber(e.target.value)
+                          field.onChange(parsed)
+                        }}
+                      />
+                    )}
+                  />
+                  <InputError
+                    error={errors.items?.[idx]?.quantity?.message?.toString()}
+                  />
+                </div>
+
+                {fields.length > 1 && (
+                  <div className="flex flex-col">
+                    <Button
+                      variant="ghost"
+                      className="h-10 w-10 p-0 mt-7"
+                      onClick={() => remove(idx)}
+                    >
+                      <TrashIcon size={24} className="text-terciary" />
+                    </Button>
+                  </div>
                 )}
-              />
-              <InputError error={errors.products?.[idx]?.unit?.toString()} />
-            </div>
-            <div className="md:col-span-2">
-              <Label>Quantidade</Label>
-              <Input
-                type="number"
-                min={1}
-                {...register(`products.${idx}.quantity` as const, {
-                  valueAsNumber: true,
-                })}
-                readOnly={readOnly}
-              />
-              <InputError
-                error={errors.products?.[idx]?.quantity?.toString()}
-              />
-            </div>
-            <div className="md:col-span-1 flex items-center">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => remove(idx)}
-                disabled={readOnly}
-              >
-                <span className="sr-only">Remover</span>
-                🗑️
-              </Button>
-            </div>
-          </div>
-        ))}
+              </div>
+            )
+          })}
+        </div>
+
         <div className="flex items-center mt-2">
           <Button
             type="button"
             variant="outline"
             className="w-full justify-center gap-2"
             onClick={() =>
-              append({ name: '', unit: MeasureUnit.UN, quantity: 1 })
+              append({ productId: '' as unknown as number, quantity: 1 })
             }
             disabled={readOnly}
           >
-            <PlusCircle size={20} />
+            <PlusCircleIcon size={20} />
             Inserir produto
           </Button>
         </div>

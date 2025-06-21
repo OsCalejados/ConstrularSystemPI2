@@ -1,11 +1,13 @@
 'use client'
 
+import MovementOptions from '../dropdown-menus/movement-options'
+
+import { MovementType } from '@/enums/movement-type'
+import { ArrowUpDown } from 'lucide-react'
+import { formatDate } from '@/utils/format/format-date'
 import { ColumnDef } from '@tanstack/react-table'
 import { Movement } from '@/types/movement'
-import Badge from '../ui/badge'
 import { Button } from '../shadcnui/button'
-import { ArrowUpDown } from 'lucide-react'
-import MovementOptions from '../dropdown-menus/movement-options'
 
 export const movementColumns: ColumnDef<Movement>[] = [
   {
@@ -25,28 +27,41 @@ export const movementColumns: ColumnDef<Movement>[] = [
     ),
   },
   {
-    accessorKey: 'status',
+    accessorKey: 'type',
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         className="pl-0"
       >
-        Status
+        Tipo
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
     cell: ({ row }) => {
-      const status = row.getValue('status') as string
-      const badgeClass =
-        status === 'Entrada'
-          ? 'bg-green-100 text-green-700'
-          : 'bg-red-100 text-red-700'
-      return <Badge className={badgeClass}>{status}</Badge>
+      const type = row.getValue('type') as string
+
+      if (type === MovementType.IN) {
+        return (
+          <div className="bg-status-paid rounded-full bg-opacity-25 px-4 w-fit flex gap-2 border border-status-paid items-center justify-center h-8">
+            <div className="w-2 h-2 rounded-full bg-status-paid" />
+            <span className="text-status-paid text-sm">Entrada</span>
+          </div>
+        )
+      } else {
+        return (
+          <div className="bg-status-pending-alternative rounded-full bg-opacity-25 px-4 w-fit border border-status-pending-alternative flex gap-2 items-center justify-center h-8">
+            <div className="w-2 h-2 rounded-full bg-status-pending-alternative" />
+            <span className="text-status-pending-alternative text-sm">
+              Saída
+            </span>
+          </div>
+        )
+      }
     },
   },
   {
-    accessorKey: 'date',
+    accessorKey: 'createdAt',
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -58,16 +73,8 @@ export const movementColumns: ColumnDef<Movement>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const date = row.getValue('date') as string
-      return (
-        <span>
-          {new Date(date).toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-          })}
-        </span>
-      )
+      const createdAt = row.getValue('createdAt') as string
+      return <span>{formatDate(createdAt)}</span>
     },
   },
   {
