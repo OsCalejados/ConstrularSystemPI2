@@ -90,11 +90,7 @@ export default function EditOrder() {
   }
 
   useEffect(() => {
-    console.log('order.customer', order?.customer)
-    console.log('order.customer?.id', order?.customer?.id)
     if (order) {
-      console.log(order.customer?.id)
-
       reset({
         type: OrderType.INSTALLMENT,
         notes: order.notes ?? '',
