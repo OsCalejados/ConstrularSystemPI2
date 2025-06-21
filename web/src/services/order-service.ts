@@ -1,4 +1,4 @@
-import { InstallmentOrderFormData } from '@/types/validations'
+import { InstallmentOrderFormData, PaymentFormData } from '@/types/validations'
 import { OrderStatus } from '@/enums/order-status'
 import { api } from '@/lib/axios'
 
@@ -88,4 +88,18 @@ export async function deleteManyOrders(orderIds: number[]) {
       orderIds,
     },
   })
+}
+
+export async function addPayment(
+  orderId: number | string,
+  paymentFormData: PaymentFormData,
+) {
+  await api.post(`orders/${orderId}/payments`, paymentFormData)
+}
+
+export async function deletePayment(
+  orderId: number | string,
+  paymentId: number | string,
+) {
+  await api.delete(`orders/${orderId}/payments/${paymentId}`)
 }

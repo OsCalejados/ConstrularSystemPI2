@@ -1,9 +1,9 @@
 import { FindOrderOptions } from './find-order-options.interface';
+import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { UpdateStatusDto } from '../dtos/update-status';
+import { OrderPaymentDto } from '../dtos/order-payment.dto';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { OrderDto } from '../dtos/order.dto';
-import { CreatePaymentDto } from '../dtos/create-payment.dto';
-import { OrderPaymentDto } from '../dtos/order-payment.dto';
 
 export abstract class IOrderRepository {
   abstract findAll(options?: FindOrderOptions): Promise<OrderDto[]>;
@@ -23,8 +23,6 @@ export abstract class IOrderRepository {
     options?: FindOrderOptions,
   ): Promise<OrderDto[]>;
 
-  abstract findPayments(orderId: number): Promise<OrderPaymentDto[]>;
-
   abstract create(order: OrderDto, sellerId: number): Promise<OrderDto>;
 
   abstract update(orderId: number, order: OrderDto): Promise<OrderDto>;
@@ -41,10 +39,20 @@ export abstract class IOrderRepository {
 
   abstract updateIsPaid(orderId: number, isPaid: boolean): Promise<void>;
 
+  abstract deleteById(orderId: number): Promise<OrderDto>;
+
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
+  abstract findPayments(orderId: number): Promise<OrderPaymentDto[]>;
+
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
   abstract addPayment(
     orderId: number,
     createPaymentDto: CreatePaymentDto,
   ): Promise<OrderDto>;
 
-  abstract deleteById(orderId: number): Promise<OrderDto>;
+  abstract deletePayment(paymentId: number): Promise<void>;
 }

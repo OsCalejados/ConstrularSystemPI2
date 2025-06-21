@@ -1,3 +1,5 @@
+import { FindOrderOptionsDto } from '../dtos/find-order-options.dto';
+import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { CreateOrderDto } from '../dtos/create-order.dto';
@@ -7,15 +9,12 @@ import {
   Controller,
   Delete,
   Param,
+  Query,
   Body,
   Post,
   Put,
   Get,
-  Query,
-  Patch,
 } from '@nestjs/common';
-import { FindOrderOptionsDto } from '../dtos/find-order-options.dto';
-import { CreatePaymentDto } from '../dtos/create-payment.dto';
 
 @Controller('orders')
 export class OrderController {
@@ -76,7 +75,17 @@ export class OrderController {
     return await this.orderService.updateNotes(id, updateNotesDto);
   }
 
-  @Patch(':id/payment')
+  @Delete(':id')
+  async deleteOrder(@Param('id') orderId: string) {
+    const id = parseInt(orderId);
+
+    await this.orderService.deleteOrder(id);
+  }
+
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
+  @Post(':id/payments')
   async addPayment(
     @Param('id') orderId: string,
     @Body() createPaymentDto: CreatePaymentDto,
@@ -86,10 +95,20 @@ export class OrderController {
     return await this.orderService.addPayment(id, createPaymentDto);
   }
 
-  @Delete(':id')
-  async deleteOrder(@Param('id') orderId: string) {
-    const id = parseInt(orderId);
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
+  @Delete(':orderId/payments/:paymentId')
+  async deletePayment(
+    @Param('orderId') orderId: string,
+    @Param('paymentId') paymentId: string,
+  ) {
+    const orderIdParsed = parseInt(orderId);
+    const paymentIdParsed = parseInt(paymentId);
 
-    await this.orderService.deleteOrder(id);
+    return await this.orderService.deletePayment(
+      orderIdParsed,
+      paymentIdParsed,
+    );
   }
 }

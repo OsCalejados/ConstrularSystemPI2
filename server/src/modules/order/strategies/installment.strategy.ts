@@ -91,6 +91,14 @@ export class InstallmentOrderStrategy extends OrderStrategy {
       await this.customerService.updateBalance(order.customerId, {
         balance: customer.balance - amountToPay,
       });
+
+      if (amountToPay >= order.total) {
+        await this.orderRepository.updateStatus(order.id, {
+          status: OrderStatus.COMPLETED,
+        });
+
+        await this.orderRepository.updateIsPaid(order.id, true);
+      }
     }
 
     return order;

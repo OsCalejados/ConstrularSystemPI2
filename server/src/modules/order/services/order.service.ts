@@ -1,12 +1,15 @@
 import { FindOrderOptions } from '../interfaces/find-order-options.interface';
 import { IOrderRepository } from '../interfaces/order.repository.interface';
+import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { CustomerService } from '@src/modules/customer/services/customer.service';
 import { UpdateStatusDto } from '../dtos/update-status';
+import { PaymentService } from './payment.service';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { IOrderService } from '../interfaces/order.service.interface';
 import { OrderStrategy } from '../strategies/order.strategy';
+import { OrderStatus } from '@src/common/enums/order-status.enum';
 import { OrderDto } from '../dtos/order.dto';
 import {
   BadRequestException,
@@ -14,8 +17,6 @@ import {
   Injectable,
   Inject,
 } from '@nestjs/common';
-import { CreatePaymentDto } from '../dtos/create-payment.dto';
-import { OrderStatus } from '@src/common/enums/order-status.enum';
 
 @Injectable()
 export class OrderService implements IOrderService {
@@ -24,6 +25,7 @@ export class OrderService implements IOrderService {
     private readonly strategies: OrderStrategy[],
     private readonly orderRepository: IOrderRepository,
     private readonly customerService: CustomerService,
+    private readonly paymentService: PaymentService,
   ) {}
 
   async getAllOrders(options?: FindOrderOptions): Promise<OrderDto[]> {
@@ -133,11 +135,23 @@ export class OrderService implements IOrderService {
     return updatedOrder;
   }
 
+  async deleteOrder(orderId: number): Promise<void> {
+    const order = await this.orderRepository.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundException(`Order not found`);
+    }
+
+    await this.orderRepository.deleteById(orderId);
+  }
+
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
   async addPayment(
     orderId: number,
     createPaymentDto: CreatePaymentDto,
   ): Promise<void> {
-    console.log(createPaymentDto);
     const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
@@ -146,14 +160,7 @@ export class OrderService implements IOrderService {
 
     await this.orderRepository.addPayment(orderId, createPaymentDto);
 
-    const payments = await this.orderRepository.findPayments(orderId);
-
-    const totalPayments = payments.reduce(
-      (sum, payment) => sum + Number(payment.amount),
-      0,
-    );
-
-    const isFullyPaid = totalPayments >= Number(order.total);
+    const isFullyPaid = await this.verifyStatus(orderId);
 
     if (isFullyPaid) {
       await this.orderRepository.updateStatus(orderId, {
@@ -164,13 +171,45 @@ export class OrderService implements IOrderService {
     }
   }
 
-  async deleteOrder(orderId: number): Promise<void> {
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
+  async deletePayment(orderId: number, paymentId: number): Promise<void> {
     const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
       throw new NotFoundException(`Order not found`);
     }
 
-    await this.orderRepository.deleteById(orderId);
+    const payment = await this.paymentService.getById(paymentId);
+
+    if (!payment) {
+      throw new NotFoundException(`Order not found`);
+    }
+
+    await this.orderRepository.deletePayment(paymentId);
+
+    const isFullyPaid = await this.verifyStatus(orderId);
+
+    if (order.status === OrderStatus.COMPLETED && !isFullyPaid) {
+      await this.orderRepository.updateStatus(orderId, {
+        status: OrderStatus.OPEN,
+      });
+
+      await this.orderRepository.updateIsPaid(orderId, false);
+    }
+  }
+
+  private async verifyStatus(orderId: number): Promise<boolean> {
+    const order = await this.orderRepository.findById(orderId, {
+      includePayments: true,
+    });
+
+    const totalPayments = order.payments.reduce(
+      (sum, payment) => sum + payment.amount,
+      0,
+    );
+
+    return totalPayments >= order.total;
   }
 }

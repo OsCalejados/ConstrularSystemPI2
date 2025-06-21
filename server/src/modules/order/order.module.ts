@@ -1,22 +1,21 @@
+import { InstallmentOrderStrategy } from './strategies/installment.strategy';
+import { PrismaPaymentRepository } from './repositories/prisma-payment.repository';
 import { PrismaOrderRepository } from './repositories/prisma-order.repository';
+import { IPaymentRepository } from './interfaces/payment.repository.interface';
+import { QuoteOrderStrategy } from './strategies/quote.strategy';
+import { SaleOrderStrategy } from './strategies/sale.strategy';
 import { IOrderRepository } from './interfaces/order.repository.interface';
 import { OrderController } from './controllers/order.controller';
+import { PaymentService } from './services/payment.service';
+import { CustomerModule } from '../customer/customer.module';
 import { IOrderService } from './interfaces/order.service.interface';
 import { PrismaService } from 'src/common/services/prisma.service';
 import { OrderService } from './services/order.service';
 import { Module } from '@nestjs/common';
-import { InstallmentOrderStrategy } from './strategies/installment.strategy';
-import { QuoteOrderStrategy } from './strategies/quote.strategy';
-import { SaleOrderStrategy } from './strategies/sale.strategy';
-import { CustomerModule } from '../customer/customer.module';
-import { PaymentController } from './controllers/payment.controller';
-import { PaymentService } from './services/payment.service';
-import { IPaymentRepository } from './interfaces/payment.repository.interface';
-import { PrismaPaymentRepository } from './repositories/payment.repository';
 
 @Module({
   imports: [CustomerModule],
-  controllers: [OrderController, PaymentController],
+  controllers: [OrderController],
   providers: [
     OrderService,
     PrismaService,

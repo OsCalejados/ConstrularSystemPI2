@@ -5,7 +5,6 @@ import { paymentFormSchema } from '@/validations/payment-form-schema'
 import { PaymentFormData } from '@/types/validations'
 import { useQueryClient } from '@tanstack/react-query'
 import { formatCurrency } from '@/utils/format/format-currency'
-import { createPayment } from '@/services/payment-service'
 import { parseCurrency } from '@/utils/parse/currency'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Label } from '../shadcnui/label'
@@ -19,6 +18,7 @@ import {
 } from '../shadcnui/select'
 import { PaymentMethod } from '@/enums/payment-method.'
 import { useEffect } from 'react'
+import { addPayment } from '@/services/order-service'
 
 interface AddPaymentFormProps {
   orderId: number
@@ -63,7 +63,7 @@ export default function AddPaymentForm({
   }, [amount, paymentMethod, remainingAmount, setValue])
 
   const onSubmit = async (data: PaymentFormData) => {
-    await createPayment(orderId, data)
+    await addPayment(orderId, data)
 
     queryClient.invalidateQueries({
       queryKey: ['orderById'],

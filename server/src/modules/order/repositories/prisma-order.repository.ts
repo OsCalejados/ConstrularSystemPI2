@@ -78,16 +78,6 @@ export class PrismaOrderRepository implements IOrderRepository {
     return orders.map((order) => OrderMapper.toDto(order));
   }
 
-  async findPayments(orderId: number): Promise<OrderPaymentDto[]> {
-    const payments = await this.prisma.orderPayment.findMany({
-      where: {
-        orderId,
-      },
-    });
-
-    return payments.map((payment) => OrderPaymentMapper.toDto(payment));
-  }
-
   async create(order: OrderDto, sellerId: number): Promise<OrderDto> {
     const createdOrder = await this.prisma.order.create({
       data: {
@@ -193,6 +183,32 @@ export class PrismaOrderRepository implements IOrderRepository {
     });
   }
 
+  async deleteById(orderId: number): Promise<OrderDto> {
+    const deletedOrder = await this.prisma.order.delete({
+      where: {
+        id: orderId,
+      },
+    });
+
+    return OrderMapper.toDto(deletedOrder);
+  }
+
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
+  async findPayments(orderId: number): Promise<OrderPaymentDto[]> {
+    const payments = await this.prisma.orderPayment.findMany({
+      where: {
+        orderId,
+      },
+    });
+
+    return payments.map((payment) => OrderPaymentMapper.toDto(payment));
+  }
+
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
   async addPayment(
     orderId: number,
     createPaymentDto: CreatePaymentDto,
@@ -216,13 +232,14 @@ export class PrismaOrderRepository implements IOrderRepository {
     return OrderMapper.toDto(updatedOrder);
   }
 
-  async deleteById(orderId: number): Promise<OrderDto> {
-    const deletedOrder = await this.prisma.order.delete({
+  // =====================================
+  // Mover para módulo Payment futuramente
+  // =====================================
+  async deletePayment(paymentId: number): Promise<void> {
+    await this.prisma.orderPayment.delete({
       where: {
-        id: orderId,
+        id: paymentId,
       },
     });
-
-    return OrderMapper.toDto(deletedOrder);
   }
 }

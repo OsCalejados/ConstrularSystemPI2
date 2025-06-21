@@ -7,7 +7,6 @@ import Breadcrumb from '@/components/ui/breadcrumb'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Order as TOrder } from '@/types/order'
 import { formatCurrency } from '@/utils/format/format-currency'
-import { deletePayment } from '@/services/payment-service'
 import { NotesFormData } from '@/types/validations'
 import { OrderStatus } from '@/enums/order-status'
 import { useParams, useRouter } from 'next/navigation'
@@ -15,7 +14,11 @@ import { useState } from 'react'
 import { Button } from '@/components/shadcnui/button'
 import { Input } from '@/components/shadcnui/input'
 import { Label } from '@/components/shadcnui/label'
-import { getOrderById, updateNotes } from '@/services/order-service'
+import {
+  deletePayment,
+  getOrderById,
+  updateNotes,
+} from '@/services/order-service'
 import { formatPercentage } from '@/utils/format/format-percentage'
 import { Payment } from '@/types/payment'
 import { Page } from '@/components/layout/page'
@@ -69,7 +72,7 @@ export default function Order() {
   ].filter(Boolean)
 
   const onPaymentDelete = async (payment: Payment) => {
-    await deletePayment(payment.id)
+    await deletePayment(order.id, payment.id)
 
     await queryClient.invalidateQueries({
       queryKey: ['orderById'],
@@ -333,14 +336,16 @@ export default function Order() {
               <h4 className="font-medium">Controle de pagamentos</h4>
 
               <div className="flex justify-end items-center">
-                <AddPaymentDialog
-                  orderId={order.id}
-                  remainingAmount={remainingAmount}
-                >
-                  <button className="text-contrast hover:text-contrast-hover text-sm text-right">
-                    Adicionar pagamento
-                  </button>
-                </AddPaymentDialog>
+                {remainingAmount > 0 && (
+                  <AddPaymentDialog
+                    orderId={order.id}
+                    remainingAmount={remainingAmount}
+                  >
+                    <button className="text-contrast hover:text-contrast-hover text-sm text-right">
+                      Adicionar pagamento
+                    </button>
+                  </AddPaymentDialog>
+                )}
               </div>
 
               <div>
