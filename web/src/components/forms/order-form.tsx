@@ -389,10 +389,6 @@ export default function OrderForm({
             >
               Utilizar saldo disponível no pagamento deste pedido
             </label>
-            {/* <Checkbox id="useBalance" {...register('useBalance')} />
-            <Label htmlFor="useBalance">
-              Utilizar saldo disponível no pagamento deste pedido
-            </Label> */}
           </div>
         )}
       </div>

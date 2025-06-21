@@ -5,7 +5,7 @@ export function percentageMask(e: ChangeEvent<HTMLInputElement>) {
 
   value = value.replace(/\D/g, '')
 
-  if (value.length > 4) {
+  if (value.length > 5) {
     value = value.slice(0, 4)
   }
 
