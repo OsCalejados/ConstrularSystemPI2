@@ -63,7 +63,7 @@ export default function AddPaymentForm({
   }, [amount, paymentMethod, remainingAmount, setValue])
 
   const onSubmit = async (data: PaymentFormData) => {
-    await createPayment(data)
+    await createPayment(orderId, data)
 
     queryClient.invalidateQueries({
       queryKey: ['orderById'],

@@ -3,6 +3,7 @@ import { UpdateStatusDto } from '../dtos/update-status';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { OrderDto } from '../dtos/order.dto';
 import { CreatePaymentDto } from '../dtos/create-payment.dto';
+import { OrderPaymentDto } from '../dtos/order-payment.dto';
 
 export abstract class IOrderRepository {
   abstract findAll(options?: FindOrderOptions): Promise<OrderDto[]>;
@@ -22,6 +23,8 @@ export abstract class IOrderRepository {
     options?: FindOrderOptions,
   ): Promise<OrderDto[]>;
 
+  abstract findPayments(orderId: number): Promise<OrderPaymentDto[]>;
+
   abstract create(order: OrderDto, sellerId: number): Promise<OrderDto>;
 
   abstract update(orderId: number, order: OrderDto): Promise<OrderDto>;
@@ -35,6 +38,8 @@ export abstract class IOrderRepository {
     orderId: number,
     updateStatusDto: UpdateStatusDto,
   ): Promise<OrderDto>;
+
+  abstract updateIsPaid(orderId: number, isPaid: boolean): Promise<void>;
 
   abstract addPayment(
     orderId: number,

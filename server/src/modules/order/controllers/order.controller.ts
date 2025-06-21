@@ -1,4 +1,3 @@
-import { UpdateStatusDto } from '../dtos/update-status';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { CreateOrderDto } from '../dtos/create-order.dto';

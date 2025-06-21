@@ -1,8 +1,11 @@
-import { api } from '@/lib/axios'
 import { PaymentFormData } from '@/types/validations'
+import { api } from '@/lib/axios'
 
-export async function createPayment(paymentFormData: PaymentFormData) {
-  await api.post('payments', paymentFormData)
+export async function createPayment(
+  orderId: number | string,
+  paymentFormData: PaymentFormData,
+) {
+  await api.patch(`orders/${orderId}/payment`, paymentFormData)
 }
 
 export async function deletePayment(paymentId: number | string) {

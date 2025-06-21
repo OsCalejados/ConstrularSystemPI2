@@ -15,6 +15,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { CreatePaymentDto } from '../dtos/create-payment.dto';
+import { OrderStatus } from '@src/common/enums/order-status.enum';
 
 @Injectable()
 export class OrderService implements IOrderService {
@@ -136,6 +137,7 @@ export class OrderService implements IOrderService {
     orderId: number,
     createPaymentDto: CreatePaymentDto,
   ): Promise<void> {
+    console.log(createPaymentDto);
     const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
@@ -143,6 +145,23 @@ export class OrderService implements IOrderService {
     }
 
     await this.orderRepository.addPayment(orderId, createPaymentDto);
+
+    const payments = await this.orderRepository.findPayments(orderId);
+
+    const totalPayments = payments.reduce(
+      (sum, payment) => sum + Number(payment.amount),
+      0,
+    );
+
+    const isFullyPaid = totalPayments >= Number(order.total);
+
+    if (isFullyPaid) {
+      await this.orderRepository.updateStatus(orderId, {
+        status: OrderStatus.COMPLETED,
+      });
+
+      await this.orderRepository.updateIsPaid(orderId, true);
+    }
   }
 
   async deleteOrder(orderId: number): Promise<void> {
