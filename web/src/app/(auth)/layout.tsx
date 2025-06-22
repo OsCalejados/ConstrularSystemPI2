@@ -33,7 +33,10 @@ export default function RootLayout({
         <Providers>
           <main className="flex-1 flex h-full">
             <div className={`bg-primary flex-1 ${raleway.className} relative`}>
-              <h2 className="text-white font-bold p-8">Constrular</h2>
+              <div className="p-8 flex items-end gap-2">
+                <h2 className="text-white font-bold">Constrular</h2>
+                <span className="text-black font-bold">Demo</span>
+              </div>
 
               <div className="text-white absolute top-1/4 flex flex-col p-8 gap-4">
                 <h1 className="max-w-[496px] text-2xl md:text-3xl lg:text-5xl">
