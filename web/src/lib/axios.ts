@@ -1,4 +1,4 @@
-import { getSession } from '@/app/_actions/auth'
+// import { getSession } from '@/app/_actions/auth'
 import axios from 'axios'
 
 const api = axios.create({
@@ -6,22 +6,22 @@ const api = axios.create({
   withCredentials: true,
 })
 
-api.interceptors.request.use(
-  async (config) => {
-    console.log('req interceptada')
+// api.interceptors.request.use(
+//   async (config) => {
+//     console.log('req interceptada')
 
-    const session = await getSession()
-    if (session && session.access_token) {
-      console.log('Colocando token no header', session.access_token)
-      config.headers.Authorization = `Bearer ${session.access_token}`
-    }
+//     const session = await getSession()
+//     if (session && session.access_token) {
+//       console.log('Colocando token no header', session.access_token)
+//       config.headers.Authorization = `Bearer ${session.access_token}`
+//     }
 
-    console.log(config)
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  },
-)
+//     console.log(config)
+//     return config
+//   },
+//   (error) => {
+//     return Promise.reject(error)
+//   },
+// )
 
 export default api
