@@ -4,6 +4,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 
 dotenv.config();
 const backendPort = process.env.BACKEND_PORT ?? 3001;
@@ -17,8 +18,14 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new HttpExceptionFilter(app.get(HttpAdapterHost)));
+  app.use(cookieParser());
   app.enableCors({
-    origin: '*',
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3002',
+      'https://constrularfront.netlify.app',
+    ],
+    credentials: true,
   });
 
   const config = new DocumentBuilder()

@@ -64,16 +64,6 @@ export const productColumns: ColumnDef<Product>[] = [
     },
   },
   {
-    accessorKey: 'costPrice',
-    header: 'Preço de Custo',
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('costPrice'))
-      const formatted = formatCurrency(amount)
-
-      return <div>{formatted}</div>
-    },
-  },
-  {
     accessorKey: 'salePrice',
     header: ({ column }) => {
       return (
@@ -92,15 +82,6 @@ export const productColumns: ColumnDef<Product>[] = [
       const formatted = formatCurrency(amount)
 
       return <div className="font-medium">{formatted}</div>
-    },
-  },
-  {
-    accessorKey: 'profitMargin',
-    header: 'Margem',
-    cell: ({ row }) => {
-      const margin = row.getValue('profitMargin') as number
-
-      return <div>{margin}%</div>
     },
   },
   {
