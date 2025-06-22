@@ -29,7 +29,7 @@ export default function Products() {
         <div className="flex justify-between items-center">
           <h2 className="font-medium">Produtos</h2>
           <Button className="bg-primary gap-1 hover:bg-primary-hover" asChild>
-            <Link href="products/create">
+            <Link href="/stock/products/create">
               <PlusIcon size={20} weight="bold" className="text-white" />
               <span>Novo produto</span>
             </Link>

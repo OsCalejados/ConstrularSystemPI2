@@ -1,10 +1,7 @@
 'use client'
 
-import CustomPagination from '../ui/pagination'
-import TableSearchField from '../ui/table-search-field'
 import React from 'react'
-
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import {
   getPaginationRowModel,
   ColumnFiltersState,
@@ -16,7 +13,6 @@ import {
   flexRender,
   ColumnDef,
 } from '@tanstack/react-table'
-
 import {
   TableHeader,
   TableBody,
@@ -25,21 +21,23 @@ import {
   TableRow,
   Table,
 } from '@/components/shadcnui/table'
-import { Product } from '@/types/product'
+import { Movement } from '@/types/movement'
+import CustomPagination from '../ui/pagination'
+import TableSearchField from '../ui/table-search-field'
 
-type DataType = Product
+type DataType = Movement
 
-interface DataTableProps<TData extends DataType, TValue> {
+interface MovementsTableProps<TData extends DataType, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-export function ProductsTable<TData extends DataType, TValue>({
+export function MovementsTable<TData extends DataType, TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+}: MovementsTableProps<TData, TValue>) {
   const router = useRouter()
-
+  const pathname = usePathname()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -73,10 +71,12 @@ export function ProductsTable<TData extends DataType, TValue>({
       <div className="rounded-md border">
         <div className="px-4 flex items-center justify-between">
           <TableSearchField
-            placeholder="Buscar por produto..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            placeholder="Procurar por descrição"
+            value={
+              (table.getColumn('description')?.getFilterValue() as string) ?? ''
+            }
             onChange={(event) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
+              table.getColumn('description')?.setFilterValue(event.target.value)
             }
             className="w-full max-w-sm"
           />
@@ -85,25 +85,22 @@ export function ProductsTable<TData extends DataType, TValue>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      className="text-primary font-medium"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  )
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="text-primary font-medium"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
-
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
@@ -111,9 +108,7 @@ export function ProductsTable<TData extends DataType, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && 'selected'}
                   className="cursor-pointer"
-                  onClick={() =>
-                    router.push(`/stock/products/${row.original.id}`)
-                  }
+                  onClick={() => router.push(`${pathname}/${row.original.id}`)}
                 >
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
@@ -136,14 +131,13 @@ export function ProductsTable<TData extends DataType, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Nenhum produto encontrado.
+                  Nenhum resultado encontrado.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-
       <CustomPagination
         className="mt-4"
         previousPage={table.previousPage}
