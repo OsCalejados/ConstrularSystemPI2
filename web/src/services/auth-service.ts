@@ -7,3 +7,7 @@ export async function login(data: LoginFormData): Promise<Session> {
 
   return response.data
 }
+
+export async function logout(): Promise<void> {
+  await api.post('auth/logout')
+}

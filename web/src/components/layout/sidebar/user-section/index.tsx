@@ -3,8 +3,9 @@ import Link from 'next/link'
 import { SidebarMenuButton } from '@/components/shadcnui/sidebar'
 import { getUserInitials } from '@/utils/get-user-initials'
 import { ChevronUp } from 'lucide-react'
+import { clearUser } from '@/app/_actions/auth'
 import { useRouter } from 'next/navigation'
-import { logout } from '@/app/_actions/auth'
+import { logout } from '@/services/auth-service'
 import { User } from '@/types/user'
 import {
   DropdownMenuContent,
@@ -27,6 +28,7 @@ export default function UserSection({ user }: UserSectionProps) {
   const router = useRouter()
   const handleLogout = async () => {
     await logout()
+    await clearUser()
     router.replace('/')
   }
 
