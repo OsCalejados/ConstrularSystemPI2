@@ -9,6 +9,7 @@ import { OrderDto } from '../dtos/order.dto';
 import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { OrderPaymentDto } from '../dtos/order-payment.dto';
 import { OrderPaymentMapper } from '../mappers/order-payment.mapper';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PrismaOrderRepository implements IOrderRepository {
@@ -78,8 +79,12 @@ export class PrismaOrderRepository implements IOrderRepository {
     return orders.map((order) => OrderMapper.toDto(order));
   }
 
-  async create(order: OrderDto, sellerId: number): Promise<OrderDto> {
-    const createdOrder = await this.prisma.order.create({
+  async create(
+    order: OrderDto,
+    sellerId: number,
+    tx: Prisma.TransactionClient = this.prisma,
+  ): Promise<OrderDto> {
+    const createdOrder = await tx.order.create({
       data: {
         status: order.status,
         total: order.total,
@@ -120,8 +125,12 @@ export class PrismaOrderRepository implements IOrderRepository {
     return OrderMapper.toDto(createdOrder);
   }
 
-  async update(orderId: number, order: OrderDto): Promise<OrderDto> {
-    const updatedOrder = await this.prisma.order.update({
+  async update(
+    orderId: number,
+    order: OrderDto,
+    tx: Prisma.TransactionClient = this.prisma,
+  ): Promise<OrderDto> {
+    const updatedOrder = await tx.order.update({
       where: {
         id: orderId,
       },
@@ -159,8 +168,12 @@ export class PrismaOrderRepository implements IOrderRepository {
     return OrderMapper.toDto(updatedOrder);
   }
 
-  async updateStatus(orderId: number, updateStatusDto: UpdateStatusDto) {
-    const updatedOrder = await this.prisma.order.update({
+  async updateStatus(
+    orderId: number,
+    updateStatusDto: UpdateStatusDto,
+    tx: Prisma.TransactionClient = this.prisma,
+  ) {
+    const updatedOrder = await tx.order.update({
       where: {
         id: orderId,
       },
@@ -172,8 +185,12 @@ export class PrismaOrderRepository implements IOrderRepository {
     return OrderMapper.toDto(updatedOrder);
   }
 
-  async updateIsPaid(orderId: number, isPaid: boolean): Promise<void> {
-    await this.prisma.order.update({
+  async updateIsPaid(
+    orderId: number,
+    isPaid: boolean,
+    tx: Prisma.TransactionClient = this.prisma,
+  ): Promise<void> {
+    await tx.order.update({
       where: {
         id: orderId,
       },

@@ -19,7 +19,9 @@ describe('Get Customer by Id', () => {
 
     const created = await customerService.createCustomer(dto);
 
-    const found = await customerService.getCustomerById(created.id, true);
+    const found = await customerService.getCustomerById(created.id, {
+      includeAddress: true,
+    });
 
     expect(found).toBeDefined();
     expect(found.id).toBe(created.id);
@@ -32,7 +34,7 @@ describe('Get Customer by Id', () => {
     const dto = CustomerFactory.createCustomer({ name: 'Bob', city: 'City B' });
     const created = await customerService.createCustomer(dto);
 
-    const found = await customerService.getCustomerById(created.id, false);
+    const found = await customerService.getCustomerById(created.id);
 
     expect(found).toBeDefined();
     expect(found.id).toBe(created.id);
@@ -41,6 +43,10 @@ describe('Get Customer by Id', () => {
   });
 
   it('should throw if customer does not exist', async () => {
-    await expect(customerService.getCustomerById(999, true)).rejects.toThrow();
+    await expect(
+      customerService.getCustomerById(999, {
+        includeAddress: true,
+      }),
+    ).rejects.toThrow();
   });
 });

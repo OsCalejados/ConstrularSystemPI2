@@ -6,6 +6,8 @@ import { Injectable } from '@nestjs/common';
 import { CustomerRepository } from '../interfaces/customer.repository.interface';
 import { CustomerMapper } from '../mappers/customer.mapper';
 import { CustomerDto } from '../dtos/customer.dto';
+import { Prisma } from '@prisma/client';
+import { FindCustomerOptions } from '../interfaces/find-customer-options.interface';
 
 @Injectable()
 export class PrismaCustomerRepository implements CustomerRepository {
@@ -19,7 +21,7 @@ export class PrismaCustomerRepository implements CustomerRepository {
 
   async findById(
     customerId: number,
-    options?: { includeAddress?: boolean; includeOrders?: boolean },
+    options?: FindCustomerOptions,
   ): Promise<CustomerDto> {
     const customer = await this.prisma.customer.findUnique({
       include: {
@@ -86,8 +88,9 @@ export class PrismaCustomerRepository implements CustomerRepository {
   async updateBalance(
     customerId: number,
     updateBalanceDto: UpdateBalanceDto,
+    tx: Prisma.TransactionClient = this.prisma,
   ): Promise<CustomerDto> {
-    const updatedCustomer = await this.prisma.customer.update({
+    const updatedCustomer = await tx.customer.update({
       where: {
         id: customerId,
       },

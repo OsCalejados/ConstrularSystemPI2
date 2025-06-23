@@ -15,6 +15,8 @@ export abstract class OrderStrategy {
 
   abstract updateOrder(orderId: number, dto: UpdateOrderDto): Promise<OrderDto>;
 
+  abstract deleteOrder(orderId: number): Promise<void>;
+
   protected validateItems(items: OrderItemDto[]) {
     if (!items || items.length === 0) {
       throw new Error('Order must have at least one item');

@@ -16,13 +16,18 @@ describe('Delete Customer', () => {
       CustomerFactory.createCustomer(),
     );
 
-    const found = await customerService.getCustomerById(created.id, true);
+    const found = await customerService.getCustomerById(created.id, {
+      includeAddress: true,
+    });
+
     expect(found).toBeDefined();
 
     await customerService.deleteCustomer(created.id);
 
     await expect(
-      customerService.getCustomerById(created.id, true),
+      customerService.getCustomerById(created.id, {
+        includeAddress: true,
+      }),
     ).rejects.toThrow();
   });
 
@@ -45,7 +50,9 @@ describe('Delete Customer', () => {
     await customerService.deleteCustomer(created.id);
 
     await expect(
-      customerService.getCustomerById(created.id, true),
+      customerService.getCustomerById(created.id, {
+        includeAddress: true,
+      }),
     ).rejects.toThrow();
   });
 });

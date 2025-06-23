@@ -4,6 +4,7 @@ import { UpdateStatusDto } from '../dtos/update-status';
 import { OrderPaymentDto } from '../dtos/order-payment.dto';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { OrderDto } from '../dtos/order.dto';
+import { Prisma } from '@prisma/client';
 
 export abstract class IOrderRepository {
   abstract findAll(options?: FindOrderOptions): Promise<OrderDto[]>;
@@ -23,9 +24,17 @@ export abstract class IOrderRepository {
     options?: FindOrderOptions,
   ): Promise<OrderDto[]>;
 
-  abstract create(order: OrderDto, sellerId: number): Promise<OrderDto>;
+  abstract create(
+    order: OrderDto,
+    sellerId: number,
+    tx?: Prisma.TransactionClient,
+  ): Promise<OrderDto>;
 
-  abstract update(orderId: number, order: OrderDto): Promise<OrderDto>;
+  abstract update(
+    orderId: number,
+    order: OrderDto,
+    tx?: Prisma.TransactionClient,
+  ): Promise<OrderDto>;
 
   abstract updateNotes(
     orderId: number,
@@ -35,9 +44,14 @@ export abstract class IOrderRepository {
   abstract updateStatus(
     orderId: number,
     updateStatusDto: UpdateStatusDto,
+    tx?: Prisma.TransactionClient,
   ): Promise<OrderDto>;
 
-  abstract updateIsPaid(orderId: number, isPaid: boolean): Promise<void>;
+  abstract updateIsPaid(
+    orderId: number,
+    isPaid: boolean,
+    tx?: Prisma.TransactionClient,
+  ): Promise<void>;
 
   abstract deleteById(orderId: number): Promise<OrderDto>;
 

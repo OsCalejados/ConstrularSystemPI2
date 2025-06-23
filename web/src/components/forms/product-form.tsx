@@ -118,7 +118,7 @@ export default function ProductForm({
                   value={field.value}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 disabled:opacity-100 disabled:cursor-text">
                     <SelectValue placeholder="Selecione uma unidade" />
                   </SelectTrigger>
                   <SelectContent>

@@ -24,7 +24,10 @@ export default function EditCustomer() {
 
   const { data: customer } = useQuery<Customer>({
     queryKey: ['customerById'],
-    queryFn: () => getCustomerById(customerId as string),
+    queryFn: () =>
+      getCustomerById(customerId as string, {
+        includeAddress: true,
+      }),
   })
 
   const customerForm = useForm<CustomerFormData>({

@@ -2,11 +2,8 @@ import { CreateCustomerDto } from '../dtos/create-customer.dto';
 import { UpdateCustomerDto } from '../dtos/update-customer.dto';
 import { UpdateBalanceDto } from '../dtos/update-balance.dto';
 import { CustomerDto } from '../dtos/customer.dto';
-
-type FindCustomerOptions = {
-  includeAddress?: boolean;
-  includeOrders?: boolean;
-};
+import { Prisma } from '@prisma/client';
+import { FindCustomerOptions } from './find-customer-options.interface';
 
 export abstract class CustomerRepository {
   abstract create(customer: CreateCustomerDto): Promise<CustomerDto>;
@@ -19,6 +16,7 @@ export abstract class CustomerRepository {
   abstract updateBalance(
     customerId: number,
     updateBalanceDto: UpdateBalanceDto,
+    tx?: Prisma.TransactionClient,
   ): Promise<CustomerDto>;
 
   abstract findAll(): Promise<CustomerDto[]>;
