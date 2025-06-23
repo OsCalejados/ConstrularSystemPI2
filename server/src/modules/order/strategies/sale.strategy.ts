@@ -25,6 +25,7 @@ export class SaleOrderStrategy extends OrderStrategy {
   }
 
   async deleteOrder(orderId: number): Promise<void> {
+    console.log(orderId);
     throw new Error('Method not implemented.');
   }
 }
