@@ -56,7 +56,7 @@ export abstract class IOrderRepository {
     tx?: Prisma.TransactionClient,
   ): Promise<void>;
 
-  abstract deleteById(orderId: number): Promise<OrderDto>;
+  abstract deleteById(orderId: number): Promise<void>;
 
   // =====================================
   // Mover para módulo Payment futuramente

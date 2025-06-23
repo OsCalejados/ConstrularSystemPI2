@@ -9,7 +9,7 @@ export class ProductRepository implements IProductRepository {
   constructor(private prisma: PrismaService) {}
 
   async getAllByName(productName: string): Promise<Product[]> {
-    return this.prisma.product.findMany({
+    return await this.prisma.product.findMany({
       where: {
         name: {
           contains: productName,
@@ -20,11 +20,11 @@ export class ProductRepository implements IProductRepository {
   }
 
   async findAll(): Promise<Product[]> {
-    return this.prisma.product.findMany();
+    return await this.prisma.product.findMany();
   }
 
   async findById(productId: number): Promise<Product | null> {
-    return this.prisma.product.findUnique({
+    return await this.prisma.product.findUnique({
       where: {
         id: productId,
       },
@@ -32,7 +32,7 @@ export class ProductRepository implements IProductRepository {
   }
 
   async create(data: Prisma.ProductCreateInput): Promise<Product> {
-    return this.prisma.product.create({
+    return await this.prisma.product.create({
       data,
     });
   }
@@ -41,7 +41,7 @@ export class ProductRepository implements IProductRepository {
     productId: number,
     data: Prisma.ProductUpdateInput,
   ): Promise<Product | null> {
-    return this.prisma.product.update({
+    return await this.prisma.product.update({
       where: {
         id: productId,
       },
@@ -50,7 +50,7 @@ export class ProductRepository implements IProductRepository {
   }
 
   async delete(productId: number): Promise<void> {
-    await this.prisma.product.delete({
+    await await this.prisma.product.delete({
       where: {
         id: productId,
       },

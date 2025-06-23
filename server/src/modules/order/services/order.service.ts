@@ -142,9 +142,9 @@ export class OrderService implements IOrderService {
       (s) => s.type === OrderType.INSTALLMENT,
     );
 
-    // if (!strategy) {
-    //   throw new BadRequestException(`Invalid order type: ${order.type}`);
-    // }
+    if (!strategy) {
+      throw new BadRequestException(`Invalid order type`);
+    }
 
     await strategy.deleteOrder(orderId);
   }

@@ -23,11 +23,13 @@ import { addPayment } from '@/services/order-service'
 interface AddPaymentFormProps {
   orderId: number
   remainingAmount: number
+  onSuccess: () => void
 }
 
 export default function AddPaymentForm({
   orderId,
   remainingAmount,
+  onSuccess,
 }: AddPaymentFormProps) {
   const queryClient = useQueryClient()
   const paymentForm = useForm<PaymentFormData>({
@@ -63,11 +65,17 @@ export default function AddPaymentForm({
   }, [amount, paymentMethod, remainingAmount, setValue])
 
   const onSubmit = async (data: PaymentFormData) => {
-    await addPayment(orderId, data)
+    try {
+      await addPayment(orderId, data)
 
-    queryClient.invalidateQueries({
-      queryKey: ['orderById'],
-    })
+      queryClient.invalidateQueries({
+        queryKey: ['orderById'],
+      })
+
+      onSuccess()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
