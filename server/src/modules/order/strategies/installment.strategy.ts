@@ -252,9 +252,7 @@ export class InstallmentOrderStrategy extends OrderStrategy {
     }
 
     if (existingOrder.status === OrderStatus.COMPLETED) {
-      throw new BadRequestException(
-        `Pedido com status ${existingOrder.status} não pode ser deletado.`,
-      );
+      throw new BadRequestException(`Pedido concluídos não pode ser deletado.`);
     }
 
     await this.prisma.$transaction(async (tx) => {

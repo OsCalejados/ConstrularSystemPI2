@@ -28,10 +28,10 @@ export class OrderMapper {
       createdAt: order.createdAt,
       customerId: order.customerId,
       sellerId: order.sellerId,
-      seller: order.seller ? UserMapper.toDto(order.seller) : undefined,
-      customer: order.customer
-        ? CustomerMapper.toDto(order.customer)
-        : undefined,
+      // seller: order.seller ? UserMapper.toDto(order.seller) : undefined,
+      // customer: order.customer
+      //   ? CustomerMapper.toDto(order.customer)
+      //   : undefined,
       items: order.items
         ? order.items.map((product) => OrderItemMapper.toDto(product))
         : undefined,
