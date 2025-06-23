@@ -11,6 +11,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -18,6 +19,7 @@ export class AuthController {
 
   @isPublic()
   @Post('login')
+  @ApiOperation({ summary: 'Login' })
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   async login(

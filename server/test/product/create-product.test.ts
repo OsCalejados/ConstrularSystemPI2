@@ -1,314 +1,281 @@
-// import { Prisma, Product } from '@prisma/client';
-// import { CreateProductDto } from '@src/modules/product/dtos/create-product.dto';
-// import { ProductService } from '@src/modules/product/services/product.service';
-// import { IProductRepository } from '@src/modules/product/interfaces/product.repository.interface';
-// import { IOrderService } from '@src/modules/order/interfaces/order.service.interface';
-// import { MeasureUnit } from '@src/common/enums/measure-unit.enum';
-// import { ProductDto } from '@src/modules/product/dtos/product.dto';
-// import { AppException } from '@src/common/exceptions/app.exception';
-// import { HttpStatus } from '@nestjs/common';
+import { Prisma, Product } from '@prisma/client';
+import { CreateProductDto } from '@src/modules/product/dtos/create-product.dto';
+import { ProductService } from '@src/modules/product/services/product.service';
+import { MeasureUnit } from '@src/common/enums/measure-unit.enum';
+import { ProductDto } from '@src/modules/product/dtos/product.dto';
+import { AppException } from '@src/common/exceptions/app.exception';
+import { HttpStatus } from '@nestjs/common';
+import { ProductFactory } from '../factories/product.factory';
 
-// describe('Create Product Service Tests', () => {
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
+describe('Create Product Service Tests', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//   describe('deve criar um produto com sucesso', () => {
-//     it('should create a product successfully', async () => {
-//       const mockOrderService: IOrderService = {} as unknown as IOrderService;
+  describe('deve criar um produto com sucesso', () => {
+    it('should create a product successfully', async () => {
+      const mockOrderService = ProductFactory.createMockOrderService();
+      const createProductDto = ProductFactory.createProductDto();
 
-//       const createProductDto = new CreateProductDto();
-//       createProductDto.name = 'Test Product';
-//       createProductDto.brand = 'Test Brand';
-//       createProductDto.unit = MeasureUnit.UN;
-//       createProductDto.stockQuantity = 50.0;
-//       createProductDto.costPrice = 20.0;
-//       createProductDto.profitMargin = 30.0;
-//       createProductDto.profit = 6.0;
-//       createProductDto.salePrice = 26.0;
+      const createMock = jest
+        .fn()
+        .mockImplementation((data: Prisma.ProductCreateInput) => {
+          return Promise.resolve({
+            ...data,
+            createdAt: expect.any(Date),
+            id: expect.any(Number),
+          } as Product);
+        });
 
-//       const createMock = jest
-//         .fn()
-//         .mockImplementation((data: Prisma.ProductCreateInput) => {
-//           return Promise.resolve({
-//             ...data,
-//             createdAt: expect.any(Date),
-//             id: expect.any(Number),
-//           } as Product);
-//         });
+      const mockProductRepository = ProductFactory.createMockProductRepository({
+        create: createMock,
+        existsByName: jest.fn().mockReturnValue(false),
+      });
 
-//       const mockProductRepository: IProductRepository = {
-//         create: createMock,
-//         existsByName: jest.fn().mockReturnValue(false),
-//       } as unknown as IProductRepository;
+      const productService = new ProductService(
+        mockProductRepository,
+        mockOrderService,
+      );
 
-//       const productService = new ProductService(
-//         mockProductRepository,
-//         mockOrderService,
-//       );
+      const result = await productService.createProduct(createProductDto);
 
-//       const result = await productService.createProduct(createProductDto);
+      expect(result).toEqual({
+        id: expect.any(Number),
+        name: 'Test Product',
+        brand: 'Test Brand',
+        unit: 'UN',
+        stockQuantity: 50.0,
+        costPrice: 20.0,
+        profitMargin: 30.0,
+        profit: 6.0,
+        salePrice: 26.0,
+        createdAt: expect.any(Date),
+      } as ProductDto);
 
-//       expect(result).toEqual({
-//         id: expect.any(Number),
-//         name: 'Test Product',
-//         brand: 'Test Brand',
-//         unit: 'UN',
-//         stockQuantity: 50.0,
-//         costPrice: 20.0,
-//         profitMargin: 30.0,
-//         profit: 6.0,
-//         salePrice: 26.0,
-//         createdAt: expect.any(Date),
-//       } as ProductDto);
+      const capturedArgs = createMock.mock.calls[0][0];
 
-//       const capturedArgs = createMock.mock.calls[0][0];
+      expect(capturedArgs).toEqual({
+        name: 'Test Product',
+        brand: 'Test Brand',
+        unit: MeasureUnit.UN,
+        stockQuantity: 50.0,
+        costPrice: 20.0,
+        profitMargin: 30.0,
+        profit: 6.0,
+        salePrice: 26.0,
+        createdAt: expect.any(Date),
+      });
+    });
+  });
 
-//       expect(capturedArgs).toEqual({
-//         name: 'Test Product',
-//         brand: 'Test Brand',
-//         unit: MeasureUnit.UN,
-//         stockQuantity: 50.0,
-//         costPrice: 20.0,
-//         profitMargin: 30.0,
-//         profit: 6.0,
-//         salePrice: 26.0,
-//         createdAt: expect.any(Date),
-//       });
-//     });
-//   });
+  describe('deve falhar ao criar um produto porque possui um número negativo', () => {
+    it('should fail in create a product because have a negative number', async () => {
+      const mockOrderService = ProductFactory.createMockOrderService();
+      const createProductDto = ProductFactory.createProductDto({
+        stockQuantity: -50.0,
+        costPrice: -20.0,
+        profitMargin: -30.0,
+        profit: -6.0,
+        salePrice: -26.0,
+      });
 
-//   describe('deve falhar ao criar um produto porque possui um número negativo', () => {
-//     it('should fail in create a product because have a negative number', async () => {
-//       const mockOrderService: IOrderService = {} as unknown as IOrderService;
+      const targetException = new AppException(
+        'Negative numbers are not allowed.',
+        HttpStatus.BAD_REQUEST,
+        undefined,
+        [
+          'stockQuantity',
+          'costPrice',
+          'profitMargin',
+          'profit',
+          'salePrice',
+        ].sort(),
+        undefined,
+      );
 
-//       const createProductDto = new CreateProductDto();
-//       createProductDto.name = 'Test Product';
-//       createProductDto.brand = 'Test Brand';
-//       createProductDto.unit = MeasureUnit.UN;
-//       createProductDto.stockQuantity = -50.0;
-//       createProductDto.costPrice = -20.0;
-//       createProductDto.profitMargin = -30.0;
-//       createProductDto.profit = -6.0;
-//       createProductDto.salePrice = -26.0;
+      const createMock = jest
+        .fn()
+        .mockImplementation((data: Prisma.ProductCreateInput) => {
+          return Promise.resolve({
+            ...data,
+            createdAt: expect.any(Date),
+            id: expect.any(Number),
+          } as Product);
+        });
 
-//       const targetException = new AppException(
-//         'Negative numbers are not allowed.',
-//         HttpStatus.BAD_REQUEST,
-//         undefined,
-//         [
-//           'stockQuantity',
-//           'costPrice',
-//           'profitMargin',
-//           'profit',
-//           'salePrice',
-//         ].sort(),
-//         undefined,
-//       );
+      const mockProductRepository = ProductFactory.createMockProductRepository({
+        create: createMock,
+      });
 
-//       const createMock = jest
-//         .fn()
-//         .mockImplementation((data: Prisma.ProductCreateInput) => {
-//           return Promise.resolve({
-//             ...data,
-//             createdAt: expect.any(Date),
-//             id: expect.any(Number),
-//           } as Product);
-//         });
+      const productService = new ProductService(
+        mockProductRepository,
+        mockOrderService,
+      );
 
-//       const mockProductRepository: IProductRepository = {
-//         create: createMock,
-//       } as unknown as IProductRepository;
+      let capturedError: AppException | null = undefined;
 
-//       const productService = new ProductService(
-//         mockProductRepository,
-//         mockOrderService,
-//       );
+      try {
+        await productService.createProduct(createProductDto);
+      } catch (error) {
+        capturedError = error as AppException;
+      }
 
-//       let capturedError: AppException | null = undefined;
+      expect(capturedError).toBeInstanceOf(AppException);
+      expect(capturedError?.message).toBe(targetException.message);
+      expect(capturedError?.status).toBe(targetException.status);
+      expect(capturedError?.validationErrorProperties).toEqual(
+        targetException.validationErrorProperties,
+      );
+      expect(capturedError?.originalException).toBe(
+        targetException.originalException,
+      );
+    });
+  });
 
-//       try {
-//         await productService.createProduct(createProductDto);
-//       } catch (error) {
-//         capturedError = error as AppException;
-//       }
+  describe('deve falhar ao criar um produto porque não possui propriedade obrigatória (todas ausentes)', () => {
+    it("should fail in create a product because don't have obrigatory property", async () => {
+      const mockOrderService = ProductFactory.createMockOrderService();
+      // Intentionally create an empty DTO to simulate missing properties
+      const createProductDto = new CreateProductDto();
 
-//       expect(capturedError).toBeInstanceOf(AppException);
-//       expect(capturedError?.message).toBe(targetException.message);
-//       expect(capturedError?.status).toBe(targetException.status);
-//       expect(capturedError?.validationErrorProperties).toEqual(
-//         targetException.validationErrorProperties,
-//       );
-//       expect(capturedError?.originalException).toBe(
-//         targetException.originalException,
-//       );
-//     });
-//   });
+      const targetException = new AppException(
+        'Missing or null required properties.',
+        HttpStatus.BAD_REQUEST,
+        undefined,
+        [
+          'name',
+          'brand',
+          'unit',
+          'stockQuantity',
+          'costPrice',
+          'profitMargin',
+          'profit',
+          'salePrice',
+        ].sort(),
+        undefined,
+      );
 
-//   describe('deve falhar ao criar um produto porque não possui propriedade obrigatória (todas ausentes)', () => {
-//     it("should fail in create a product because don't have obrigatory property", async () => {
-//       const mockOrderService: IOrderService = {} as unknown as IOrderService;
+      const createMock = jest.fn();
 
-//       const createProductDto = new CreateProductDto();
+      const mockProductRepository = ProductFactory.createMockProductRepository({
+        create: createMock,
+      });
 
-//       const targetException = new AppException(
-//         'Missing or null required properties.',
-//         HttpStatus.BAD_REQUEST,
-//         undefined,
-//         [
-//           'name',
-//           'brand',
-//           'unit',
-//           'stockQuantity',
-//           'costPrice',
-//           'profitMargin',
-//           'profit',
-//           'salePrice',
-//         ].sort(),
-//         undefined,
-//       );
+      const productService = new ProductService(
+        mockProductRepository,
+        mockOrderService,
+      );
 
-//       const createMock = jest.fn();
+      let capturedError: AppException | null = null;
 
-//       const mockProductRepository: IProductRepository = {
-//         create: createMock,
-//       } as unknown as IProductRepository;
+      try {
+        await productService.createProduct(createProductDto);
+      } catch (error) {
+        capturedError = error as AppException;
+      }
 
-//       const productService = new ProductService(
-//         mockProductRepository,
-//         mockOrderService,
-//       );
+      expect(capturedError?.message).toBe(targetException.message);
+      expect(capturedError?.status).toBe(targetException.status);
+      expect(capturedError?.validationErrorProperties).toEqual(
+        targetException.validationErrorProperties,
+      );
+    });
+  });
 
-//       let capturedError: AppException | null = null;
+  describe('deve falhar ao criar um produto porque não possui propriedade obrigatória (algumas nulas)', () => {
+    it("should fail in create a product because don't have obrigatory property", async () => {
+      const mockOrderService = ProductFactory.createMockOrderService();
+      const createProductDto = ProductFactory.createProductDto({
+        profitMargin: null,
+        profit: null,
+        salePrice: null,
+      });
 
-//       try {
-//         await productService.createProduct(createProductDto);
-//       } catch (error) {
-//         capturedError = error as AppException;
-//       }
+      const targetException = new AppException(
+        'Missing or null required properties.',
+        HttpStatus.BAD_REQUEST,
+        undefined,
+        ['profitMargin', 'profit', 'salePrice'].sort(),
+        undefined,
+      );
 
-//       expect(capturedError?.message).toBe(targetException.message);
-//       expect(capturedError?.status).toBe(targetException.status);
-//       expect(capturedError?.validationErrorProperties).toEqual(
-//         targetException.validationErrorProperties,
-//       );
-//     });
-//   });
+      const createMock = jest.fn();
 
-//   describe('deve falhar ao criar um produto porque não possui propriedade obrigatória (algumas nulas)', () => {
-//     it("should fail in create a product because don't have obrigatory property", async () => {
-//       const mockOrderService: IOrderService = {} as unknown as IOrderService;
+      const mockProductRepository = ProductFactory.createMockProductRepository({
+        create: createMock,
+      });
 
-//       const createProductDto = new CreateProductDto();
-//       createProductDto.name = 'Test Product';
-//       createProductDto.brand = 'Test Brand';
-//       createProductDto.unit = MeasureUnit.UN;
-//       createProductDto.stockQuantity = 50.0;
-//       createProductDto.costPrice = 20.0;
-//       createProductDto.profitMargin = null;
-//       createProductDto.profit = null;
-//       createProductDto.salePrice = null;
+      const productService = new ProductService(
+        mockProductRepository,
+        mockOrderService,
+      );
 
-//       const targetException = new AppException(
-//         'Missing or null required properties.',
-//         HttpStatus.BAD_REQUEST,
-//         undefined,
-//         ['profitMargin', 'profit', 'salePrice'].sort(),
-//         undefined,
-//       );
+      let capturedError: AppException | null = undefined;
 
-//       const createMock = jest.fn();
+      try {
+        await productService.createProduct(createProductDto);
+      } catch (error) {
+        capturedError = error as AppException;
+      }
 
-//       const mockProductRepository: IProductRepository = {
-//         create: createMock,
-//       } as unknown as IProductRepository;
+      expect(capturedError?.message).toBe(targetException.message);
+      expect(capturedError?.status).toBe(targetException.status);
+      expect(capturedError?.validationErrorProperties).toEqual(
+        targetException.validationErrorProperties,
+      );
+    });
+  });
 
-//       const productService = new ProductService(
-//         mockProductRepository,
-//         mockOrderService,
-//       );
+  describe('deve falhar ao criar um produto porque um produto com o mesmo nome já existe', () => {
+    it('should fail in create a product because a product with the same name already exists', async () => {
+      const mockOrderService = ProductFactory.createMockOrderService();
+      const createProductDto = ProductFactory.createProductDto();
 
-//       let capturedError: AppException | null = undefined;
+      const targetException = new AppException(
+        'Product with same name exists.',
+        HttpStatus.BAD_REQUEST,
+        undefined,
+        [],
+        undefined,
+      );
 
-//       try {
-//         await productService.createProduct(createProductDto);
-//       } catch (error) {
-//         capturedError = error as AppException;
-//       }
+      const createMock = jest
+        .fn()
+        .mockImplementation((data: Prisma.ProductCreateInput) => {
+          return Promise.resolve({
+            ...data,
+            createdAt: expect.any(Date),
+            id: expect.any(Number),
+          } as Product);
+        });
 
-//       expect(capturedError?.message).toBe(targetException.message);
-//       expect(capturedError?.status).toBe(targetException.status);
-//       expect(capturedError?.validationErrorProperties).toEqual(
-//         targetException.validationErrorProperties,
-//       );
-//     });
-//   });
+      const mockProductRepository = ProductFactory.createMockProductRepository({
+        create: createMock,
+        existsByName: jest.fn().mockReturnValue(true),
+      });
 
-//   describe('deve falhar ao criar um produto porque um produto com o mesmo nome já existe', () => {
-//     it('should fail in create a product because a product with the same name already exists', async () => {
-//       const mockOrderService: IOrderService = {} as unknown as IOrderService;
+      const productService = new ProductService(
+        mockProductRepository,
+        mockOrderService,
+      );
 
-//       const createProductDto = new CreateProductDto();
-//       createProductDto.name = 'Test Product';
-//       createProductDto.brand = 'Test Brand';
-//       createProductDto.unit = MeasureUnit.UN;
-//       createProductDto.stockQuantity = 50.0;
-//       createProductDto.costPrice = 20.0;
-//       createProductDto.profitMargin = 30.0;
-//       createProductDto.profit = 6.0;
-//       createProductDto.salePrice = 26.0;
+      let capturedError: AppException | null = undefined;
 
-//       const targetException = new AppException(
-//         'Product with same name exists.',
-//         HttpStatus.BAD_REQUEST,
-//         undefined,
-//         [],
-//         undefined,
-//       );
+      try {
+        await productService.createProduct(createProductDto);
+      } catch (error) {
+        capturedError = error as AppException;
+      }
 
-//       const createMock = jest
-//         .fn()
-//         .mockImplementation((data: Prisma.ProductCreateInput) => {
-//           return Promise.resolve({
-//             ...data,
-//             createdAt: expect.any(Date),
-//             id: expect.any(Number),
-//           } as Product);
-//         });
-
-//       const mockProductRepository: IProductRepository = {
-//         create: createMock,
-//         existsByName: jest.fn().mockReturnValue(true),
-//       } as unknown as IProductRepository;
-
-//       const productService = new ProductService(
-//         mockProductRepository,
-//         mockOrderService,
-//       );
-
-//       let capturedError: AppException | null = undefined;
-
-//       try {
-//         await productService.createProduct(createProductDto);
-//       } catch (error) {
-//         capturedError = error as AppException;
-//       }
-
-//       expect(capturedError).toBeInstanceOf(AppException);
-//       expect(capturedError?.message).toBe(targetException.message);
-//       expect(capturedError?.status).toBe(targetException.status);
-//       expect(capturedError?.validationErrorProperties).toEqual(
-//         targetException.validationErrorProperties,
-//       );
-//       expect(capturedError?.originalException).toBe(
-//         targetException.originalException,
-//       );
-//     });
-//   });
-// });
-
-describe('Remover posteriormente', () => {
-  it('should be defined', () => {
-    expect(1).toBeDefined();
+      expect(capturedError).toBeInstanceOf(AppException);
+      expect(capturedError?.message).toBe(targetException.message);
+      expect(capturedError?.status).toBe(targetException.status);
+      expect(capturedError?.validationErrorProperties).toEqual(
+        targetException.validationErrorProperties,
+      );
+      expect(capturedError?.originalException).toBe(
+        targetException.originalException,
+      );
+    });
   });
 });

@@ -10,10 +10,13 @@ import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { OrderPaymentDto } from '../dtos/order-payment.dto';
 import { OrderPaymentMapper } from '../mappers/order-payment.mapper';
 import { Prisma } from '@prisma/client';
+import { CreateOrderDto } from '../dtos/create-order.dto';
 
 @Injectable()
-export class PrismaOrderRepository implements IOrderRepository {
-  constructor(private prisma: PrismaService) {}
+export class PrismaOrderRepository extends IOrderRepository {
+  constructor(protected prisma: PrismaService) {
+    super(prisma);
+  }
 
   async findAll(options?: FindOrderOptions): Promise<OrderDto[]> {
     const orders = await this.prisma.order.findMany({
@@ -85,7 +88,7 @@ export class PrismaOrderRepository implements IOrderRepository {
   }
 
   async create(
-    order: OrderDto,
+    order: CreateOrderDto,
     sellerId: number,
     tx: Prisma.TransactionClient = this.prisma,
   ): Promise<OrderDto> {
