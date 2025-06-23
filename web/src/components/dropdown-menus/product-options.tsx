@@ -48,7 +48,7 @@ export default function ProductOptions({
       queryKey: ['products'],
     })
 
-    router.replace('/products')
+    router.replace('/stock/products')
   }
 
   const deleteDialog = useDialog()

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+// import Link from 'next/link'
 
 import { SidebarMenuButton } from '@/components/shadcnui/sidebar'
 import { getUserInitials } from '@/utils/get-user-initials'
@@ -57,11 +57,11 @@ export default function UserSection({ user }: UserSectionProps) {
         side="top"
         className="w-[--radix-popper-anchor-width]"
       >
-        <DropdownMenuItem>
+        {/* <DropdownMenuItem>
           <Link href="/settings/account">
             <span>Conta</span>
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem onClick={handleLogout}>
           <span>Sair</span>
         </DropdownMenuItem>
