@@ -1,6 +1,11 @@
 import { BalanceFormData, CustomerFormData } from '@/types/validations'
 import api from '@/lib/axios'
 
+interface FindCustomerOptions {
+  includeAddress?: boolean
+  includeOrders?: boolean
+}
+
 export async function getCustomers() {
   const response = await api.get('customers')
 
@@ -9,10 +14,10 @@ export async function getCustomers() {
 
 export async function getCustomerById(
   customerId: number | string,
-  includeOrders: boolean = false,
+  options?: FindCustomerOptions,
 ) {
   const response = await api.get(`customers/${customerId}`, {
-    params: { includeOrders },
+    params: { includeAddress: options?.includeAddress },
   })
 
   return response.data

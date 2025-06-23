@@ -32,7 +32,9 @@ export class CustomerController {
   ) {
     const id = parseInt(customerId);
 
-    return await this.customerService.getCustomerById(id, includeAddress);
+    return await this.customerService.getCustomerById(id, {
+      includeAddress,
+    });
   }
 
   @Post()

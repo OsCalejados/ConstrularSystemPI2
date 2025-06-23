@@ -8,37 +8,38 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ProductFormData } from '@/types/validations'
 import { updateProduct, getProductById } from '@/services/product-service'
-import { useQuery } from '@tanstack/react-query'
 import { toast } from '@/hooks/use-toast'
-import { useEffect } from 'react'
+import { useState } from 'react'
 import Breadcrumb from '@/components/ui/breadcrumb'
 import { Page } from '@/components/layout/page'
 import CancelDialog from '@/components/dialogs/cancel-dialog'
 import { productFormSchema } from '@/validations/product-form-schema'
+import { Product } from '@/types/product'
+import LoadSpinner from '@/components/ui/load-spinner'
 
 export default function EditProduct() {
-  // const queryClient = useQueryClient()
+  const [isLoading, setIsLoading] = useState(true)
+  const [product, setProduct] = useState<Product | null>(null)
   const router = useRouter()
-
   const { productId } = useParams()
-
-  const { data: product, isLoading } = useQuery({
-    queryKey: ['product', productId],
-    queryFn: () => getProductById(productId as string),
-  })
 
   const productForm = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     mode: 'onTouched',
-    defaultValues: {
-      name: product?.name,
-      brand: product?.brand,
-      unit: product?.unit,
-      stockQuantity: product?.stockQuantity,
-      costPrice: product?.costPrice,
-      profitMargin: product?.profitMargin,
-      profit: product?.profit,
-      salePrice: product?.salePrice,
+    defaultValues: async () => {
+      const data = await getProductById(productId as string)
+      setIsLoading(false)
+      setProduct(data)
+      return {
+        name: data.name,
+        brand: data.brand,
+        unit: data.unit,
+        stockQuantity: data.stockQuantity,
+        costPrice: data.costPrice,
+        profitMargin: data.profitMargin,
+        profit: data.profit,
+        salePrice: data.salePrice,
+      }
     },
   })
 
@@ -46,14 +47,6 @@ export default function EditProduct() {
     reset,
     formState: { isDirty },
   } = productForm
-
-  useEffect(() => {
-    if (product) {
-      reset({
-        ...product,
-      })
-    }
-  }, [product, reset])
 
   const onSubmit = async (data: ProductFormData) => {
     await updateProduct(productId as string, data)
@@ -66,13 +59,7 @@ export default function EditProduct() {
     router.back()
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-muted-foreground">Carregando...</div>
-      </div>
-    )
-  }
+  if (isLoading || !product) return <LoadSpinner />
 
   if (!product) {
     return (

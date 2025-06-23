@@ -12,6 +12,8 @@ import { IOrderService } from './interfaces/order.service.interface';
 import { PrismaService } from '@src/common/services/prisma.service';
 import { OrderService } from './services/order.service';
 import { Module } from '@nestjs/common';
+import { ProductRepository } from '../product/repositories/product.repository';
+import { IProductRepository } from '../product/interfaces/product.repository.interface';
 
 @Module({
   imports: [CustomerModule],
@@ -30,6 +32,10 @@ import { Module } from '@nestjs/common';
     {
       provide: IOrderRepository,
       useClass: PrismaOrderRepository,
+    },
+    {
+      provide: IProductRepository,
+      useClass: ProductRepository,
     },
     {
       provide: IPaymentRepository,

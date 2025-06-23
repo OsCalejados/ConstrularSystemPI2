@@ -14,12 +14,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { createOrder } from '@/services/order-service'
 import { OrderType } from '@/enums/order-type'
 import { useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Customer } from '@/types/customer'
 import { Product } from '@/types/product'
 import { Button } from '@/components/shadcnui/button'
 import { toast } from '@/hooks/use-toast'
 import { Page } from '@/components/layout/page'
+import { AxiosError } from 'axios'
+import { APIErrorResponse } from '@/types/api-error-response'
 
 export default function CreateOrder() {
   const router = useRouter()
@@ -60,23 +62,23 @@ export default function CreateOrder() {
     formState: { isDirty },
   } = orderForm
 
-  const onSubmit = async (data: InstallmentOrderFormData) => {
-    try {
-      await createOrder(data)
-
+  const { mutate } = useMutation({
+    mutationFn: createOrder,
+    onSuccess: async () => {
       toast({
         title: 'Pedido criado com sucesso',
       })
 
       reset()
       router.back()
-    } catch (error) {
+    },
+    onError: (e: AxiosError<APIErrorResponse>) => {
       toast({
-        title: 'Erro ao criar cliente',
+        title: e.response?.data?.error?.message,
         variant: 'destructive',
       })
-    }
-  }
+    },
+  })
 
   if (!customers || !products) return null
 
@@ -143,7 +145,7 @@ export default function CreateOrder() {
         <div className="mt-4">
           <FormProvider {...orderForm}>
             <OrderForm
-              onSubmit={onSubmit}
+              onSubmit={async (data) => mutate(data)}
               customers={customers}
               products={products}
               showBalanceOption

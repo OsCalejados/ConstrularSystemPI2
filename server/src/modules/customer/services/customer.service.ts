@@ -7,6 +7,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { FindCustomerOptions } from '../interfaces/find-customer-options.interface';
 
 @Injectable()
 export class CustomerService {
@@ -17,10 +19,11 @@ export class CustomerService {
     return customers;
   }
 
-  async getCustomerById(customerId: number, includeAddress?: boolean) {
-    const customer = await this.customerRepository.findById(customerId, {
-      includeAddress: includeAddress,
-    });
+  async getCustomerById(customerId: number, options?: FindCustomerOptions) {
+    const customer = await this.customerRepository.findById(
+      customerId,
+      options,
+    );
 
     if (!customer) {
       throw new NotFoundException(`Customer not found`);
@@ -64,7 +67,11 @@ export class CustomerService {
     return updatedCustomer;
   }
 
-  async updateBalance(customerId: number, updateBalanceDto: UpdateBalanceDto) {
+  async updateBalance(
+    customerId: number,
+    updateBalanceDto: UpdateBalanceDto,
+    tx?: Prisma.TransactionClient,
+  ) {
     const existingCustomer = await this.customerRepository.findById(customerId);
 
     if (!existingCustomer) {
@@ -74,6 +81,7 @@ export class CustomerService {
     const updatedCustomer = await this.customerRepository.updateBalance(
       customerId,
       updateBalanceDto,
+      tx,
     );
 
     return updatedCustomer;

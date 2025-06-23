@@ -17,6 +17,7 @@ import {
   Injectable,
   Inject,
 } from '@nestjs/common';
+import { OrderType } from '@src/common/enums/order-type.enum';
 
 @Injectable()
 export class OrderService implements IOrderService {
@@ -82,7 +83,7 @@ export class OrderService implements IOrderService {
       throw new BadRequestException(`Invalid order type: ${order.type}`);
     }
 
-    const createdOrder = strategy.createOrder(order, sellerId);
+    const createdOrder = await strategy.createOrder(order, sellerId);
 
     return createdOrder;
   }
@@ -94,7 +95,7 @@ export class OrderService implements IOrderService {
       throw new BadRequestException(`Invalid order type: ${order.type}`);
     }
 
-    const updatedOrder = strategy.updateOrder(orderId, order);
+    const updatedOrder = await strategy.updateOrder(orderId, order);
 
     return updatedOrder;
   }
@@ -136,13 +137,15 @@ export class OrderService implements IOrderService {
   }
 
   async deleteOrder(orderId: number): Promise<void> {
-    const order = await this.orderRepository.findById(orderId);
+    const strategy = this.strategies.find(
+      (s) => s.type === OrderType.INSTALLMENT,
+    );
 
-    if (!order) {
-      throw new NotFoundException(`Order not found`);
-    }
+    // if (!strategy) {
+    //   throw new BadRequestException(`Invalid order type: ${order.type}`);
+    // }
 
-    await this.orderRepository.deleteById(orderId);
+    await strategy.deleteOrder(orderId);
   }
 
   // =====================================

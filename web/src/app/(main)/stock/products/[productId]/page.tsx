@@ -4,39 +4,41 @@ import Breadcrumb from '@/components/ui/breadcrumb'
 
 import { getProductById } from '@/services/product-service'
 import { useParams, useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
 import { Product } from '@/types/product'
 import { Button } from '@/components/shadcnui/button'
 import { Page } from '@/components/layout/page'
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
-import { useEffect } from 'react'
+import { useState } from 'react'
 import { ProductFormData } from '@/types/validations'
 import { productFormSchema } from '@/validations/product-form-schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormProvider, useForm } from 'react-hook-form'
 import ProductForm from '@/components/forms/product-form'
+import LoadSpinner from '@/components/ui/load-spinner'
 
 export default function ProductView() {
+  const [isLoading, setIsLoading] = useState(true)
+  const [product, setProduct] = useState<Product | null>(null)
   const { productId } = useParams()
   const router = useRouter()
-
-  const { data: product } = useQuery<Product>({
-    queryKey: ['productById', productId],
-    queryFn: () => getProductById(productId as string),
-  })
 
   const productForm = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     mode: 'onTouched',
-    defaultValues: {
-      name: product?.name,
-      brand: product?.brand,
-      unit: product?.unit,
-      stockQuantity: product?.stockQuantity,
-      costPrice: product?.costPrice,
-      profitMargin: product?.profitMargin,
-      profit: product?.profit,
-      salePrice: product?.salePrice,
+    defaultValues: async () => {
+      const data = await getProductById(productId as string)
+      setIsLoading(false)
+      setProduct(data)
+      return {
+        name: data.name,
+        brand: data.brand,
+        unit: data.unit,
+        stockQuantity: data.stockQuantity,
+        costPrice: data.costPrice,
+        profitMargin: data.profitMargin,
+        profit: data.profit,
+        salePrice: data.salePrice,
+      }
     },
   })
 
@@ -44,17 +46,7 @@ export default function ProductView() {
     console.log(data)
   }
 
-  const { reset } = productForm
-
-  useEffect(() => {
-    if (product) {
-      reset({
-        ...product,
-      })
-    }
-  }, [product, reset])
-
-  if (!product) return null
+  if (isLoading || !product) return <LoadSpinner />
 
   return (
     <Page.Container>

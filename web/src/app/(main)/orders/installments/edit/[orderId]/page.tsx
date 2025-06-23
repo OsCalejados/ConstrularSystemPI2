@@ -15,13 +15,15 @@ import { getProducts } from '@/services/product-service'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { OrderType } from '@/enums/order-type'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Customer } from '@/types/customer'
 import { Product } from '@/types/product'
 import { Button } from '@/components/shadcnui/button'
 import { Order } from '@/types/order'
 import { toast } from '@/hooks/use-toast'
 import { Page } from '@/components/layout/page'
+import { AxiosError } from 'axios'
+import { APIErrorResponse } from '@/types/api-error-response'
 
 export default function EditOrder() {
   const { orderId } = useParams()
@@ -72,22 +74,24 @@ export default function EditOrder() {
     formState: { isDirty },
   } = orderForm
 
-  const onSubmit = async (data: InstallmentOrderFormData) => {
-    try {
-      await updateOrder(orderId as string, data)
-
+  const { mutate } = useMutation({
+    mutationFn: (data: InstallmentOrderFormData) =>
+      updateOrder(orderId as string, data),
+    onSuccess: async () => {
       toast({
         title: 'Pedido editado com sucesso',
       })
 
+      reset()
       router.back()
-    } catch (error) {
+    },
+    onError: (e: AxiosError<APIErrorResponse>) => {
       toast({
-        title: 'Erro ao editar pedido',
+        title: e.response?.data?.error?.message,
         variant: 'destructive',
       })
-    }
-  }
+    },
+  })
 
   useEffect(() => {
     if (order) {
@@ -174,7 +178,7 @@ export default function EditOrder() {
         <div className="mt-4 h-full">
           <FormProvider {...orderForm}>
             <OrderForm
-              onSubmit={onSubmit}
+              onSubmit={async (data) => mutate(data)}
               customers={customers}
               products={products}
             />

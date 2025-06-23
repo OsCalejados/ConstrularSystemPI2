@@ -23,4 +23,9 @@ export class QuoteOrderStrategy extends OrderStrategy {
     console.log(orderId);
     throw new Error('Method not implemented.');
   }
+
+  async deleteOrder(orderId: number): Promise<void> {
+    console.log(orderId);
+    throw new Error('Method not implemented.');
+  }
 }
