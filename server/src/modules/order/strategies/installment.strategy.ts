@@ -8,6 +8,7 @@ import {
   BadRequestException,
   NotFoundException,
   Injectable,
+  Inject,
 } from '@nestjs/common';
 import { IProductRepository } from '@src/modules/product/interfaces/product.repository.interface';
 import { CustomerService } from '@src/modules/customer/services/customer.service';
@@ -19,8 +20,10 @@ import { OrderStatus } from '@src/common/enums/order-status.enum';
 @Injectable()
 export class InstallmentOrderStrategy extends OrderStrategy {
   constructor(
+    @Inject('IOrderRepository')
     private readonly orderRepository: IOrderRepository,
     private readonly customerService: CustomerService,
+    @Inject('IProductRepository')
     private readonly productRepository: IProductRepository,
     private readonly prisma: PrismaService,
   ) {
@@ -85,27 +88,21 @@ export class InstallmentOrderStrategy extends OrderStrategy {
       }
 
       // Monta DTO do pedido
-      const createDto: OrderDto = {
-        id: undefined,
+      const createDto: CreateOrderDto = {
         total: dto.total,
         discount: dto.discount,
         subtotal: dto.subtotal,
         notes: dto.notes,
         customerId: dto.customerId,
         items: dto.items,
-        sellerId,
-        paid: false,
-        status: OrderStatus.OPEN,
         type: OrderType.INSTALLMENT,
-        createdAt: undefined,
-        seller: undefined,
-        customer: undefined,
+        useBalance: dto.useBalance,
+        status: dto.status,
+        paid: dto.paid,
         payments:
           amountToPay && amountToPay > 0
             ? [
                 {
-                  id: undefined,
-                  installments: undefined,
                   paidAt: new Date(),
                   netAmount: amountToPay,
                   paymentMethod: PaymentMethod.CASH,

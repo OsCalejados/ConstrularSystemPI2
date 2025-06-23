@@ -24,6 +24,7 @@ export class OrderService implements IOrderService {
   constructor(
     @Inject('ORDER_STRATEGIES')
     private readonly strategies: OrderStrategy[],
+    @Inject('IOrderRepository')
     private readonly orderRepository: IOrderRepository,
     private readonly customerService: CustomerService,
     private readonly paymentService: PaymentService,

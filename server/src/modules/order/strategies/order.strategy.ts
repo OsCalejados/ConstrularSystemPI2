@@ -1,9 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { CreateOrderDto } from '../dtos/create-order.dto';
-import { OrderItemDto } from '../dtos/order-item.dto';
 import { OrderType } from '@src/common/enums/order-type.enum';
 import { OrderDto } from '../dtos/order.dto';
+import { CreateOrderItemDto } from '../dtos/create-order-item.dto';
 
 export abstract class OrderStrategy {
   type: OrderType;
@@ -17,7 +17,7 @@ export abstract class OrderStrategy {
 
   abstract deleteOrder(orderId: number): Promise<void>;
 
-  protected validateItems(items: OrderItemDto[]) {
+  protected validateItems(items: CreateOrderItemDto[]) {
     if (!items || items.length === 0) {
       throw new Error('Order must have at least one item');
     }
@@ -47,10 +47,8 @@ export abstract class OrderStrategy {
   }
 
   protected validateOrderTotals(order: CreateOrderDto | UpdateOrderDto): void {
-    const itemsTotal = order.items.reduce(
-      (acc, item) => acc + Number(item.total),
-      0,
-    );
+    let itemsTotal = 0;
+    order.items.forEach((item) => (itemsTotal += Number(item.total)));
 
     if (itemsTotal !== Number(order.subtotal)) {
       throw new BadRequestException(

@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { IProductService } from '../interfaces/product.service.interface';
 import { IProductRepository } from '../interfaces/product.repository.interface';
 import { IOrderService } from '@src/modules/order/interfaces/order.service.interface';
@@ -11,8 +11,8 @@ import { AppException } from '@src/common/exceptions/app.exception';
 @Injectable()
 export class ProductService implements IProductService {
   constructor(
-    private productRepository: IProductRepository,
-    private orderService: IOrderService,
+    @Inject('IProductRepository') private productRepository: IProductRepository,
+    @Inject('IOrderService') private orderService: IOrderService,
   ) {}
 
   async getAllProducts(): Promise<ProductDto[]> {

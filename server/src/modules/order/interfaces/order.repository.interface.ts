@@ -5,8 +5,11 @@ import { OrderPaymentDto } from '../dtos/order-payment.dto';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { OrderDto } from '../dtos/order.dto';
 import { Prisma } from '@prisma/client';
+import { PrismaService } from '@src/common/services/prisma.service';
+import { CreateOrderDto } from '../dtos/create-order.dto';
 
 export abstract class IOrderRepository {
+  constructor(protected prisma: PrismaService) {}
   abstract findAll(options?: FindOrderOptions): Promise<OrderDto[]>;
 
   abstract findById(
@@ -25,7 +28,7 @@ export abstract class IOrderRepository {
   ): Promise<OrderDto[]>;
 
   abstract create(
-    order: OrderDto,
+    order: CreateOrderDto,
     sellerId: number,
     tx?: Prisma.TransactionClient,
   ): Promise<OrderDto>;
