@@ -21,7 +21,10 @@ export default function Customer() {
 
   const { data: customer } = useQuery<TCustomer>({
     queryKey: ['customerById'],
-    queryFn: () => getCustomerById(customerId as string),
+    queryFn: () =>
+      getCustomerById(customerId as string, {
+        includeAddress: true,
+      }),
   })
 
   if (!customer) return null
