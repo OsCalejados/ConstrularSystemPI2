@@ -4,7 +4,7 @@ import { UpdateStatusDto } from '../dtos/update-status';
 import { UpdateNotesDto } from '../dtos/update-notes';
 import { PrismaService } from '@src/common/services/prisma.service';
 import { OrderMapper } from '../mappers/order.mapper';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrderDto } from '../dtos/order.dto';
 import { CreatePaymentDto } from '../dtos/create-payment.dto';
 import { OrderPaymentDto } from '../dtos/order-payment.dto';
@@ -21,7 +21,7 @@ export class PrismaOrderRepository implements IOrderRepository {
         payments: options?.includePayments ?? false,
         customer: options?.includeCustomer ?? false,
         seller: options?.includeSeller ?? false,
-        items: options?.includeProducts ?? false,
+        items: options?.includeItems ?? false,
       },
     });
 
@@ -43,7 +43,7 @@ export class PrismaOrderRepository implements IOrderRepository {
         seller: options?.includeSeller ?? false,
         items: {
           include: {
-            product: options?.includeProducts ?? false,
+            product: options?.includeItems ?? false,
           },
         },
       },
@@ -52,6 +52,11 @@ export class PrismaOrderRepository implements IOrderRepository {
       },
     });
 
+    if (!order) {
+      throw new NotFoundException(`Order with ID ${orderId} not found`);
+    }
+
+    console.log('=========== ORDER ==========', order);
     return OrderMapper.toDto(order);
   }
 
@@ -200,14 +205,12 @@ export class PrismaOrderRepository implements IOrderRepository {
     });
   }
 
-  async deleteById(orderId: number): Promise<OrderDto> {
-    const deletedOrder = await this.prisma.order.delete({
+  async deleteById(orderId: number): Promise<void> {
+    await this.prisma.order.delete({
       where: {
         id: orderId,
       },
     });
-
-    return OrderMapper.toDto(deletedOrder);
   }
 
   // =====================================

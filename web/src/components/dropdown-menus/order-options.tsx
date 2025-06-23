@@ -8,7 +8,7 @@ import {
   TrashSimpleIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import { MoreHorizontal, MoreVertical } from 'lucide-react'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { deleteOrder } from '@/services/order-service'
 import { Button } from '../shadcnui/button'
@@ -26,6 +26,9 @@ import {
   AlertDialogTrigger,
   AlertDialog,
 } from '@/components/shadcnui/alert-dialog'
+import { AxiosError } from 'axios'
+import { APIErrorResponse } from '@/types/api-error-response'
+import { toast } from '@/hooks/use-toast'
 
 interface OrderOptionsProps {
   order: Order
@@ -43,15 +46,23 @@ export default function OrderOptions({
   const router = useRouter()
   const queryClient = useQueryClient()
 
-  const onDelete = async () => {
-    await deleteOrder(order.id)
+  const { mutate } = useMutation({
+    mutationFn: () => deleteOrder(order.id),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ['orders'],
+      })
 
-    queryClient.invalidateQueries({
-      queryKey: ['orders'],
-    })
-
-    router.replace('/orders/installments')
-  }
+      router.replace('/orders/installments')
+    },
+    onError: (e: AxiosError<APIErrorResponse>) => {
+      console.log(e)
+      toast({
+        title: e.response?.data?.error?.message,
+        variant: 'destructive',
+      })
+    },
+  })
 
   const onPrint = () => {
     console.log('Enviando mensagem para o main...')
@@ -139,7 +150,7 @@ export default function OrderOptions({
       </DropdownMenu>
 
       {/* Dialog */}
-      <DeleteDialog onConfirm={onDelete} variant="order" />
+      <DeleteDialog onConfirm={mutate} variant="order" />
     </AlertDialog>
   )
 }

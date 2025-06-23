@@ -14,6 +14,7 @@ import {
   Post,
   Put,
   Get,
+  ParseIntPipe,
 } from '@nestjs/common';
 
 @Controller('orders')
@@ -76,10 +77,8 @@ export class OrderController {
   }
 
   @Delete(':id')
-  async deleteOrder(@Param('id') orderId: string) {
-    const id = parseInt(orderId);
-
-    await this.orderService.deleteOrder(id);
+  async deleteOrder(@Param('id', ParseIntPipe) orderId: number) {
+    await this.orderService.deleteOrder(orderId);
   }
 
   // =====================================
