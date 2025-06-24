@@ -18,12 +18,14 @@ import {
   ApiParam,
   ApiQuery,
   ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { MovementType } from '@src/common/enums/movement_type.enum';
 import { StockMovementDTO } from '../dtos/stock_movement.dto';
 import { CreateStockMovementDTO } from '../dtos/create_stock_movement.dto';
 
-@Controller('stockMovements')
+@ApiTags('Stock Movements')
+@Controller('stock_movements')
 export class StockMovementController {
   constructor(
     @Inject('IStockMovementService')
