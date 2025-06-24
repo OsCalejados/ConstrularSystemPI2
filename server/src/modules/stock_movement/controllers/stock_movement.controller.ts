@@ -24,6 +24,7 @@ import { MovementType } from '@src/common/enums/movement_type.enum';
 import { StockMovementDTO } from '../dtos/stock_movement.dto';
 import { CreateStockMovementDTO } from '../dtos/create_stock_movement.dto';
 
+
 @ApiTags('Stock Movements')
 @Controller('stock_movements')
 export class StockMovementController {
