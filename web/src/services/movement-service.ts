@@ -1,31 +1,30 @@
-import { movements } from '@/data/movements'
+import api from '@/lib/axios'
 import { Movement } from '@/types/movement'
 import { MovementFormData } from '@/types/validations'
 
 export async function getMovements(): Promise<Movement[]> {
-  return movements
+  return await api.get('stock_movements')
 }
 
 export async function getMovementById(
   movementId: number | string,
 ): Promise<Movement> {
-  await new Promise((resolve) => setTimeout(resolve, 300))
-  const movement = movements.find((m) => m.id === Number(movementId))
+  const response = await api.get(`stock_movements/${movementId}`)
 
-  if (!movement) {
+  if (!response) {
     throw new Error('Movement not found')
   }
 
-  return movement
+  return response.data
 }
 
 export async function createMovement(data: MovementFormData) {
   console.log(data)
-  // const response = await api.post('movements', movementData)
-  //   return response.data
+  const response = await api.post('movements', data)
+  return response.data
 }
 
 export async function deleteMovement(movementId: number | string) {
   console.log('movement to be deleted: ', movementId)
-  // await api.delete(`movements/${movementId}`)
+  await api.delete(`movements/${movementId}`)
 }
