@@ -97,7 +97,7 @@ export class InstallmentOrderStrategy extends OrderStrategy {
         items: dto.items,
         type: OrderType.INSTALLMENT,
         useBalance: dto.useBalance,
-        status: dto.status,
+        status: OrderStatus.OPEN,
         paid: dto.paid,
         payments:
           amountToPay && amountToPay > 0
