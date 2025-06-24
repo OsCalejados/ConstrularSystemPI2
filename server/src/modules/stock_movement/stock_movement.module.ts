@@ -4,9 +4,10 @@ import { OrderModule } from '../order/order.module';
 import { StockMovementController } from './controllers/stock_movement.controller';
 import { StockMovementService } from './services/stock_movement.service';
 import { StockMovementRepository } from './repositories/stock_movement.repository';
+import { ProductModule } from '../product/product.module';
 
 @Module({
-  imports: [OrderModule],
+  imports: [OrderModule, ProductModule],
   controllers: [StockMovementController],
   providers: [
     {

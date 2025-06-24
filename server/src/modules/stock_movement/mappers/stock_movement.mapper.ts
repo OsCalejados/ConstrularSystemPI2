@@ -1,6 +1,7 @@
 import { StockMovementDTO } from '../dtos/stock_movement.dto';
 
 import { StockMovementWithDetails } from '../types/stock_movement.types';
+import { StockMovementItemMapper } from './stock_movement_item.mapper';
 
 export class StockMovementMapper {
   static toDto(stockMovement: StockMovementWithDetails): StockMovementDTO {
@@ -9,10 +10,9 @@ export class StockMovementMapper {
       type: stockMovement.type,
       description: stockMovement.description,
       createdAt: stockMovement.createdAt,
-      items: [],
-      // stockMovement.stockMovementItems.map((item) => {
-      //  return StockMovementItemMapper.toDto(item);
-      // }),
+      items: stockMovement.items.map((item) => {
+        return StockMovementItemMapper.toDto(item);
+      }),
     };
   }
 }

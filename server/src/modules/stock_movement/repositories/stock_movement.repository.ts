@@ -9,6 +9,8 @@ import {
 } from '@prisma/client';
 import { IStockMovementRepository } from '../interfaces/stock_movement.repository.interface';
 import { StockMovementWithDetails } from '../types/stock_movement.types';
+import { MovementType } from '@src/common/enums/movement_type.enum';
+import { CreateStockMovementDTO } from '../dtos/create_stock_movement.dto';
 
 @Injectable()
 export class StockMovementRepository implements IStockMovementRepository {
@@ -25,8 +27,15 @@ export class StockMovementRepository implements IStockMovementRepository {
     return deletedMovement;
   }
 
-  async findAll(): Promise<StockMovementWithDetails[]> {
+  async findAll(type?: MovementType): Promise<StockMovementWithDetails[]> {
+    const where: Prisma.StockMovementWhereInput = {};
+
+    if (type) {
+      where.type = type.toString();
+    }
+
     return this.prisma.stockMovement.findMany({
+      where,
       include: {
         items: {
           include: {
@@ -55,10 +64,21 @@ export class StockMovementRepository implements IStockMovementRepository {
   }
 
   async create(
-    data: Prisma.StockMovementCreateInput,
+    data: CreateStockMovementDTO,
+    tx?: Prisma.TransactionClient,
   ): Promise<StockMovementWithDetails> {
-    return this.prisma.stockMovement.create({
-      data,
+    const prisma = tx || this.prisma;
+    return prisma.stockMovement.create({
+      data: {
+        type: data.type,
+        description: data.description,
+        items: {
+          create: data.items.map((item) => ({
+            quantity: item.quantity,
+            productId: item.productId,
+          })),
+        },
+      },
       include: {
         items: {
           include: {

@@ -7,11 +7,19 @@ import {
   HttpStatus,
   Inject,
   Param,
+  Query,
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
 import { IStockMovementService } from '../interfaces/stock_movement.service.interface';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { MovementType } from '@src/common/enums/movement_type.enum';
 import { StockMovementDTO } from '../dtos/stock_movement.dto';
 import { CreateStockMovementDTO } from '../dtos/create_stock_movement.dto';
 
@@ -28,9 +36,15 @@ export class StockMovementController {
     description: 'Returns all stock movements.',
     type: [StockMovementDTO],
   })
+  @ApiQuery({
+    name: 'type',
+    enum: MovementType,
+    required: false,
+    description: 'Filter stock movements by type (IN or OUT)',
+  })
   @HttpCode(HttpStatus.OK)
-  async getAllStockMovements() {
-    return await this.stockMovementService.getAllStockMovements();
+  async getAllStockMovements(@Query('type') type?: MovementType) {
+    return await this.stockMovementService.getAllStockMovements(type);
   }
 
   @Get(':id')
@@ -50,7 +64,7 @@ export class StockMovementController {
     description: 'Stock movement not found.',
   })
   @HttpCode(HttpStatus.OK)
-  async getProductById(@Param('id', ParseIntPipe) id: number) {
+  async getStockMovementById(@Param('id', ParseIntPipe) id: number) {
     return await this.stockMovementService.getStockMovementById(id);
   }
 
@@ -70,7 +84,7 @@ export class StockMovementController {
     description: 'Invalid input data.',
   })
   @HttpCode(HttpStatus.CREATED)
-  async createProduct(@Body() stockMovementDto: CreateStockMovementDTO) {
+  async createStockMovement(@Body() stockMovementDto: CreateStockMovementDTO) {
     return await this.stockMovementService.createStockMovement(
       stockMovementDto,
     );
@@ -93,7 +107,9 @@ export class StockMovementController {
     description: 'Stock movement not found.',
   })
   @HttpCode(HttpStatus.OK)
-  async deleteProduct(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async deleteStockMovement(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<void> {
     await this.stockMovementService.deleteStockMovement(id);
   }
 }
