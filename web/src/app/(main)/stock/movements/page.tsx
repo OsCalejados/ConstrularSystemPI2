@@ -25,16 +25,7 @@ export default function Movements() {
   })
 
   if (isLoading) {
-    return (
-      <Page.Container>
-        <Page.Header>
-          <Breadcrumb currentPage="Movimentações" />
-        </Page.Header>
-        <Page.Content>
-          <LoadSpinner />
-        </Page.Content>
-      </Page.Container>
-    )
+    return <LoadSpinner />
   }
 
   if (isError) {
