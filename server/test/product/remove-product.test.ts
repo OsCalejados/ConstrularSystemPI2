@@ -1,101 +1,85 @@
-// import { HttpStatus } from '@nestjs/common';
-// import { Product } from '@prisma/client';
-// import { AppException } from '@src/common/exceptions/app.exception';
-// import { IOrderService } from '@src/modules/order/interfaces/order.service.interface';
-// import { IProductRepository } from '@src/modules/product/interfaces/product.repository.interface';
-// import { ProductService } from '@src/modules/product/services/product.service';
+import { HttpStatus } from '@nestjs/common';
+import { AppException } from '@src/common/exceptions/app.exception';
+import { ProductService } from '@src/modules/product/services/product.service';
+import { ProductFactory } from '../factories/product.factory';
 
-// describe('Remove Product Service Tests', () => {
-//   describe('deve remover um produto com sucesso', () => {
-//     it('should remove a product successfully', async () => {
-//       const mockOrderService: IOrderService = {
-//         getOrdersByProductId: jest.fn().mockResolvedValue([]),
-//       } as unknown as IOrderService;
+describe('Remove Product Service Tests', () => {
+  describe('deve remover um produto com sucesso', () => {
+    it('should remove a product successfully', async () => {
+      const mockOrderService = ProductFactory.createMockOrderService({
+        getOrdersByProductId: jest.fn().mockResolvedValue([]),
+      });
+      const mockProductRepository = ProductFactory.createMockProductRepository({
+        findById: jest
+          .fn()
+          .mockResolvedValue(
+            ProductFactory.createProduct({ id: 1, name: 'Martelo de Unha' }),
+          ),
+        delete: jest.fn().mockResolvedValue(null),
+      });
 
-//       const findByIdMock = jest.fn().mockResolvedValue({
-//         id: 1,
-//         name: 'Martelo de Unha',
-//       } as Product);
+      const productService = new ProductService(
+        mockProductRepository,
+        mockOrderService,
+      );
 
-//       const deleteMock = jest.fn().mockResolvedValue(null);
+      await productService.deleteProduct(1);
 
-//       const mockProductRepository: IProductRepository = {
-//         findById: findByIdMock,
-//         delete: deleteMock,
-//       } as unknown as IProductRepository;
+      expect(mockProductRepository.findById).toHaveBeenCalledWith(1);
+      expect(mockProductRepository.delete).toHaveBeenCalledWith(1);
+    });
+  });
 
-//       const productService = new ProductService(
-//         mockProductRepository,
-//         mockOrderService,
-//       );
+  describe('deve falhar ao remover um produto inexistente', () => {
+    it('should fail to remove a non-existent product', async () => {
+      const mockOrderService = ProductFactory.createMockOrderService({
+        getOrdersByProductId: jest.fn().mockResolvedValue([]),
+      });
+      const mockProductRepository = ProductFactory.createMockProductRepository({
+        findById: jest.fn().mockResolvedValue(null),
+      });
 
-//       await productService.deleteProduct(1);
+      const productService = new ProductService(
+        mockProductRepository,
+        mockOrderService,
+      );
 
-//       expect(findByIdMock).toHaveBeenCalledWith(1);
-//       expect(deleteMock).toHaveBeenCalledWith(1);
-//     });
-//   });
+      await expect(productService.deleteProduct(999)).rejects.toThrow(
+        new AppException('Product not found.', HttpStatus.NOT_FOUND),
+      );
 
-//   describe('deve falhar ao remover um produto inexistente', () => {
-//     it('should fail to remove a non-existent product', async () => {
-//       const mockOrderService: IOrderService = {
-//         getOrdersByProductId: jest.fn().mockResolvedValue([]),
-//       } as unknown as IOrderService;
+      expect(mockProductRepository.findById).toHaveBeenCalledWith(999);
+    });
+  });
 
-//       const findByIdMock = jest.fn().mockResolvedValue(null);
+  describe('deve falhar ao remover um produto com histórico de vendas', () => {
+    it('should fail to remove a product with sales history', async () => {
+      const mockOrderService = ProductFactory.createMockOrderService({
+        getOrdersByProductId: jest.fn().mockResolvedValue([{ id: 1 }]),
+      });
+      const mockProductRepository = ProductFactory.createMockProductRepository({
+        findById: jest.fn().mockResolvedValue(
+          ProductFactory.createProduct({
+            id: 1,
+            name: 'Cano soldável de 25mm',
+          }),
+        ),
+      });
 
-//       const mockProductRepository: IProductRepository = {
-//         findById: findByIdMock,
-//       } as unknown as IProductRepository;
+      const productService = new ProductService(
+        mockProductRepository,
+        mockOrderService,
+      );
 
-//       const productService = new ProductService(
-//         mockProductRepository,
-//         mockOrderService,
-//       );
+      await expect(productService.deleteProduct(1)).rejects.toThrow(
+        new AppException(
+          'Cannot remove product. It has a sales history.',
+          HttpStatus.BAD_REQUEST,
+        ),
+      );
 
-//       await expect(productService.deleteProduct(999)).rejects.toThrow(
-//         new AppException('Product not found.', HttpStatus.NOT_FOUND),
-//       );
-
-//       expect(findByIdMock).toHaveBeenCalledWith(999);
-//     });
-//   });
-
-//   describe('deve falhar ao remover um produto com histórico de vendas', () => {
-//     it('should fail to remove a product with sales history', async () => {
-//       const mockOrderService: IOrderService = {
-//         getOrdersByProductId: jest.fn().mockResolvedValue([{ id: 1 }]),
-//       } as unknown as IOrderService;
-
-//       const findByIdMock = jest.fn().mockResolvedValue({
-//         id: 1,
-//         name: 'Cano soldável de 25mm',
-//       } as Product);
-
-//       const mockProductRepository: IProductRepository = {
-//         findById: findByIdMock,
-//       } as unknown as IProductRepository;
-
-//       const productService = new ProductService(
-//         mockProductRepository,
-//         mockOrderService,
-//       );
-
-//       await expect(productService.deleteProduct(1)).rejects.toThrow(
-//         new AppException(
-//           'Cannot remove product. It has a sales history.',
-//           HttpStatus.BAD_REQUEST,
-//         ),
-//       );
-
-//       expect(findByIdMock).toHaveBeenCalledWith(1);
-//       expect(mockOrderService.getOrdersByProductId).toHaveBeenCalledWith(1);
-//     });
-//   });
-// });
-
-describe('Remover posteriormente', () => {
-  it('should be defined', () => {
-    expect(1).toBeDefined();
+      expect(mockProductRepository.findById).toHaveBeenCalledWith(1);
+      expect(mockOrderService.getOrdersByProductId).toHaveBeenCalledWith(1);
+    });
   });
 });

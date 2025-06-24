@@ -14,11 +14,14 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
 
 @Controller('products')
 export class ProductController {
-  constructor(private productService: IProductService) {}
+  constructor(
+    @Inject('IProductService') private productService: IProductService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all products' })
