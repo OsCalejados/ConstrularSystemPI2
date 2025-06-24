@@ -51,7 +51,8 @@ describe('ProductController (Integration)', () => {
       .withExposedPorts(5432) // Expondo a porta padrão do PostgreSQL
       .withWaitStrategy(
         Wait.forLogMessage('database system is ready to accept connections', 2),
-      )
+      ) // Espera a mensagem de log
+      .withStartupTimeout(180000) // Aumenta o tempo limite de inicialização para 3 minutos
       .start();
     console.log('[ProductService Integration] PostgreSQL container started.');
 
@@ -63,7 +64,7 @@ describe('ProductController (Integration)', () => {
 
     console.log('[ProductService Integration] Applying Prisma migrations...');
     try {
-      execSync('npx prisma migrate deploy && npx prisma db push', {
+      execSync('npx prisma migrate reset --force', {
         env: { ...process.env, DATABASE_URL: databaseUrl },
         stdio: 'inherit',
       });

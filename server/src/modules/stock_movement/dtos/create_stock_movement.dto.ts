@@ -21,8 +21,8 @@ export class CreateStockMovementDTO {
   description: string;
 
   @ApiProperty({
-    description: 'The product associated with the stock movement.',
-    type: () => CreateStockMovementDTO,
+    description: 'The items associated with the stock movement.',
+    type: () => CreateStockMovementItem,
   })
   @IsNotEmpty()
   items: CreateStockMovementItem[];

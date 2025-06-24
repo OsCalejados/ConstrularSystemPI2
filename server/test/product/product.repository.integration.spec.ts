@@ -23,7 +23,8 @@ describe('ProductRepository (Integration)', () => {
       .withExposedPorts(5432)
       .withWaitStrategy(
         Wait.forLogMessage('database system is ready to accept connections', 2),
-      )
+      ) // Espera a mensagem de log
+      .withStartupTimeout(180000) // Aumenta o tempo limite de inicialização para 3 minutos
       .start();
     console.log('PostgreSQL container started.');
 
@@ -36,7 +37,7 @@ describe('ProductRepository (Integration)', () => {
 
     console.log('Applying Prisma migrations...');
     try {
-      execSync('npx prisma migrate deploy', {
+      execSync('npx prisma migrate reset --force', {
         env: { ...process.env, DATABASE_URL: databaseUrl },
         stdio: 'inherit',
       });
