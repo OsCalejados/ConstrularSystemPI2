@@ -12,13 +12,56 @@ import { Movement } from '@/types/movement'
 import { Button } from '@/components/shadcnui/button'
 import { Page } from '@/components/layout/page'
 
+import LoadSpinner from '@/components/ui/load-spinner'
+
 export default function Movements() {
-  const { data: movements } = useQuery<Movement[]>({
+  const {
+    data: movements,
+    isLoading,
+    isError,
+  } = useQuery<Movement[]>({
     queryKey: ['movements'],
     queryFn: getMovements,
   })
 
-  if (!movements) return null
+  if (isLoading) {
+    return (
+      <Page.Container>
+        <Page.Header>
+          <Breadcrumb currentPage="Movimentações" />
+        </Page.Header>
+        <Page.Content>
+          <LoadSpinner />
+        </Page.Content>
+      </Page.Container>
+    )
+  }
+
+  if (isError) {
+    return (
+      <Page.Container>
+        <Page.Header>
+          <Breadcrumb currentPage="Movimentações" />
+        </Page.Header>
+        <Page.Content>
+          <p>Erro ao carregar movimentações.</p>
+        </Page.Content>
+      </Page.Container>
+    )
+  }
+
+  if (!movements) {
+    return (
+      <Page.Container>
+        <Page.Header>
+          <Breadcrumb currentPage="Movimentações" />
+        </Page.Header>
+        <Page.Content>
+          <p>Nenhum dado de movimentação disponível.</p>
+        </Page.Content>
+      </Page.Container>
+    )
+  }
 
   return (
     <Page.Container>

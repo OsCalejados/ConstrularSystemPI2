@@ -29,7 +29,10 @@ export default function ViewMovement() {
       return {
         description: data.description,
         type: data.type,
-        items: data.items,
+        items: data.items.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+        })),
       }
     },
   })

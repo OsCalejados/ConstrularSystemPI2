@@ -1,8 +1,10 @@
 import { MovementType } from '@/enums/movement-type'
+import { Product } from './product'
 
 export interface MovementItem {
-  productId: number
+  id: number
   quantity: number
+  product: Product
 }
 
 export interface Movement {
