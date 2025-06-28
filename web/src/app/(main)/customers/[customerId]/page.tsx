@@ -13,10 +13,10 @@ import { useRef } from 'react'
 import { Page } from '@/components/layout/page'
 import { CaretLeftIcon, PlusIcon } from '@phosphor-icons/react/dist/ssr'
 import Breadcrumb from '@/components/ui/breadcrumb'
-import { OrdersTable } from '@/components/tables/orders-table'
 import { getOrdersByCustomer } from '@/services/order-service'
-import { installmentOrdersColumns } from '@/components/tables/installment-orders-culumns'
 import { Order } from '@/types/order'
+import { customerOrdersColumns } from '@/components/tables/customer-orders-columns'
+import { CustomerOrdersTable } from '@/components/tables/customer-orders-table'
 
 export default function Customer() {
   const router = useRouter()
@@ -94,7 +94,7 @@ export default function Customer() {
 
         <div className="flex flex-col gap-2">
           <h3 className="font-medium">Pedidos</h3>
-          <OrdersTable columns={installmentOrdersColumns} data={orders} />
+          <CustomerOrdersTable columns={customerOrdersColumns} data={orders} />
         </div>
       </Page.Content>
     </Page.Container>
