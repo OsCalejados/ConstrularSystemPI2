@@ -7,6 +7,7 @@ interface FindOrderOptions {
   includeProducts?: boolean
   includeCustomer?: boolean
   includeSeller?: boolean
+  type?: string
 }
 
 export async function getOrders(options?: FindOrderOptions) {
@@ -16,6 +17,7 @@ export async function getOrders(options?: FindOrderOptions) {
       includeProducts: options?.includeProducts,
       includeCustomer: options?.includeCustomer,
       includeSeller: options?.includeSeller,
+      type: options?.type,
     },
   })
 
