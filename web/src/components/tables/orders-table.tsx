@@ -26,6 +26,7 @@ import {
   Table,
 } from '@/components/shadcnui/table'
 import { Order } from '@/types/order'
+import { OrderType } from '@/enums/order-type'
 
 type DataType = Order
 
@@ -107,28 +108,37 @@ export function OrdersTable<TData extends DataType, TValue>({
 
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                  className="cursor-pointer"
-                  onClick={() => router.push(`${pathname}/${row.original.id}`)}
-                >
-                  {row.getVisibleCells().map((cell, index) => (
-                    <TableCell
-                      key={cell.id}
-                      className={
-                        index === 0 ? 'text-primary' : 'text-secondary'
-                      }
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const orderSubroute =
+                  row.original.type === OrderType.INSTALLMENT
+                    ? 'installments'
+                    : OrderType.SALE
+                      ? 'sales'
+                      : 'quotes'
+                const orderPath = `/orders/${orderSubroute}/${row.original.id}`
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    className="cursor-pointer"
+                    onClick={() => router.push(orderPath)}
+                  >
+                    {row.getVisibleCells().map((cell, index) => (
+                      <TableCell
+                        key={cell.id}
+                        className={
+                          index === 0 ? 'text-primary' : 'text-secondary'
+                        }
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell

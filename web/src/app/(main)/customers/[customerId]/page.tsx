@@ -13,6 +13,10 @@ import { useRef } from 'react'
 import { Page } from '@/components/layout/page'
 import { CaretLeftIcon, PlusIcon } from '@phosphor-icons/react/dist/ssr'
 import Breadcrumb from '@/components/ui/breadcrumb'
+import { OrdersTable } from '@/components/tables/orders-table'
+import { getOrdersByCustomer } from '@/services/order-service'
+import { installmentOrdersColumns } from '@/components/tables/installment-orders-culumns'
+import { Order } from '@/types/order'
 
 export default function Customer() {
   const router = useRouter()
@@ -27,7 +31,15 @@ export default function Customer() {
       }),
   })
 
-  if (!customer) return null
+  const { data: orders } = useQuery<Order[]>({
+    queryKey: ['orderByCustomerId'],
+    queryFn: () =>
+      getOrdersByCustomer(customerId as string, {
+        includeCustomer: true,
+      }),
+  })
+
+  if (!customer || !orders) return null
 
   return (
     <Page.Container ref={containerRef}>
@@ -76,6 +88,13 @@ export default function Customer() {
               useLongLabel
             />
           </div>
+        </div>
+
+        <div className="h-px bg-border my-4" />
+
+        <div className="flex flex-col gap-2">
+          <h3 className="font-medium">Pedidos</h3>
+          <OrdersTable columns={installmentOrdersColumns} data={orders} />
         </div>
       </Page.Content>
     </Page.Container>

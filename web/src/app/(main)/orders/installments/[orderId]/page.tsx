@@ -94,7 +94,7 @@ export default function Order() {
     <Page.Container>
       <Page.Header>
         <Breadcrumb
-          currentPage={`Pedido ${order.id}`}
+          currentPage={`Pedido #${orderId.toString().padStart(6, '0')}`}
           parents={[
             {
               name: 'Pedidos',
@@ -118,7 +118,9 @@ export default function Order() {
             >
               <CaretLeftIcon size={20} />
             </Button>
-            <h2 className="font-medium">Pedido {order.id}</h2>
+            <h2 className="font-medium">
+              Pedido #{orderId.toString().padStart(6, '0')}
+            </h2>
           </div>
           <div className="flex gap-2">
             <OrderOptions order={order} variant="primary" />
