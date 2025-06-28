@@ -1,7 +1,12 @@
 import { IOrderRepository } from '../interfaces/order.repository.interface';
+import { CustomerService } from '@src/modules/customer/services/customer.service';
+import { OrderPaymentDto } from '../dtos/order-payment.dto';
 import { CreateOrderDto } from '../dtos/create-order.dto';
 import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { OrderStrategy } from './order.strategy';
+import { PaymentMethod } from '@src/common/enums/payment-method.enum';
+import { PrismaService } from '@src/common/services/prisma.service';
+import { OrderStatus } from '@src/common/enums/order-status.enum';
 import { OrderType } from '@src/common/enums/order-type.enum';
 import { OrderDto } from '../dtos/order.dto';
 import {
@@ -10,12 +15,6 @@ import {
   Injectable,
   Inject,
 } from '@nestjs/common';
-import { IProductRepository } from '@src/modules/product/interfaces/product.repository.interface';
-import { CustomerService } from '@src/modules/customer/services/customer.service';
-import { OrderPaymentDto } from '../dtos/order-payment.dto';
-import { PaymentMethod } from '@src/common/enums/payment-method.enum';
-import { PrismaService } from '@src/common/services/prisma.service';
-import { OrderStatus } from '@src/common/enums/order-status.enum';
 
 @Injectable()
 export class InstallmentOrderStrategy extends OrderStrategy {
@@ -23,8 +22,6 @@ export class InstallmentOrderStrategy extends OrderStrategy {
     @Inject('IOrderRepository')
     private readonly orderRepository: IOrderRepository,
     private readonly customerService: CustomerService,
-    @Inject('IProductRepository')
-    private readonly productRepository: IProductRepository,
     private readonly prisma: PrismaService,
   ) {
     super();
