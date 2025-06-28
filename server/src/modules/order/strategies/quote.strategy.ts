@@ -4,11 +4,16 @@ import { UpdateOrderDto } from '../dtos/update-order.dto';
 import { OrderStrategy } from './order.strategy';
 import { OrderType } from '@src/common/enums/order-type.enum';
 import { OrderDto } from '../dtos/order.dto';
+import { Inject, Injectable } from '@nestjs/common';
 
+@Injectable()
 export class QuoteOrderStrategy extends OrderStrategy {
   type = OrderType.QUOTE;
 
-  constructor(private readonly orderRepository: IOrderRepository) {
+  constructor(
+    @Inject('IOrderRepository')
+    private readonly orderRepository: IOrderRepository,
+  ) {
     super();
   }
 

@@ -160,8 +160,8 @@ export default function Sidebar() {
                               <SidebarMenuSubItem key={subItem.title}>
                                 <SidebarMenuSubButton
                                   asChild
-                                  isActive={pathname === subItem.url}
-                                  className="data-[active='true']:text-contrast data-[active='true']:bg-transparent data-[active='true']:font-medium"
+                                  isActive={isActive(subItem)}
+                                  className="data-[active='true']:text-contrast data-[active=true]:bg-transparent data-[active='true']:font-medium"
                                 >
                                   <a href={subItem.url}>
                                     <span>{subItem.title}</span>

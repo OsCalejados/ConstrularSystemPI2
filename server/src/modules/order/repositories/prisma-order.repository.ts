@@ -106,11 +106,13 @@ export class PrismaOrderRepository extends IOrderRepository {
             id: sellerId ?? undefined,
           },
         },
-        customer: {
-          connect: {
-            id: order.customerId ?? undefined,
+        ...(order.customerId && {
+          customer: {
+            connect: {
+              id: order.customerId ?? undefined,
+            },
           },
-        },
+        }),
         items: {
           createMany: {
             data: order.items,
@@ -123,7 +125,6 @@ export class PrismaOrderRepository extends IOrderRepository {
                 change: payment.change ?? 0,
                 paymentMethod: payment.paymentMethod,
                 installments: payment.installments,
-                paidAt: payment.paidAt ?? new Date(),
               })),
             }
           : undefined,

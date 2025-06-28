@@ -35,7 +35,7 @@ interface DataTableProps<TData extends DataType, TValue> {
   data: TData[]
 }
 
-export function OrdersTable<TData extends DataType, TValue>({
+export function CustomerOrdersTable<TData extends DataType, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -74,10 +74,10 @@ export function OrdersTable<TData extends DataType, TValue>({
       <div className="rounded-md border">
         <div className="px-4 flex items-center justify-between">
           <TableSearchField
-            placeholder="Buscar por nome..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            placeholder="Buscar por código do pedido..."
+            value={(table.getColumn('id')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
+              table.getColumn('id')?.setFilterValue(event.target.value)
             }
             className="w-full max-w-sm"
           />

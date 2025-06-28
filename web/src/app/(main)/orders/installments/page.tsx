@@ -27,13 +27,13 @@ export default function Orders() {
     <Page.Container>
       {/* Header */}
       <Page.Header>
-        <Breadcrumb currentPage="Pedidos" />
+        <Breadcrumb currentPage="Pedidos a prazo" />
       </Page.Header>
 
       {/* Content */}
       <Page.Content>
         <div className="flex justify-between items-center">
-          <h2 className="font-medium">Pedidos</h2>
+          <h2 className="font-medium">Pedidos a prazo</h2>
           <Button className="bg-primary gap-1 hover:bg-primary-hover" asChild>
             <Link href="/orders/installments/create">
               <PlusIcon size={20} weight="bold" className="text-white" />

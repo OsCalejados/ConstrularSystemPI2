@@ -40,12 +40,15 @@ export async function getOrderById(
 
 export async function getOrdersByCustomer(
   customerId: number | string,
-  page: number = 1,
-  pageSize: number = 12,
-  status?: string,
+  options?: FindOrderOptions,
 ) {
   const response = await api.get(`orders/customer/${customerId}`, {
-    params: { page, pageSize, status },
+    params: {
+      includePayments: options?.includePayments,
+      includeProducts: options?.includeProducts,
+      includeCustomer: options?.includeCustomer,
+      includeSeller: options?.includeSeller,
+    },
   })
 
   return response.data
