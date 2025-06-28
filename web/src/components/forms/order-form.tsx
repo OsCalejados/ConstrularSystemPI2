@@ -392,6 +392,14 @@ export default function OrderForm({
           </div>
         )}
       </div>
+
+      {/* Pagamentos */}
+      <div className="border-primary flex flex-col gap-4 flex-[2] border px-6 py-4 rounded-xl text-primary">
+        <h4 className="font-medium">Pagamentos</h4>
+        <div className="text-terciary text-sm">
+          (Em breve: área para adicionar pagamentos ou condições de pagamento)
+        </div>
+      </div>
     </form>
   )
 }
