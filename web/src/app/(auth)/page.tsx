@@ -1,12 +1,12 @@
 import LoginForm from '@/components/forms/login-form'
-import { HardHatIcon } from '@phosphor-icons/react/dist/ssr'
+import { HardHat } from '@phosphor-icons/react/dist/ssr'
 
 export default function Login() {
   return (
     <div className="h-full flex flex-col gap-4 justify-center px-16">
       <div className="flex justify-center">
         <div className="w-32 h-32 rounded-full bg-background-secondary border text-contrast flex items-center justify-center">
-          <HardHatIcon size={72} weight="fill" />
+          <HardHat size={72} weight="fill" />
         </div>
       </div>
 

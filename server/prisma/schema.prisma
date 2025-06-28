@@ -11,13 +11,13 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   name     String
-  username String  @unique
+  username String @unique
   password String
-  role     String  @default("SELLER") // ADMINISTRATOR
-  
-  Order    Order[]
+  role     String @default("SELLER") // ADMINISTRATOR
+
+  Order Order[]
 
   @@map("users")
 }
@@ -60,9 +60,10 @@ model Product {
   profitMargin  Decimal
   profit        Decimal
   salePrice     Decimal
-  createdAt     DateTime
+  createdAt     DateTime @default(now())
 
-  OrderItem OrderItem[]
+  orderItems         OrderItem[]
+  stockMovementItems StockMovementItem[]
 
   @@map("products")
 }
@@ -73,31 +74,72 @@ model Order {
   sellerId      Int
   type          String
   status        String
+  subtotal      Decimal
   total         Decimal
+  notes         String?
   discount      Decimal  @default(0.00)
   paymentMethod String?
   paid          Boolean  @default(false)
   installments  Int? // Usado quando pagamento em cartão de crédito
   amountPaid    Decimal? // Usado quando pagamento em dinheiro
-  createdAt     DateTime
+  createdAt     DateTime @default(now())
 
-  customer Customer?   @relation(fields: [customerId], references: [id])
-  seller   User        @relation(fields: [sellerId], references: [id])
+  customer Customer?      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  seller   User           @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   items    OrderItem[]
+  payments OrderPayment[]
 
   @@map("orders")
 }
 
 model OrderItem {
   id        Int     @id @default(autoincrement())
-  orderId   Int
-  productId Int
   quantity  Decimal
   unitPrice Decimal
   total     Decimal
 
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderId   Int
+  productId Int
 
   @@map("order_items")
+}
+
+model OrderPayment {
+  id            Int      @id @default(autoincrement())
+  amount        Decimal
+  change        Decimal?
+  paymentMethod String // CASH | DEBIT | CREDIT | PIX
+  installments  Int? // Caso cartão, define quantas parcelas
+  paidAt        DateTime @default(now())
+
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId Int
+
+  @@map("order_payments")
+}
+
+model StockMovement {
+  id          Int      @id @default(autoincrement())
+  type        String
+  description String
+  createdAt   DateTime @default(now())
+
+  items StockMovementItem[]
+
+  @@map("stock_movements")
+}
+
+model StockMovementItem {
+  id       Int     @id @default(autoincrement())
+  quantity Decimal
+
+  stockMovementId Int
+  productId       Int
+
+  stockMovement StockMovement @relation(fields: [stockMovementId], references: [id], onDelete: Cascade)
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("stock_movement_items")
 }

@@ -1,8 +1,9 @@
 export interface Address {
   id: number
-  district?: string
+  city?: string
+  neighborhood?: string
   street?: string
   number?: string
   complement?: string
-  landmark?: string
+  reference?: string
 }

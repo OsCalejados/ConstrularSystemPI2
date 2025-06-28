@@ -65,7 +65,7 @@ export const setupPrinter = () => {
     // Informações do Cliente
     printData.push({
       type: 'text',
-      value: `Cliente: ${data.customer.name}`,
+      value: `Cliente: ${data.customer?.name}`,
       style: {
         fontWeight: '500',
         textAlign: 'left',
@@ -73,7 +73,7 @@ export const setupPrinter = () => {
       },
     })
 
-    if (data.customer.phone) {
+    if (data.customer?.phone) {
       printData.push({
         type: 'text',
         value: `Telefone: ${data.customer.phone}`,
@@ -85,10 +85,10 @@ export const setupPrinter = () => {
       })
     }
 
-    if (data.customer.email) {
+    if (data.customer?.email) {
       printData.push({
         type: 'text',
-        value: `Email: ${data.customer.email}`,
+        value: `Email: ${data.customer?.email}`,
         style: {
           fontWeight: '500',
           textAlign: 'left',
@@ -130,10 +130,10 @@ export const setupPrinter = () => {
         { type: 'text', value: 'Produto' },
       ],
       // multi dimensional array depicting the rows and columns of the table body
-      tableBody: data.items.map((item) => [
+      tableBody: data.items?.map((item) => [
         { type: 'text', value: item.quantity.toString() },
-        { type: 'text', value: item.unit },
-        { type: 'text', value: item.name },
+        { type: 'text', value: item.unitPrice.toString() },
+        { type: 'text', value: item.total.toString() },
       ]),
       // list of rows to be rendered in the table footer
       tableFooter: [],

@@ -1,5 +1,10 @@
-import { CustomerFormData } from '@/types/validations'
-import { api } from '@/lib/axios'
+import { BalanceFormData, CustomerFormData } from '@/types/validations'
+import api from '@/lib/axios'
+
+interface FindCustomerOptions {
+  includeAddress?: boolean
+  includeOrders?: boolean
+}
 
 export async function getCustomers() {
   const response = await api.get('customers')
@@ -9,16 +14,18 @@ export async function getCustomers() {
 
 export async function getCustomerById(
   customerId: number | string,
-  includeOrders: boolean = false,
+  options?: FindCustomerOptions,
 ) {
   const response = await api.get(`customers/${customerId}`, {
-    params: { includeOrders },
+    params: { includeAddress: options?.includeAddress },
   })
 
   return response.data
 }
 
 export async function createCustomer(customerFormData: CustomerFormData) {
+  console.log(customerFormData)
+
   const { email, ...data } = customerFormData
 
   const response = await api.post('customers', {
@@ -43,8 +50,14 @@ export async function updateCustomer(
   console.log(response.data)
 }
 
-export async function updateBalance(customerId: number, balance: number) {
-  const response = await api.put(`customers/${customerId}/balance`, { balance })
+export async function updateBalance(
+  customerId: number,
+  balanceFormData: BalanceFormData,
+) {
+  const response = await api.put(
+    `customers/${customerId}/balance`,
+    balanceFormData,
+  )
 
   console.log(response.data)
 }

@@ -18,52 +18,83 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuAction,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from '@/components/shadcnui/sidebar'
 
+import { HardHatIcon } from '@phosphor-icons/react/dist/ssr'
+import { ChevronRight, Package, Tags, Users } from 'lucide-react'
 import {
-  HardHatIcon,
-  ShoppingCartSimpleIcon,
-} from '@phosphor-icons/react/dist/ssr'
-import { ChartColumn, Package, Tags, Users } from 'lucide-react'
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/shadcnui/collapsible'
 
 interface MenuItem {
   title: string
   url: string
   icon: React.ElementType
   protected?: boolean
+  items?: {
+    title: string
+    url: string
+  }[]
 }
 
 const items: MenuItem[] = [
-  {
-    title: 'PDV',
-    url: '/pos',
-    icon: ShoppingCartSimpleIcon,
-  },
+  // {
+  //   title: 'PDV',
+  //   url: '/pos',
+  //   icon: ShoppingCartSimpleIcon,
+  // },
   {
     title: 'Pedidos',
     url: '/orders',
     icon: Tags,
+    items: [
+      {
+        title: 'Vendas',
+        url: '/orders/sales',
+      },
+      {
+        title: 'A prazo',
+        url: '/orders/installments',
+      },
+    ],
   },
   {
     title: 'Estoque',
-    url: '/inventory',
+    url: '/stock',
     icon: Package,
+    items: [
+      {
+        title: 'Produtos',
+        url: '/stock/products',
+      },
+      {
+        title: 'Movimentações',
+        url: '/stock/movements',
+      },
+    ],
   },
   {
     title: 'Clientes',
     url: '/customers',
     icon: Users,
   },
-  {
-    title: 'Relatórios',
-    url: '/reports',
-    icon: ChartColumn,
-    protected: true,
-  },
+  // {
+  //   title: 'Relatórios',
+  //   url: '/reports',
+  //   icon: ChartColumn,
+  //   protected: true,
+  // },
 ]
 
 export default function Sidebar() {
   const pathname = usePathname()
+  console.log(pathname)
 
   const isActive = (item: { url: string }) =>
     item.url === '/'
@@ -85,7 +116,7 @@ export default function Sidebar() {
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <HardHatIcon weight="fill" className="size-4" />
                 </div>
-                <h1 className="text-xl font-bold">Socifit</h1>
+                <h1 className="text-xl font-bold">Constrular</h1>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -99,22 +130,56 @@ export default function Sidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive(item)}
-                    className="data-[active='true']:border-primary data-[active='true']:border"
-                  >
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <Collapsible
+                  key={`${item.title}-${pathname}`}
+                  asChild
+                  defaultOpen={isActive(item)}
+                >
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(item)}
+                      className="data-[active='true']:border-contrast data-[active='true']:border"
+                    >
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                    {item.items?.length ? (
+                      <>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuAction className="data-[state=open]:rotate-90">
+                            <ChevronRight />
+                            <span className="sr-only">Toggle</span>
+                          </SidebarMenuAction>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.items?.map((subItem) => (
+                              <SidebarMenuSubItem key={subItem.title}>
+                                <SidebarMenuSubButton
+                                  asChild
+                                  isActive={pathname === subItem.url}
+                                  className="data-[active='true']:text-contrast data-[active='true']:bg-transparent data-[active='true']:font-medium"
+                                >
+                                  <a href={subItem.url}>
+                                    <span>{subItem.title}</span>
+                                  </a>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </>
+                    ) : null}
+                  </SidebarMenuItem>
+                </Collapsible>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
         {/* <SidebarGroup>
           <SidebarGroupLabel>Sistema</SidebarGroupLabel>
           <SidebarGroupContent>

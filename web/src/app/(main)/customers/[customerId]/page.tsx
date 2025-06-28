@@ -1,62 +1,59 @@
 'use client'
 
 import CustomerOptions from '@/components/dropdown-menus/customer-options'
-import TabsProvider from '@/components/ui/tabs/tabs-context'
-import Selectors from '@/components/ui/tabs/selectors'
-import Content from '@/components/ui/tabs/content'
-import Galery from '@/app/(main)/customers/[customerId]/_components/galery'
 import Link from 'next/link'
 
 import { Customer as TCustomer } from '@/types/customer'
 import { getCustomerById } from '@/services/customer-service'
-import { formatCurrency } from '@/utils/format-currency'
-import { OrderStatus } from '@/enums/order-status'
-import { useParams } from 'next/navigation'
+import { formatCurrency } from '@/utils/format/format-currency'
+import { useParams, useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/shadcnui/button'
 import { useRef } from 'react'
-import { Tabs } from '@/types/tabs'
 import { Page } from '@/components/layout/page'
-import { Plus } from '@phosphor-icons/react/dist/ssr'
+import { CaretLeftIcon, PlusIcon } from '@phosphor-icons/react/dist/ssr'
+import Breadcrumb from '@/components/ui/breadcrumb'
 
 export default function Customer() {
+  const router = useRouter()
   const containerRef = useRef<HTMLDivElement>(null)
   const { customerId } = useParams()
 
   const { data: customer } = useQuery<TCustomer>({
     queryKey: ['customerById'],
-    queryFn: () => getCustomerById(customerId as string, true),
+    queryFn: () =>
+      getCustomerById(customerId as string, {
+        includeAddress: true,
+      }),
   })
 
-  if (!customer || !customer.orders) return null
-
-  const tabs = [
-    {
-      id: 'all',
-      label: 'Todos',
-      value: customer.orders.length,
-    },
-    {
-      id: 'paid',
-      label: 'Pagos',
-      value: customer.orders.filter(
-        (order) => order.status === OrderStatus.PAID,
-      ).length,
-    },
-    {
-      id: 'pending',
-      label: 'Pendentes',
-      value: customer.orders.filter(
-        (order) => order.status === OrderStatus.PENDING,
-      ).length,
-    } as Tabs,
-  ]
+  if (!customer) return null
 
   return (
     <Page.Container ref={containerRef}>
       <Page.Header>
+        <Breadcrumb
+          currentPage={customer.name}
+          parents={[
+            {
+              name: 'Clientes',
+              path: '/customers',
+            },
+          ]}
+        />
+      </Page.Header>
+      <Page.Content>
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl">{customer.name}</h1>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => router.back()}
+              className="w-8 h-8"
+              variant="outline"
+            >
+              <CaretLeftIcon size={20} />
+            </Button>
+            <h2 className="font-medium">{customer.name}</h2>
+          </div>
           <div className="flex gap-2 justify-between items-center">
             <div className="border border-primary rounded-lg font-medium h-10 flex gap-1 items-center px-4 text-sm">
               <span>Saldo: </span>
@@ -65,12 +62,9 @@ export default function Customer() {
               </span>
             </div>
 
-            <Button
-              className="bg-button-primary gap-1 hover:bg-button-primary-hover"
-              asChild
-            >
+            <Button className="bg-primary hover:bg-primary-hover gap-1" asChild>
               <Link href={`/orders/create?customer=${customer.id}`}>
-                <Plus size={20} weight="bold" className="text-white" />
+                <PlusIcon size={20} weight="bold" className="text-white" />
                 <span>Novo pedido</span>
               </Link>
             </Button>
@@ -83,33 +77,7 @@ export default function Customer() {
             />
           </div>
         </div>
-      </Page.Header>
-
-      <TabsProvider tabs={tabs}>
-        <Selectors />
-        <Content value="all">
-          <Galery
-            customerId={customerId as string}
-            containerRef={containerRef}
-          />
-        </Content>
-
-        <Content value="paid">
-          <Galery
-            customerId={customerId as string}
-            containerRef={containerRef}
-            status={OrderStatus.PAID}
-          />
-        </Content>
-
-        <Content value="pending">
-          <Galery
-            customerId={customerId as string}
-            containerRef={containerRef}
-            status={OrderStatus.PENDING}
-          />
-        </Content>
-      </TabsProvider>
+      </Page.Content>
     </Page.Container>
   )
 }

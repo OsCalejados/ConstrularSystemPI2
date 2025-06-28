@@ -1,8 +1,8 @@
-import { UserRepository } from 'src/modules/user/repositories/user.repository';
+import { UserRepository } from '@src/modules/user/repositories/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { Injectable } from '@nestjs/common';
 import { PayloadDto } from '../dtos/payload.dto';
-import { UserMapper } from 'src/modules/user/mappers/user.mapper';
+import { UserMapper } from '@src/modules/user/mappers/user.mapper';
 import { LoginDto } from '../dtos/login.dto';
 
 @Injectable()

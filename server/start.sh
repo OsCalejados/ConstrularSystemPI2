@@ -1,5 +1,3 @@
-#!/bin/sh
-
 # Espera o Postgres estar disponível
 until nc -z db 5432; do
   echo "⏳ Aguardando o PostgreSQL ficar disponível..."
@@ -17,12 +15,12 @@ else
   npx prisma migrate dev --name init
 fi
 
-echo "⏳ Criando Usuário Admin..."
-npm run prisma:seed
-
 # Gera os clients do Prisma
 echo "⏳ Gerando Prisma Client..."
 npx prisma generate
+
+echo "⏳ Criando Usuário Admin..."
+npm run prisma:seed
 
 # Inicia o Prisma Studio
 echo "⏳ Iniciando Prisma Studio..."

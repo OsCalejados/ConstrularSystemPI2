@@ -1,15 +1,39 @@
-import { OrderFormData } from '@/types/validations'
-import { api } from '@/lib/axios'
+import { InstallmentOrderFormData, PaymentFormData } from '@/types/validations'
 import { OrderStatus } from '@/enums/order-status'
+import api from '@/lib/axios'
 
-export async function getOrders() {
-  const response = await api.get('orders')
+interface FindOrderOptions {
+  includePayments?: boolean
+  includeProducts?: boolean
+  includeCustomer?: boolean
+  includeSeller?: boolean
+}
+
+export async function getOrders(options?: FindOrderOptions) {
+  const response = await api.get('orders', {
+    params: {
+      includePayments: options?.includePayments,
+      includeProducts: options?.includeProducts,
+      includeCustomer: options?.includeCustomer,
+      includeSeller: options?.includeSeller,
+    },
+  })
 
   return response.data
 }
 
-export async function getOrderById(orderId: number | string) {
-  const response = await api.get(`orders/${orderId}`)
+export async function getOrderById(
+  orderId: number | string,
+  options?: FindOrderOptions,
+) {
+  const response = await api.get(`orders/${orderId}`, {
+    params: {
+      includePayments: options?.includePayments,
+      includeProducts: options?.includeProducts,
+      includeCustomer: options?.includeCustomer,
+      includeSeller: options?.includeSeller,
+    },
+  })
 
   return response.data
 }
@@ -27,33 +51,17 @@ export async function getOrdersByCustomer(
   return response.data
 }
 
-export async function createOrder(orderFormData: OrderFormData) {
-  const { customerId: id, ...data } = orderFormData
-  const customerId = parseInt(id)
-
-  const body = {
-    customerId,
-    ...data,
-  }
-
-  const response = await api.post('orders', body)
+export async function createOrder(orderFormData: InstallmentOrderFormData) {
+  const response = await api.post('orders', orderFormData)
 
   console.log(response.data)
 }
 
 export async function updateOrder(
   orderId: number | string,
-  orderFormData: OrderFormData,
+  orderFormData: InstallmentOrderFormData,
 ) {
-  const { customerId: id, ...data } = orderFormData
-  const customerId = parseInt(id)
-
-  const body = {
-    customerId,
-    ...data,
-  }
-
-  const response = await api.put(`orders/${orderId}`, body)
+  const response = await api.put(`orders/${orderId}`, orderFormData)
 
   console.log(response.data)
 }
@@ -80,4 +88,18 @@ export async function deleteManyOrders(orderIds: number[]) {
       orderIds,
     },
   })
+}
+
+export async function addPayment(
+  orderId: number | string,
+  paymentFormData: PaymentFormData,
+) {
+  await api.post(`orders/${orderId}/payments`, paymentFormData)
+}
+
+export async function deletePayment(
+  orderId: number | string,
+  paymentId: number | string,
+) {
+  await api.delete(`orders/${orderId}/payments/${paymentId}`)
 }

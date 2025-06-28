@@ -18,10 +18,10 @@ import {
 } from '@/components/shadcnui/dropdown-menu'
 
 import {
-  PencilSimple,
   TrashSimple,
   Wallet,
   Eye,
+  PencilSimpleIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import { deleteCustomer } from '@/services/customer-service'
 import { useRouter } from 'next/navigation'
@@ -75,7 +75,7 @@ export default function CustomerOptions({
             </Button>
           ) : (
             <Button
-              className="bg-button-primary gap-1 hover:bg-button-primary-hover px-0 w-10"
+              className="bg-primary hover:bg-primary-hover gap-1 px-0 w-10"
               onClick={(event) => event.stopPropagation()}
             >
               <MoreVertical className="h-4 w-4" />
@@ -125,7 +125,7 @@ export default function CustomerOptions({
               onClick={(event) => event.stopPropagation()}
               className="gap-2"
             >
-              <PencilSimple size={16} />
+              <PencilSimpleIcon size={16} />
               <span>{useLongLabel ? 'Editar dados' : 'Editar'}</span>
             </Link>
           </DropdownMenuItem>
