@@ -28,10 +28,11 @@ import { parseNumber } from '@/utils/parse/number'
 import { formatPercentage } from '@/utils/format/format-percentage'
 
 interface SaleOrderFormProps {
-  onSubmit: (data: SaleOrderFormData) => Promise<void>
+  onSubmit?: (data: SaleOrderFormData) => Promise<void>
   customers: Customer[]
   products: Product[]
   showBalanceOption?: boolean
+  readOnly?: boolean
 }
 
 export default function SaleOrderForm({
@@ -39,6 +40,7 @@ export default function SaleOrderForm({
   customers,
   products,
   showBalanceOption = false,
+  readOnly = false,
 }: SaleOrderFormProps) {
   const {
     control,
@@ -100,28 +102,30 @@ export default function SaleOrderForm({
     <form
       className="flex flex-col lg:flex-row gap-4"
       id="order-form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={onSubmit ? handleSubmit(onSubmit) : undefined}
     >
       <div className="flex flex-col gap-4 flex-[4]">
         {/* Produtos */}
         <div className="border-primary max-h-[calc(100vh-412px)] flex flex-col gap-4 border p-5 pt-4 rounded-xl text-primary">
           <div className="pt-1 px-1 flex justify-between items-center">
             <h4 className="font-medium">Produtos</h4>
-            <button
-              type="button"
-              onClick={() => {
-                append({
-                  productId: '' as unknown as number,
-                  unitPrice: 0,
-                  quantity: 1,
-                  total: 0,
-                })
-                clearErrors()
-              }}
-              className="text-contrast hover:text-contrast-hover text-sm"
-            >
-              Adicionar novo item
-            </button>
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() => {
+                  append({
+                    productId: '' as unknown as number,
+                    unitPrice: 0,
+                    quantity: 1,
+                    total: 0,
+                  })
+                  clearErrors()
+                }}
+                className="text-contrast hover:text-contrast-hover text-sm"
+              >
+                Adicionar novo item
+              </button>
+            )}
           </div>
           <div className="px-1 mt-2 pb-1 flex flex-1 flex-col gap-4 overflow-y-auto">
             {fields.map((field, index) => (
@@ -135,26 +139,35 @@ export default function SaleOrderForm({
                       <Select
                         name={field.name}
                         value={field.value?.toString()}
-                        onValueChange={(value) => {
-                          field.onChange(Number(value))
-                          const product = products.find(
-                            (p) => p.id.toString() === value,
-                          )
-                          if (product) {
-                            setValue(
-                              `items.${index}.unitPrice`,
-                              Number(product.salePrice),
-                              {
-                                shouldValidate: true,
-                              },
-                            )
-                            const quantity =
-                              watchedItems?.[index]?.quantity || 0
-                            updateItemTotal(index, product.salePrice, quantity)
-                          }
-                        }}
+                        onValueChange={
+                          readOnly
+                            ? undefined
+                            : (value) => {
+                                field.onChange(Number(value))
+                                const product = products.find(
+                                  (p) => p.id.toString() === value,
+                                )
+                                if (product) {
+                                  setValue(
+                                    `items.${index}.unitPrice`,
+                                    Number(product.salePrice),
+                                    {
+                                      shouldValidate: true,
+                                    },
+                                  )
+                                  const quantity =
+                                    watchedItems?.[index]?.quantity || 0
+                                  updateItemTotal(
+                                    index,
+                                    product.salePrice,
+                                    quantity,
+                                  )
+                                }
+                              }
+                        }
+                        disabled={readOnly}
                       >
-                        <SelectTrigger className="mt-1">
+                        <SelectTrigger className="mt-1" disabled={readOnly}>
                           <SelectValue placeholder="Selecione o produto" />
                         </SelectTrigger>
                         <SelectContent>
@@ -188,12 +201,18 @@ export default function SaleOrderForm({
                         value={
                           field.value ? formatCurrency(field.value) : 'R$ 0,00'
                         }
-                        onChange={(e) => {
-                          const float = parseCurrency(e.target.value)
-                          field.onChange(float)
-                          const quantity = watchedItems?.[index]?.quantity || 0
-                          updateItemTotal(index, float, quantity)
-                        }}
+                        onChange={
+                          readOnly
+                            ? undefined
+                            : (e) => {
+                                const float = parseCurrency(e.target.value)
+                                field.onChange(float)
+                                const quantity =
+                                  watchedItems?.[index]?.quantity || 0
+                                updateItemTotal(index, float, quantity)
+                              }
+                        }
+                        disabled={readOnly}
                       />
                     )}
                   />
@@ -214,15 +233,20 @@ export default function SaleOrderForm({
                         {...field}
                         className="mt-1"
                         value={field.value ?? ''}
-                        onChange={(e) => {
-                          const parsed = parseNumber(e.target.value)
-                          field.onChange(parsed)
-                          updateItemTotal(
-                            index,
-                            watchedItems?.[index]?.unitPrice || 0,
-                            parsed,
-                          )
-                        }}
+                        onChange={
+                          readOnly
+                            ? undefined
+                            : (e) => {
+                                const parsed = parseNumber(e.target.value)
+                                field.onChange(parsed)
+                                updateItemTotal(
+                                  index,
+                                  watchedItems?.[index]?.unitPrice || 0,
+                                  parsed,
+                                )
+                              }
+                        }
+                        disabled={readOnly}
                       />
                     )}
                   />
@@ -244,11 +268,12 @@ export default function SaleOrderForm({
                         value={
                           field.value ? formatCurrency(field.value) : 'R$ 0,00'
                         }
+                        disabled={readOnly}
                       />
                     )}
                   />
                 </div>
-                {fields.length > 1 && (
+                {!readOnly && fields.length > 1 && (
                   <div className="flex flex-col">
                     <Button
                       variant="ghost"
@@ -283,15 +308,17 @@ export default function SaleOrderForm({
                   - {formatCurrency((discount / 100) * subtotal)} (
                   {formatPercentage(discount, 'suffix')})
                 </span>
-                <ApplyDiscountDialog
-                  subtotal={subtotal}
-                  discount={discount}
-                  onConfirm={updateDiscount}
-                >
-                  <Button className="w-6 h-6 bg-primary p-0 hover:bg-primary-hover">
-                    <PencilSimpleIcon size={16} />
-                  </Button>
-                </ApplyDiscountDialog>
+                {!readOnly && (
+                  <ApplyDiscountDialog
+                    subtotal={subtotal}
+                    discount={discount}
+                    onConfirm={updateDiscount}
+                  >
+                    <Button className="w-6 h-6 bg-primary p-0 hover:bg-primary-hover">
+                      <PencilSimpleIcon size={16} />
+                    </Button>
+                  </ApplyDiscountDialog>
+                )}
               </div>
             </div>
             <div className="border-t-1 border-dashed border my-2 border-gray-300" />
@@ -316,11 +343,16 @@ export default function SaleOrderForm({
                   <Select
                     name={field.name}
                     value={field.value ? field.value.toString() : ''}
-                    onValueChange={(value) => {
-                      if (Number(value)) field.onChange(Number(value))
-                    }}
+                    onValueChange={
+                      readOnly
+                        ? undefined
+                        : (value) => {
+                            if (Number(value)) field.onChange(Number(value))
+                          }
+                    }
+                    disabled={readOnly}
                   >
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-1" disabled={readOnly}>
                       <SelectValue placeholder="Selecione o cliente" />
                     </SelectTrigger>
                     <SelectContent>
@@ -345,6 +377,8 @@ export default function SaleOrderForm({
                 id="notes"
                 {...register('notes')}
                 className="mt-1"
+                readOnly={readOnly}
+                disabled={readOnly}
               />
               <InputError error={errors.notes?.message?.toString()} />
             </div>
@@ -355,6 +389,7 @@ export default function SaleOrderForm({
                 id="useBalance"
                 type="checkbox"
                 {...register('useBalance')}
+                disabled={readOnly}
               />
               <label
                 htmlFor="useBalance"
@@ -378,9 +413,12 @@ export default function SaleOrderForm({
                   <Select
                     name={field.name}
                     value={field.value}
-                    onValueChange={(value) => field.onChange(value)}
+                    onValueChange={
+                      readOnly ? undefined : (value) => field.onChange(value)
+                    }
+                    disabled={readOnly}
                   >
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-1" disabled={readOnly}>
                       <SelectValue placeholder="Selecione a forma de pagamento" />
                     </SelectTrigger>
                     <SelectContent>
@@ -406,10 +444,15 @@ export default function SaleOrderForm({
                     value={
                       field.value ? formatCurrency(field.value) : 'R$ 0,00'
                     }
-                    onChange={(e) => {
-                      const float = parseCurrency(e.target.value)
-                      field.onChange(float)
-                    }}
+                    onChange={
+                      readOnly
+                        ? undefined
+                        : (e) => {
+                            const float = parseCurrency(e.target.value)
+                            field.onChange(float)
+                          }
+                    }
+                    disabled={readOnly}
                   />
                 )}
               />
@@ -428,10 +471,15 @@ export default function SaleOrderForm({
                       value={
                         field.value ? formatCurrency(field.value) : 'R$ 0,00'
                       }
-                      onChange={(e) => {
-                        const float = parseCurrency(e.target.value)
-                        field.onChange(float)
-                      }}
+                      onChange={
+                        readOnly
+                          ? undefined
+                          : (e) => {
+                              const float = parseCurrency(e.target.value)
+                              field.onChange(float)
+                            }
+                      }
+                      disabled={readOnly}
                     />
                   )}
                 />
