@@ -11,6 +11,7 @@ import { getOrders } from '@/services/order-service'
 import { useQuery } from '@tanstack/react-query'
 import { OrdersTable } from '@/components/tables/orders-table'
 import { installmentOrdersColumns } from '@/components/tables/installment-orders-culumns'
+import { OrderType } from '@/enums/order-type'
 
 export default function Orders() {
   const { data: orders } = useQuery<Order[]>({
@@ -18,6 +19,7 @@ export default function Orders() {
     queryFn: () =>
       getOrders({
         includeCustomer: true,
+        type: OrderType.INSTALLMENT,
       }),
   })
 
