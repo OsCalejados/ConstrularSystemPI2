@@ -4,6 +4,7 @@ export const itemSchema = z.object({
   productId: z
     .number({ message: 'Campo obrigatório.' })
     .nullable()
+    .optional()
     .refine((val) => val !== null, {
       message: 'Produto obrigatório',
     }),

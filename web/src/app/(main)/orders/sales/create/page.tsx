@@ -48,7 +48,7 @@ export default function CreateSale() {
       discount: 0,
       items: [
         {
-          productId: null,
+          productId: undefined,
           unitPrice: 0,
           quantity: 1,
           total: 0,
