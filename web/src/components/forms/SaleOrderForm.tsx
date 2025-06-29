@@ -1,6 +1,5 @@
 import ApplyDiscountDialog from '../dialogs/apply-discount'
 import InputError from '../ui/input-error'
-
 import {
   Controller,
   useFieldArray,
@@ -18,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcnui/select'
-import { InstallmentOrderFormData } from '@/types/validations'
+import { SaleOrderFormData } from '@/types/validations'
 import { PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react/dist/ssr'
 import { Product } from '@/types/product'
 import { Customer } from '@/types/customer'
@@ -28,19 +27,19 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { parseNumber } from '@/utils/parse/number'
 import { formatPercentage } from '@/utils/format/format-percentage'
 
-interface OrderFormProps {
-  onSubmit: (data: InstallmentOrderFormData) => Promise<void>
+interface SaleOrderFormProps {
+  onSubmit: (data: SaleOrderFormData) => Promise<void>
   customers: Customer[]
   products: Product[]
   showBalanceOption?: boolean
 }
 
-export default function OrderForm({
+export default function SaleOrderForm({
   onSubmit,
   customers,
   products,
   showBalanceOption = false,
-}: OrderFormProps) {
+}: SaleOrderFormProps) {
   const {
     control,
     register,
@@ -48,7 +47,7 @@ export default function OrderForm({
     clearErrors,
     handleSubmit,
     formState: { errors },
-  } = useFormContext<InstallmentOrderFormData>()
+  } = useFormContext<SaleOrderFormData>()
 
   const { fields, append, remove } = useFieldArray({
     rules: {
@@ -59,6 +58,8 @@ export default function OrderForm({
   })
 
   const watchedItems = useWatch({ control, name: 'items', defaultValue: [] })
+
+  const { watch } = useFormContext<SaleOrderFormData>()
 
   const quantityTotal = useMemo(() => {
     return watchedItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
@@ -73,9 +74,7 @@ export default function OrderForm({
       (sum, item) => sum + (item.total || 0),
       0,
     )
-
     const total = subtotal - subtotal * (discount / 100)
-
     setValue('subtotal', subtotal)
     setValue('total', total)
   }, [watchedItems, discount, setValue])
@@ -104,9 +103,8 @@ export default function OrderForm({
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="flex flex-col gap-4 flex-[4]">
-        {/* Items */}
+        {/* Produtos */}
         <div className="border-primary max-h-[calc(100vh-412px)] flex flex-col gap-4 border p-5 pt-4 rounded-xl text-primary">
-          {/* Title */}
           <div className="pt-1 px-1 flex justify-between items-center">
             <h4 className="font-medium">Produtos</h4>
             <button
@@ -125,8 +123,6 @@ export default function OrderForm({
               Adicionar novo item
             </button>
           </div>
-
-          {/* Fields */}
           <div className="px-1 mt-2 pb-1 flex flex-1 flex-col gap-4 overflow-y-auto">
             {fields.map((field, index) => (
               <div key={field.id} className="flex gap-4">
@@ -152,10 +148,8 @@ export default function OrderForm({
                                 shouldValidate: true,
                               },
                             )
-
                             const quantity =
                               watchedItems?.[index]?.quantity || 0
-
                             updateItemTotal(index, product.salePrice, quantity)
                           }
                         }}
@@ -182,7 +176,6 @@ export default function OrderForm({
                     ]?.productId?.message?.toString()}
                   />
                 </div>
-
                 <div className="w-32">
                   <Label htmlFor={`unitPrice.${index}`}>Preço unitário *</Label>
                   <Controller
@@ -197,16 +190,13 @@ export default function OrderForm({
                         }
                         onChange={(e) => {
                           const float = parseCurrency(e.target.value)
-
                           field.onChange(float)
-
                           const quantity = watchedItems?.[index]?.quantity || 0
                           updateItemTotal(index, float, quantity)
                         }}
                       />
                     )}
                   />
-
                   <InputError
                     error={errors.items?.[
                       index
@@ -214,7 +204,6 @@ export default function OrderForm({
                     className="text-wrap"
                   />
                 </div>
-
                 <div className="w-32">
                   <Label htmlFor={`quantity.${index}`}>Quantidade *</Label>
                   <Controller
@@ -237,13 +226,11 @@ export default function OrderForm({
                       />
                     )}
                   />
-
                   <InputError
                     error={errors.items?.[index]?.quantity?.message?.toString()}
                     className="text-wrap"
                   />
                 </div>
-
                 <div className="w-36">
                   <Label htmlFor={`total.${index}`}>Total</Label>
                   <Controller
@@ -261,7 +248,6 @@ export default function OrderForm({
                     )}
                   />
                 </div>
-
                 {fields.length > 1 && (
                   <div className="flex flex-col">
                     <Button
@@ -277,8 +263,7 @@ export default function OrderForm({
             ))}
           </div>
         </div>
-
-        {/* Total */}
+        {/* Conta */}
         <div className="border-primary flex flex-col gap-4 border p-6 pt-4 rounded-xl text-primary">
           <h4 className="font-medium">Conta</h4>
           <div className="flex flex-col gap-2">
@@ -286,12 +271,10 @@ export default function OrderForm({
               <span className="text-terciary">Quantidade de itens</span>
               <span className="font-medium">{quantityTotal}</span>
             </div>
-
             <div className="flex justify-between text-sm">
               <h4 className="text-terciary">Subtotal</h4>
               <span className="font-medium">{formatCurrency(subtotal)}</span>
             </div>
-
             <div className="flex justify-between text-sm">
               <span className="text-terciary">Desconto</span>
               <div className="flex items-center gap-2">
@@ -311,9 +294,7 @@ export default function OrderForm({
                 </ApplyDiscountDialog>
               </div>
             </div>
-
             <div className="border-t-1 border-dashed border my-2 border-gray-300" />
-
             <div className="flex justify-between font-medium">
               <h4>Total</h4>
               <span className="text-currency">{formatCurrency(total)}</span>
@@ -321,22 +302,17 @@ export default function OrderForm({
           </div>
         </div>
       </div>
-
-      {/* Order Details */}
-      <div className="border-primary flex flex-col gap-4 flex-[2] border px-6 py-4 rounded-xl text-primary">
-        {/* Title */}
-        <h4 className="font-medium">Detalhes do pedido</h4>
-        {/* Fields */}
-        <div className="mt-2 flex flex-col gap-4">
-          <div>
-            <Label htmlFor="customerId">Cliente *</Label>
-            <Controller
-              name="customerId"
-              control={control}
-              render={({ field }) => {
-                console.log('Customer Select value:', field.value)
-
-                return (
+      {/* Coluna Direita */}
+      <div className="flex flex-col gap-4 flex-[2]">
+        <div className="border-primary flex flex-col gap-4 border px-6 py-4 rounded-xl text-primary">
+          <h4 className="font-medium">Detalhes do pedido</h4>
+          <div className="mt-2 flex flex-col gap-4">
+            <div>
+              <Label htmlFor="customerId">Cliente *</Label>
+              <Controller
+                name="customerId"
+                control={control}
+                render={({ field }) => (
                   <Select
                     name={field.name}
                     value={field.value ? field.value.toString() : ''}
@@ -358,39 +334,112 @@ export default function OrderForm({
                       ))}
                     </SelectContent>
                   </Select>
-                )
-              }}
-            />
-            <InputError error={errors.customerId?.message?.toString()} />
+                )}
+              />
+              <InputError error={errors.customerId?.message?.toString()} />
+            </div>
+            <div>
+              <Label htmlFor="notes">Notas</Label>
+              <Textarea
+                placeholder="Insira notas sobre o pedido..."
+                id="notes"
+                {...register('notes')}
+                className="mt-1"
+              />
+              <InputError error={errors.notes?.message?.toString()} />
+            </div>
           </div>
-
-          <div>
-            <Label htmlFor="notes">Notas</Label>
-            <Textarea
-              placeholder="Insira notas sobre o pedido..."
-              id="notes"
-              {...register('notes')}
-              className="mt-1"
-            />
-            <InputError error={errors.notes?.message?.toString()} />
+          {showBalanceOption && (
+            <div className="flex items-center gap-3">
+              <input
+                id="useBalance"
+                type="checkbox"
+                {...register('useBalance')}
+              />
+              <label
+                htmlFor="useBalance"
+                className="text-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Utilizar saldo disponível no pagamento deste pedido
+              </label>
+            </div>
+          )}
+        </div>
+        {/* Pagamentos */}
+        <div className="border-primary flex flex-col gap-4 border px-4 py-4 rounded-xl text-primary">
+          <h4 className="font-medium">Pagamentos</h4>
+          <div className="flex flex-col gap-4">
+            <div>
+              <Label htmlFor="paymentMethod">Forma de pagamento *</Label>
+              <Controller
+                name="paymentMethod"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Selecione a forma de pagamento" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="CASH">Dinheiro</SelectItem>
+                      <SelectItem value="CREDIT">Cartão de crédito</SelectItem>
+                      <SelectItem value="DEBIT">Cartão de débito</SelectItem>
+                      <SelectItem value="PIX">Pix</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              <InputError error={errors.paymentMethod?.message?.toString()} />
+            </div>
+            <div>
+              <Label htmlFor="amount">Valor do pagamento</Label>
+              <Controller
+                name="amount"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    className="mt-1"
+                    value={
+                      field.value ? formatCurrency(field.value) : 'R$ 0,00'
+                    }
+                    onChange={(e) => {
+                      const float = parseCurrency(e.target.value)
+                      field.onChange(float)
+                    }}
+                  />
+                )}
+              />
+              <InputError error={errors.amount?.message?.toString()} />
+            </div>
+            {watch('paymentMethod') === 'CASH' && (
+              <div>
+                <Label htmlFor="change">Troco</Label>
+                <Controller
+                  name="change"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      className="mt-1"
+                      value={
+                        field.value ? formatCurrency(field.value) : 'R$ 0,00'
+                      }
+                      onChange={(e) => {
+                        const float = parseCurrency(e.target.value)
+                        field.onChange(float)
+                      }}
+                    />
+                  )}
+                />
+                <InputError error={errors.change?.message?.toString()} />
+              </div>
+            )}
           </div>
         </div>
-
-        {showBalanceOption && (
-          <div className="flex items-center gap-3">
-            <input
-              id="useBalance"
-              type="checkbox"
-              {...register('useBalance')}
-            />
-            <label
-              htmlFor="useBalance"
-              className="text-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Utilizar saldo disponível no pagamento deste pedido
-            </label>
-          </div>
-        )}
       </div>
     </form>
   )

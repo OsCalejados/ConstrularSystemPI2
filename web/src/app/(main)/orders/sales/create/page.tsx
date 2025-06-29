@@ -2,7 +2,7 @@
 
 import CancelDialog from '@/components/dialogs/cancel-dialog'
 import Breadcrumb from '@/components/ui/breadcrumb'
-import OrderForm from '@/components/forms/order-form'
+import SaleOrderForm from '@/components/forms/SaleOrderForm'
 
 import { SaleOrderFormData } from '@/types/validations'
 import { saleOrderSchema } from '@/validations/sale-order-schema'
@@ -143,12 +143,11 @@ export default function CreateSale() {
 
         <div className="mt-4">
           <FormProvider {...orderForm}>
-            <OrderForm
+            <SaleOrderForm
               onSubmit={async (data) => mutate(data)}
               customers={customers}
               products={products}
               showBalanceOption
-              showPaymentBox
             />
           </FormProvider>
         </div>
