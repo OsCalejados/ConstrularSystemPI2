@@ -130,7 +130,7 @@ export default function SaleOrderForm({
                 type="button"
                 onClick={() => {
                   append({
-                    productId: '' as unknown as number,
+                    productId: null,
                     unitPrice: 0,
                     quantity: 1,
                     total: 0,
@@ -154,7 +154,7 @@ export default function SaleOrderForm({
                     render={({ field }) => (
                       <Select
                         name={field.name}
-                        value={field.value?.toString()}
+                        value={field.value?.toString() || ''}
                         onValueChange={
                           readOnly
                             ? undefined

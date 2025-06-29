@@ -48,20 +48,37 @@ export default function ViewSale() {
         useBalance: order.useBalance,
         items: order.items.map(
           (item: {
-            product: Product
+            product?: Product
             unitPrice: number
             quantity: number
             total: number
           }) => ({
-            productId: item.product.id,
+            productId: item.product?.id || null,
             unitPrice: item.unitPrice,
             quantity: item.quantity,
             total: item.total,
           }),
         ),
-        paymentMethod: order.payments?.[0]?.method || undefined,
-        amount: order.payments?.[0]?.amount || 0,
-        change: order.payments?.[0]?.change || 0,
+        payments: order.payments?.map(
+          (payment: {
+            method?: string
+            amount?: number
+            change?: number
+            installments?: number
+          }) => ({
+            paymentMethod: payment.method || '',
+            amount: payment.amount || 0,
+            change: payment.change || 0,
+            installments: payment.installments || 1,
+          }),
+        ) || [
+          {
+            paymentMethod: '',
+            amount: 0,
+            change: 0,
+            installments: 1,
+          },
+        ],
       }
     },
   })

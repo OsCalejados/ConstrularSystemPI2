@@ -16,7 +16,7 @@ export const salesColumns: ColumnDef<Order>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="pl-0"
         >
-          Nome
+          ID
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )

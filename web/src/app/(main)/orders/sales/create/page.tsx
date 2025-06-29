@@ -48,9 +48,10 @@ export default function CreateSale() {
       discount: 0,
       items: [
         {
-          productId: undefined,
+          productId: null,
           unitPrice: 0,
           quantity: 1,
+          total: 0,
         },
       ],
       payments: [

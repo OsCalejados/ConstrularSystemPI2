@@ -1,6 +1,6 @@
 import { itemSchema } from './item-schema'
 import { OrderType } from '@/enums/order-type'
-import { PaymentMethod } from '@/enums/payment-method.'
+import { PaymentMethod } from '@/enums/payment-method'
 import { z } from 'zod'
 
 const round = (value: number) => Number(value.toFixed(2))

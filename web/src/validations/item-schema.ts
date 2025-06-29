@@ -1,9 +1,6 @@
 import { z } from 'zod'
 
 export const itemSchema = z.object({
-  // productId: z
-  //   .string({ message: 'Campo obrigatório.' })
-  //   .min(1, { message: 'Campo obrigatório.' }),
   productId: z
     .number({ message: 'Campo obrigatório.' })
     .nullable()
