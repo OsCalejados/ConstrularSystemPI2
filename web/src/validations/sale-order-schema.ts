@@ -13,9 +13,19 @@ export const saleOrderSchema = z.object({
   subtotal: z.number().nonnegative().transform(round),
   discount: z.number().nonnegative().default(0).transform(round),
   items: z.array(itemSchema).min(1, 'Adicione pelo menos um item.'),
-  useBalance: z.boolean().default(false),
-  paymentMethod: z.enum(Object.values(PaymentMethod) as [string, ...string[]]),
-  amount: z.number().positive({ message: 'Valor deve ser maior que zero.' }),
-  installments: z.number().optional(),
-  change: z.number().optional(),
+  payments: z
+    .array(
+      z.object({
+        paymentMethod: z.enum(
+          Object.values(PaymentMethod) as [string, ...string[]],
+        ),
+        amount: z
+          .number()
+          .positive({ message: 'Valor deve ser maior que zero.' }),
+        change: z.number().optional(),
+        installments: z.number().optional(),
+      }),
+    )
+    .min(1)
+    .max(1),
 })

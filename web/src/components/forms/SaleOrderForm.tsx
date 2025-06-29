@@ -31,7 +31,6 @@ interface SaleOrderFormProps {
   onSubmit?: (data: SaleOrderFormData) => Promise<void>
   customers: Customer[]
   products: Product[]
-  showBalanceOption?: boolean
   readOnly?: boolean
 }
 
@@ -39,7 +38,6 @@ export default function SaleOrderForm({
   onSubmit,
   customers,
   products,
-  showBalanceOption = false,
   readOnly = false,
 }: SaleOrderFormProps) {
   const {
@@ -97,6 +95,24 @@ export default function SaleOrderForm({
   const updateDiscount = (discount: number) => {
     setValue('discount', discount)
   }
+
+  const { fields: paymentFields, append: appendPayment } = useFieldArray({
+    name: 'payments',
+    control,
+  })
+
+  // Garante que sempre exista um pagamento inicial
+  useEffect(() => {
+    if (!paymentFields.length) {
+      appendPayment({
+        paymentMethod: '',
+        amount: 0,
+        change: 0,
+        installments: 1,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentFields.length])
 
   return (
     <form
@@ -383,109 +399,115 @@ export default function SaleOrderForm({
               <InputError error={errors.notes?.message?.toString()} />
             </div>
           </div>
-          {showBalanceOption && (
-            <div className="flex items-center gap-3">
-              <input
-                id="useBalance"
-                type="checkbox"
-                {...register('useBalance')}
-                disabled={readOnly}
-              />
-              <label
-                htmlFor="useBalance"
-                className="text-sm peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Utilizar saldo disponível no pagamento deste pedido
-              </label>
-            </div>
-          )}
         </div>
         {/* Pagamentos */}
         <div className="border-primary flex flex-col gap-4 border px-4 py-4 rounded-xl text-primary">
           <h4 className="font-medium">Pagamentos</h4>
           <div className="flex flex-col gap-4">
-            <div>
-              <Label htmlFor="paymentMethod">Forma de pagamento *</Label>
-              <Controller
-                name="paymentMethod"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    name={field.name}
-                    value={field.value}
-                    onValueChange={
-                      readOnly ? undefined : (value) => field.onChange(value)
-                    }
-                    disabled={readOnly}
-                  >
-                    <SelectTrigger className="mt-1" disabled={readOnly}>
-                      <SelectValue placeholder="Selecione a forma de pagamento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="CASH">Dinheiro</SelectItem>
-                      <SelectItem value="CREDIT">Cartão de crédito</SelectItem>
-                      <SelectItem value="DEBIT">Cartão de débito</SelectItem>
-                      <SelectItem value="PIX">Pix</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              <InputError error={errors.paymentMethod?.message?.toString()} />
-            </div>
-            <div>
-              <Label htmlFor="amount">Valor do pagamento</Label>
-              <Controller
-                name="amount"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    className="mt-1"
-                    value={
-                      field.value ? formatCurrency(field.value) : 'R$ 0,00'
-                    }
-                    onChange={
-                      readOnly
-                        ? undefined
-                        : (e) => {
-                            const float = parseCurrency(e.target.value)
-                            field.onChange(float)
-                          }
-                    }
-                    disabled={readOnly}
+            {paymentFields.map((field, idx) => (
+              <div key={field.id}>
+                <div>
+                  <Label htmlFor={`payments.${idx}.paymentMethod`}>
+                    Forma de pagamento *
+                  </Label>
+                  <Controller
+                    name={`payments.${idx}.paymentMethod`}
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        name={field.name}
+                        value={field.value}
+                        onValueChange={
+                          readOnly
+                            ? undefined
+                            : (value) => field.onChange(value)
+                        }
+                        disabled={readOnly}
+                      >
+                        <SelectTrigger className="mt-1" disabled={readOnly}>
+                          <SelectValue placeholder="Selecione a forma de pagamento" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="CASH">Dinheiro</SelectItem>
+                          <SelectItem value="CREDIT">
+                            Cartão de crédito
+                          </SelectItem>
+                          <SelectItem value="DEBIT">
+                            Cartão de débito
+                          </SelectItem>
+                          <SelectItem value="PIX">Pix</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
                   />
-                )}
-              />
-              <InputError error={errors.amount?.message?.toString()} />
-            </div>
-            {watch('paymentMethod') === 'CASH' && (
-              <div>
-                <Label htmlFor="change">Troco</Label>
-                <Controller
-                  name="change"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      className="mt-1"
-                      value={
-                        field.value ? formatCurrency(field.value) : 'R$ 0,00'
-                      }
-                      onChange={
-                        readOnly
-                          ? undefined
-                          : (e) => {
-                              const float = parseCurrency(e.target.value)
-                              field.onChange(float)
-                            }
-                      }
-                      disabled={readOnly}
+                  <InputError
+                    error={errors.payments?.[idx]?.paymentMethod?.toString()}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`payments.${idx}.amount`}>
+                    Valor do pagamento
+                  </Label>
+                  <Controller
+                    name={`payments.${idx}.amount`}
+                    control={control}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        className="mt-1"
+                        value={
+                          field.value ? formatCurrency(field.value) : 'R$ 0,00'
+                        }
+                        onChange={
+                          readOnly
+                            ? undefined
+                            : (e) => {
+                                const float = parseCurrency(e.target.value)
+                                field.onChange(float)
+                              }
+                        }
+                        disabled={readOnly}
+                      />
+                    )}
+                  />
+                  <InputError
+                    error={errors.payments?.[idx]?.amount?.toString()}
+                  />
+                </div>
+                {watch(`payments.${idx}.paymentMethod`) === 'CASH' && (
+                  <div>
+                    <Label htmlFor={`payments.${idx}.change`}>Troco</Label>
+                    <Controller
+                      name={`payments.${idx}.change`}
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          className="mt-1"
+                          value={
+                            field.value
+                              ? formatCurrency(field.value)
+                              : 'R$ 0,00'
+                          }
+                          onChange={
+                            readOnly
+                              ? undefined
+                              : (e) => {
+                                  const float = parseCurrency(e.target.value)
+                                  field.onChange(float)
+                                }
+                          }
+                          disabled={readOnly}
+                        />
+                      )}
                     />
-                  )}
-                />
-                <InputError error={errors.change?.message?.toString()} />
+                    <InputError
+                      error={errors.payments?.[idx]?.change?.toString()}
+                    />
+                  </div>
+                )}
               </div>
-            )}
+            ))}
           </div>
         </div>
       </div>

@@ -46,12 +46,19 @@ export default function CreateSale() {
       total: 0,
       subtotal: 0,
       discount: 0,
-      useBalance: false,
       items: [
         {
           productId: undefined,
           unitPrice: 0,
           quantity: 1,
+        },
+      ],
+      payments: [
+        {
+          paymentMethod: '',
+          amount: 0,
+          change: 0,
+          installments: 1,
         },
       ],
     },
@@ -144,10 +151,11 @@ export default function CreateSale() {
         <div className="mt-4">
           <FormProvider {...orderForm}>
             <SaleOrderForm
-              onSubmit={async (data) => mutate(data)}
+              onSubmit={async (data) => {
+                mutate(data)
+              }}
               customers={customers}
               products={products}
-              showBalanceOption
             />
           </FormProvider>
         </div>
