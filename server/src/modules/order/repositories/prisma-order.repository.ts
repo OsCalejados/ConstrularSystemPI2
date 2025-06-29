@@ -20,6 +20,9 @@ export class PrismaOrderRepository extends IOrderRepository {
 
   async findAll(options?: FindOrderOptions): Promise<OrderDto[]> {
     const orders = await this.prisma.order.findMany({
+      where: {
+        ...(options?.type && { type: options.type }),
+      },
       include: {
         payments: options?.includePayments ?? false,
         customer: options?.includeCustomer ?? false,
@@ -55,11 +58,12 @@ export class PrismaOrderRepository extends IOrderRepository {
       },
     });
 
+    console.log(order);
+
     if (!order) {
       throw new NotFoundException(`Order with ID ${orderId} not found`);
     }
 
-    console.log('=========== ORDER ==========', order);
     return OrderMapper.toDto(order);
   }
 

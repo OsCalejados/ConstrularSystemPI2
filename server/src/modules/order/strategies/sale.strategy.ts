@@ -12,6 +12,7 @@ import { PrismaService } from '@src/common/services/prisma.service';
 import { OrderStatus } from '@src/common/enums/order-status.enum';
 import { OrderType } from '@src/common/enums/order-type.enum';
 import { OrderDto } from '../dtos/order.dto';
+import { PaymentMethod } from '@src/common/enums/payment-method.enum';
 
 @Injectable()
 export class SaleOrderStrategy extends OrderStrategy {
@@ -39,8 +40,12 @@ export class SaleOrderStrategy extends OrderStrategy {
     }
 
     const payment = dto.payments[0];
+    const totalPaid =
+      payment.paymentMethod === PaymentMethod.CASH
+        ? payment.amount - payment.change
+        : payment.amount;
 
-    if (payment.amount !== dto.total) {
+    if (totalPaid !== dto.total) {
       throw new BadRequestException(
         'O valor do pagamento deve ser igual ao valor total da venda.',
       );

@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../shadcnui/select'
-import { PaymentMethod } from '@/enums/payment-method.'
+import { PaymentMethod } from '@/enums/payment-method'
 import { useEffect } from 'react'
 import { addPayment } from '@/services/order-service'
 

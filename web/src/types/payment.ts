@@ -1,4 +1,4 @@
-import { PaymentMethod } from '@/enums/payment-method.'
+import { PaymentMethod } from '@/enums/payment-method'
 
 export interface Payment {
   id: number
