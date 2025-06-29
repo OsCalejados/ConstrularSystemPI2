@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcnui/select'
-import { InstallmentOrderFormData } from '@/types/validations'
+import { SaleOrderFormData } from '@/types/validations'
 import { PencilSimpleIcon, TrashIcon } from '@phosphor-icons/react/dist/ssr'
 import { Product } from '@/types/product'
 import { Customer } from '@/types/customer'
@@ -27,12 +27,14 @@ import { parseCurrency } from '@/utils/parse/currency'
 import { useCallback, useEffect, useMemo } from 'react'
 import { parseNumber } from '@/utils/parse/number'
 import { formatPercentage } from '@/utils/format/format-percentage'
+import { watch } from 'fs'
 
 interface OrderFormProps {
-  onSubmit: (data: InstallmentOrderFormData) => Promise<void>
+  onSubmit: (data: SaleOrderFormData) => Promise<void>
   customers: Customer[]
   products: Product[]
   showBalanceOption?: boolean
+  showPaymentBox?: boolean
 }
 
 export default function OrderForm({
@@ -40,6 +42,7 @@ export default function OrderForm({
   customers,
   products,
   showBalanceOption = false,
+  showPaymentBox = false,
 }: OrderFormProps) {
   const {
     control,
@@ -48,7 +51,8 @@ export default function OrderForm({
     clearErrors,
     handleSubmit,
     formState: { errors },
-  } = useFormContext<InstallmentOrderFormData>()
+    watch,
+  } = useFormContext<SaleOrderFormData>()
 
   const { fields, append, remove } = useFieldArray({
     rules: {
@@ -394,12 +398,85 @@ export default function OrderForm({
       </div>
 
       {/* Pagamentos */}
-      <div className="border-primary flex flex-col gap-4 flex-[2] border px-6 py-4 rounded-xl text-primary">
-        <h4 className="font-medium">Pagamentos</h4>
-        <div className="text-terciary text-sm">
-          (Em breve: área para adicionar pagamentos ou condições de pagamento)
+      {showPaymentBox && (
+        <div className="border-primary flex flex-col gap-4 flex-[2] border px-6 py-4 rounded-xl text-primary">
+          <h4 className="font-medium">Pagamentos</h4>
+          {/* Formulário de pagamento embutido */}
+          <div className="flex flex-col gap-4">
+            <div>
+              <Label htmlFor="paymentMethod">Forma de pagamento *</Label>
+              <Controller
+                name="paymentMethod"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Selecione a forma de pagamento" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="CASH">Dinheiro</SelectItem>
+                      <SelectItem value="CREDIT">Cartão de crédito</SelectItem>
+                      <SelectItem value="DEBIT">Cartão de débito</SelectItem>
+                      <SelectItem value="PIX">Pix</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              <InputError error={errors.paymentMethod?.message?.toString()} />
+            </div>
+
+            <div>
+              <Label htmlFor="amount">Valor do pagamento</Label>
+              <Controller
+                name="amount"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    className="mt-1"
+                    value={
+                      field.value ? formatCurrency(field.value) : 'R$ 0,00'
+                    }
+                    onChange={(e) => {
+                      const float = parseCurrency(e.target.value)
+                      field.onChange(float)
+                    }}
+                  />
+                )}
+              />
+              <InputError error={errors.amount?.message?.toString()} />
+            </div>
+
+            {watch('paymentMethod') === 'CASH' && (
+              <div>
+                <Label htmlFor="change">Troco</Label>
+                <Controller
+                  name="change"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      className="mt-1"
+                      value={
+                        field.value ? formatCurrency(field.value) : 'R$ 0,00'
+                      }
+                      onChange={(e) => {
+                        const float = parseCurrency(e.target.value)
+                        field.onChange(float)
+                      }}
+                    />
+                  )}
+                />
+                <InputError error={errors.change?.message?.toString()} />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </form>
   )
 }

@@ -1,5 +1,6 @@
 import { itemSchema } from './item-schema'
 import { OrderType } from '@/enums/order-type'
+import { PaymentMethod } from '@/enums/payment-method.'
 import { z } from 'zod'
 
 const round = (value: number) => Number(value.toFixed(2))
@@ -13,4 +14,8 @@ export const saleOrderSchema = z.object({
   discount: z.number().nonnegative().default(0).transform(round),
   items: z.array(itemSchema).min(1, 'Adicione pelo menos um item.'),
   useBalance: z.boolean().default(false),
+  paymentMethod: z.enum(Object.values(PaymentMethod) as [string, ...string[]]),
+  amount: z.number().positive({ message: 'Valor deve ser maior que zero.' }),
+  installments: z.number().optional(),
+  change: z.number().optional(),
 })

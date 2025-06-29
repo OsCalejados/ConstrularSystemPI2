@@ -148,6 +148,7 @@ export default function CreateSale() {
               customers={customers}
               products={products}
               showBalanceOption
+              showPaymentBox
             />
           </FormProvider>
         </div>
