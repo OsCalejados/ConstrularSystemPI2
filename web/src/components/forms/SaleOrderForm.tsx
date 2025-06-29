@@ -159,7 +159,9 @@ export default function SaleOrderForm({
                           readOnly
                             ? undefined
                             : (value) => {
-                                field.onChange(Number(value))
+                                field.onChange(
+                                  value ? Number(value) : undefined,
+                                )
                                 const product = products.find(
                                   (p) => p.id.toString() === value,
                                 )
@@ -420,7 +422,17 @@ export default function SaleOrderForm({
                         onValueChange={
                           readOnly
                             ? undefined
-                            : (value) => field.onChange(value)
+                            : (value) => {
+                                field.onChange(value)
+                                // Preenche automaticamente o valor total para métodos que não são dinheiro
+                                if (value !== 'CASH') {
+                                  setValue(`payments.${idx}.amount`, total)
+                                }
+                                // Reseta o troco quando não é dinheiro
+                                if (value !== 'CASH') {
+                                  setValue(`payments.${idx}.change`, 0)
+                                }
+                              }
                         }
                         disabled={readOnly}
                       >
@@ -464,6 +476,14 @@ export default function SaleOrderForm({
                             : (e) => {
                                 const float = parseCurrency(e.target.value)
                                 field.onChange(float)
+                                // Calcula o troco automaticamente para dinheiro
+                                if (
+                                  watch(`payments.${idx}.paymentMethod`) ===
+                                  'CASH'
+                                ) {
+                                  const change = Math.max(float - total, 0)
+                                  setValue(`payments.${idx}.change`, change)
+                                }
                               }
                         }
                         disabled={readOnly}
@@ -503,6 +523,54 @@ export default function SaleOrderForm({
                     />
                     <InputError
                       error={errors.payments?.[idx]?.change?.toString()}
+                    />
+                  </div>
+                )}
+                {watch(`payments.${idx}.paymentMethod`) === 'CREDIT' && (
+                  <div>
+                    <Label htmlFor={`payments.${idx}.installments`}>
+                      Parcelas *
+                    </Label>
+                    <Controller
+                      name={`payments.${idx}.installments`}
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          name={field.name}
+                          value={field.value?.toString() || '1'}
+                          onValueChange={
+                            readOnly
+                              ? undefined
+                              : (value) => field.onChange(Number(value))
+                          }
+                          disabled={readOnly}
+                        >
+                          <SelectTrigger className="mt-1" disabled={readOnly}>
+                            <SelectValue placeholder="Selecione a quantidade de parcelas" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 12 }, (_, i) => i + 1).map(
+                              (installment) => {
+                                const amount =
+                                  watch(`payments.${idx}.amount`) || 0
+                                const installmentValue = amount / installment
+                                return (
+                                  <SelectItem
+                                    key={installment}
+                                    value={installment.toString()}
+                                  >
+                                    {installment}x de{' '}
+                                    {formatCurrency(installmentValue)}
+                                  </SelectItem>
+                                )
+                              },
+                            )}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    <InputError
+                      error={errors.payments?.[idx]?.installments?.toString()}
                     />
                   </div>
                 )}
