@@ -3,8 +3,8 @@ import { z } from 'zod'
 export const itemSchema = z.object({
   productId: z
     .number({ message: 'Campo obrigatório.' })
-    .nullable()
-    .refine((val) => val !== null, {
+    .optional()
+    .refine((val) => val !== undefined, {
       message: 'Produto obrigatório',
     }),
   quantity: z

@@ -130,7 +130,7 @@ export default function SaleOrderForm({
                 type="button"
                 onClick={() => {
                   append({
-                    productId: null,
+                    productId: undefined,
                     unitPrice: 0,
                     quantity: 1,
                     total: 0,

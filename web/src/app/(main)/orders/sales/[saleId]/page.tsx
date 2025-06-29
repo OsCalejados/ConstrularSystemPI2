@@ -53,7 +53,7 @@ export default function ViewSale() {
             quantity: number
             total: number
           }) => ({
-            productId: item.product?.id || null,
+            productId: item.product?.id || undefined,
             unitPrice: item.unitPrice,
             quantity: item.quantity,
             total: item.total,
