@@ -43,7 +43,7 @@ export default function EditOrder() {
     queryKey: ['orderById'],
     queryFn: () =>
       getOrderById(orderId as string, {
-        includeProducts: true,
+        includeItems: true,
         includeCustomer: true,
       }),
     enabled: !!orderId,

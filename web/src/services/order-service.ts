@@ -8,7 +8,7 @@ import api from '@/lib/axios'
 
 interface FindOrderOptions {
   includePayments?: boolean
-  includeProducts?: boolean
+  includeItems?: boolean
   includeCustomer?: boolean
   includeSeller?: boolean
   type?: string
@@ -18,9 +18,9 @@ export async function getOrders(options?: FindOrderOptions) {
   const response = await api.get('orders', {
     params: {
       includePayments: options?.includePayments,
-      includeProducts: options?.includeProducts,
       includeCustomer: options?.includeCustomer,
       includeSeller: options?.includeSeller,
+      includeItems: options?.includeItems,
       type: options?.type,
     },
   })
@@ -35,9 +35,9 @@ export async function getOrderById(
   const response = await api.get(`orders/${orderId}`, {
     params: {
       includePayments: options?.includePayments,
-      includeProducts: options?.includeProducts,
       includeCustomer: options?.includeCustomer,
       includeSeller: options?.includeSeller,
+      includeItems: options?.includeItems,
     },
   })
 
@@ -51,9 +51,9 @@ export async function getOrdersByCustomer(
   const response = await api.get(`orders/customer/${customerId}`, {
     params: {
       includePayments: options?.includePayments,
-      includeProducts: options?.includeProducts,
       includeCustomer: options?.includeCustomer,
       includeSeller: options?.includeSeller,
+      includeItems: options?.includeItems,
     },
   })
 
@@ -63,6 +63,8 @@ export async function getOrdersByCustomer(
 export async function createOrder(
   orderFormData: InstallmentOrderFormData | SaleOrderFormData,
 ) {
+  console.log(orderFormData)
+
   const response = await api.post('orders', orderFormData)
 
   console.log(response.data)

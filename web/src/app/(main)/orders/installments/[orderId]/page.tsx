@@ -46,8 +46,8 @@ export default function Order() {
     queryFn: () =>
       getOrderById(orderId as string, {
         includeCustomer: true,
-        includeProducts: true,
         includePayments: true,
+        includeItems: true,
       }),
   })
 

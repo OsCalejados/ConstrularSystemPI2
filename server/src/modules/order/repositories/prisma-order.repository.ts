@@ -58,6 +58,8 @@ export class PrismaOrderRepository extends IOrderRepository {
       },
     });
 
+    console.log(order);
+
     if (!order) {
       throw new NotFoundException(`Order with ID ${orderId} not found`);
     }

@@ -74,7 +74,7 @@ export function OrdersTable<TData extends DataType, TValue>({
       <div className="rounded-md border">
         <div className="px-4 flex items-center justify-between">
           <TableSearchField
-            placeholder="Buscar por nome..."
+            placeholder="Buscar por cliente..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)

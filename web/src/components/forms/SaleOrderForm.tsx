@@ -130,7 +130,7 @@ export default function SaleOrderForm({
                 type="button"
                 onClick={() => {
                   append({
-                    productId: null,
+                    productId: '' as unknown as number,
                     unitPrice: 0,
                     quantity: 1,
                     total: 0,
@@ -441,7 +441,9 @@ export default function SaleOrderForm({
                     )}
                   />
                   <InputError
-                    error={errors.payments?.[idx]?.paymentMethod?.toString()}
+                    error={errors.payments?.[
+                      idx
+                    ]?.paymentMethod?.message?.toString()}
                   />
                 </div>
                 <div>
@@ -471,7 +473,7 @@ export default function SaleOrderForm({
                     )}
                   />
                   <InputError
-                    error={errors.payments?.[idx]?.amount?.toString()}
+                    error={errors.payments?.[idx]?.amount?.message?.toString()}
                   />
                 </div>
                 {watch(`payments.${idx}.paymentMethod`) === 'CASH' && (

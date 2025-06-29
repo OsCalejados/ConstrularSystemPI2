@@ -16,7 +16,7 @@ export class FindOrderOptionsDto {
   @IsOptional()
   @Transform(({ value }) => value === 'true')
   @IsBoolean()
-  includeProducts?: boolean = false;
+  includeItems?: boolean = false;
 
   @IsOptional()
   @Transform(({ value }) => value === 'true')
