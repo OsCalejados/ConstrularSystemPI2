@@ -38,16 +38,6 @@ export const salesColumns: ColumnDef<Order>[] = [
     cell: ({ row }) => {
       const total = parseFloat(row.getValue('total'))
       const formatted = formatCurrency(total)
-
-      return <div>{formatted}</div>
-    },
-  },
-  {
-    header: 'Valor',
-    accessorKey: 'total',
-    cell: ({ row }) => {
-      const total = parseFloat(row.getValue('total'))
-      const formatted = formatCurrency(total)
       return <div>{formatted}</div>
     },
   },

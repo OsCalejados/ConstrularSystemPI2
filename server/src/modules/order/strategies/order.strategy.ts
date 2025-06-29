@@ -60,7 +60,8 @@ export abstract class OrderStrategy {
       throw new BadRequestException('Discount cannot be negative');
     }
 
-    if (order.discount > order.subtotal) {
+    const discount = (order.discount * order.subtotal) / 100;
+    if (discount > order.subtotal) {
       throw new BadRequestException(
         'Discount cannot be greater than total order amount',
       );

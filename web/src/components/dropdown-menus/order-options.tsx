@@ -29,6 +29,8 @@ import {
 import { AxiosError } from 'axios'
 import { APIErrorResponse } from '@/types/api-error-response'
 import { toast } from '@/hooks/use-toast'
+import { OrderType } from '@/enums/order-type'
+import { OrderStatus } from '@/enums/order-status'
 
 interface OrderOptionsProps {
   order: Order
@@ -45,6 +47,14 @@ export default function OrderOptions({
 }: OrderOptionsProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
+
+  const orderSubroute =
+    order.type === OrderType.INSTALLMENT
+      ? 'installments'
+      : OrderType.SALE
+        ? 'sales'
+        : 'quotes'
+  const orderPath = `/orders/${orderSubroute}`
 
   const { mutate } = useMutation({
     mutationFn: () => deleteOrder(order.id),
@@ -101,7 +111,7 @@ export default function OrderOptions({
           {showViewItem && (
             <DropdownMenuItem asChild>
               <Link
-                href={`/orders/installments/${order.id}`}
+                href={`${orderPath}/${order.id}`}
                 onClick={(event) => event.stopPropagation()}
                 className="gap-2"
               >
@@ -124,28 +134,34 @@ export default function OrderOptions({
             </DropdownMenuItem>
           )}
           {/* Edit option */}
-          <DropdownMenuItem asChild>
-            <Link
-              href={`/orders/installments/edit/${order.id}`}
-              onClick={(event) => event.stopPropagation()}
-              className="gap-2"
-            >
-              <PencilSimpleIcon size={16} />
-              <span>Editar</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          {order.type !== OrderType.SALE && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={`${orderPath}/${order.id}`}
+                  onClick={(event) => event.stopPropagation()}
+                  className="gap-2"
+                >
+                  <PencilSimpleIcon size={16} />
+                  <span>Editar</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
 
           {/* Delete option */}
-          <DropdownMenuItem asChild>
-            <AlertDialogTrigger
-              className="w-full text-danger gap-2"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <TrashSimpleIcon size={16} />
-              <span>Excluir</span>
-            </AlertDialogTrigger>
-          </DropdownMenuItem>
+          {order.status !== OrderStatus.COMPLETED && (
+            <DropdownMenuItem asChild>
+              <AlertDialogTrigger
+                className="w-full text-danger gap-2"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <TrashSimpleIcon size={16} />
+                <span>Excluir</span>
+              </AlertDialogTrigger>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
