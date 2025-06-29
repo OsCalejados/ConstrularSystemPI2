@@ -1,4 +1,4 @@
-import { PaymentMethod } from '@/enums/payment-method.'
+import { PaymentMethod } from '@/enums/payment-method'
 import { z } from 'zod'
 
 export const paymentSchema = z.object({
