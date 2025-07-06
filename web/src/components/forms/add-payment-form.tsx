@@ -3,7 +3,7 @@ import InputError from '../ui/input-error'
 import { Controller, useForm } from 'react-hook-form'
 import { paymentFormSchema } from '@/validations/payment-form-schema'
 import { PaymentFormData } from '@/types/validations'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { formatCurrency } from '@/utils/format/format-currency'
 import { parseCurrency } from '@/utils/parse/currency'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,6 +19,9 @@ import {
 import { PaymentMethod } from '@/enums/payment-method'
 import { useEffect } from 'react'
 import { addPayment } from '@/services/order-service'
+import { AxiosError } from 'axios'
+import { toast } from '@/hooks/use-toast'
+import { APIErrorResponse } from '@/types/api-error-response'
 
 interface AddPaymentFormProps {
   orderId: number
@@ -55,6 +58,27 @@ export default function AddPaymentForm({
   const paymentMethod = watch('paymentMethod')
   const amount = watch('amount')
 
+  const { mutate } = useMutation({
+    mutationFn: (data: PaymentFormData) => addPayment(orderId, data),
+    onSuccess: async () => {
+      toast({
+        title: 'Pagamento adicionado com sucesso',
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: ['orderById'],
+      })
+
+      onSuccess()
+    },
+    onError: (e: AxiosError<APIErrorResponse>) => {
+      toast({
+        title: e.response?.data?.error?.message,
+        variant: 'destructive',
+      })
+    },
+  })
+
   useEffect(() => {
     if (paymentMethod === PaymentMethod.CASH) {
       const change = Math.max((amount ?? 0) - remainingAmount, 0)
@@ -64,24 +88,10 @@ export default function AddPaymentForm({
     }
   }, [amount, paymentMethod, remainingAmount, setValue])
 
-  const onSubmit = async (data: PaymentFormData) => {
-    try {
-      await addPayment(orderId, data)
-
-      queryClient.invalidateQueries({
-        queryKey: ['orderById'],
-      })
-
-      onSuccess()
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   return (
     <form
       className="py-4 flex flex-col gap-4"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit((data) => mutate(data))}
       id="payment-form"
     >
       <div>

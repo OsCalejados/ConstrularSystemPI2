@@ -95,7 +95,7 @@ export default function ProductForm({
           </div>
 
           <div>
-            <Label htmlFor="brand">Marca</Label>
+            <Label htmlFor="brand">Marca *</Label>
             <Input
               placeholder="Insira a marca"
               id="brand"

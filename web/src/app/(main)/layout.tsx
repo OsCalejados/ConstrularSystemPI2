@@ -2,6 +2,7 @@ import '../globals.css'
 
 import Providers from '@/components/layout/providers'
 import Sidebar from '@/components/layout/sidebar'
+import '@/lib/dayjs'
 
 import type { Metadata } from 'next'
 import { Poppins } from 'next/font/google'

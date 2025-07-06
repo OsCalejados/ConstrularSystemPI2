@@ -33,6 +33,8 @@ import {
   ClockClockwiseIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import OrderOptions from '@/components/dropdown-menus/order-options'
+import dayjs from 'dayjs'
+import { PaymentMethod } from '@/enums/payment-method'
 
 export default function Order() {
   const [editNotes, setEditNotes] = useState(false)
@@ -88,6 +90,21 @@ export default function Order() {
       queryKey: ['orderById'],
     })
     setEditNotes(false)
+  }
+
+  const formatPaymentMethod = (paymentMethod: PaymentMethod) => {
+    switch (paymentMethod) {
+      case PaymentMethod.CASH:
+        return 'Dinheiro'
+      case PaymentMethod.CREDIT:
+        return 'Cartão de crédito'
+      case PaymentMethod.DEBIT:
+        return 'Cartão de débito'
+      case PaymentMethod.PIX:
+        return 'Pix'
+      default:
+        return 'Tipo de pagamento não identificado'
+    }
   }
 
   return (
@@ -359,10 +376,20 @@ export default function Order() {
                   order.payments.map((payment, index) => (
                     <div
                       key={payment.id}
-                      className="flex gap-2 text-sm items-center text-terciary"
+                      className="grid grid-cols-[1fr_1fr_1fr_1fr_32px] gap-2 text-sm items-center text-terciary"
                     >
-                      <span className="flex-1">Pagamento {index + 1}</span>
-                      <span>{formatCurrency(payment.netAmount)}</span>
+                      <div className="col-span-2">
+                        <span>Pagamento {index + 1} </span>
+                        <span>
+                          ({dayjs(payment.paidAt).format('DD/MM/YYYY HH:mm')})
+                        </span>
+                      </div>
+                      <span className="text-primary">
+                        {formatCurrency(payment.netAmount)}
+                      </span>
+                      <span>
+                        {formatPaymentMethod(payment?.paymentMethod)}{' '}
+                      </span>
                       <Button
                         variant="ghost"
                         className="h-8 w-8 p-0"
