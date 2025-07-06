@@ -353,7 +353,7 @@ export default function SaleOrderForm({
           <h4 className="font-medium">Detalhes do pedido</h4>
           <div className="mt-2 flex flex-col gap-4">
             <div>
-              <Label htmlFor="customerId">Cliente *</Label>
+              <Label htmlFor="customerId">Cliente</Label>
               <Controller
                 name="customerId"
                 control={control}
@@ -425,9 +425,10 @@ export default function SaleOrderForm({
                             : (value) => {
                                 field.onChange(value)
                                 // Preenche automaticamente o valor total para métodos que não são dinheiro
-                                if (value !== 'CASH') {
-                                  setValue(`payments.${idx}.amount`, total)
-                                }
+                                setValue(`payments.${idx}.amount`, total)
+                                // if (value !== 'CASH') {
+                                //   setValue(`payments.${idx}.amount`, total)
+                                // }
                                 // Reseta o troco quando não é dinheiro
                                 if (value !== 'CASH') {
                                   setValue(`payments.${idx}.change`, 0)

@@ -20,7 +20,7 @@ export function Toaster() {
         return (
           <Toast key={id} {...props}>
             <div className="flex gap-2 items-center">
-              {props.variant === 'default' && (
+              {props.variant !== 'destructive' && (
                 <CheckCircleIcon
                   size={32}
                   weight="fill"

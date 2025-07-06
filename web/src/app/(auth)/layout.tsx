@@ -38,7 +38,7 @@ export default function RootLayout({
                 <span
                   className={`${poppins.className} text-black font-bold text-base`}
                 >
-                  v0.3.0
+                  v0.3.1
                 </span>
               </div>
 

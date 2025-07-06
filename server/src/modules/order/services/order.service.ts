@@ -162,9 +162,21 @@ export class OrderService implements IOrderService {
       throw new NotFoundException(`Order not found`);
     }
 
+    const beforeTotalPayments = await this.getTotalPayments(orderId);
+
+    if (
+      beforeTotalPayments + createPaymentDto.amount - createPaymentDto.change >
+      order.total
+    ) {
+      throw new BadRequestException(
+        'Pagamento não pode exceder o valor da compra',
+      );
+    }
+
     await this.orderRepository.addPayment(orderId, createPaymentDto);
 
-    const isFullyPaid = await this.verifyStatus(orderId);
+    const afterTotalPayments = await this.getTotalPayments(orderId);
+    const isFullyPaid = afterTotalPayments >= order.total;
 
     if (isFullyPaid) {
       await this.orderRepository.updateStatus(orderId, {
@@ -193,7 +205,8 @@ export class OrderService implements IOrderService {
 
     await this.orderRepository.deletePayment(paymentId);
 
-    const isFullyPaid = await this.verifyStatus(orderId);
+    const totalPayments = await this.getTotalPayments(orderId);
+    const isFullyPaid = totalPayments >= order.total;
 
     if (order.status === OrderStatus.COMPLETED && !isFullyPaid) {
       await this.orderRepository.updateStatus(orderId, {
@@ -204,7 +217,7 @@ export class OrderService implements IOrderService {
     }
   }
 
-  private async verifyStatus(orderId: number): Promise<boolean> {
+  private async getTotalPayments(orderId: number): Promise<number> {
     const order = await this.orderRepository.findById(orderId, {
       includePayments: true,
     });
@@ -214,6 +227,6 @@ export class OrderService implements IOrderService {
       0,
     );
 
-    return totalPayments >= order.total;
+    return totalPayments;
   }
 }

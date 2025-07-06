@@ -5,6 +5,7 @@ import { percentageMask } from '@/utils/mask/percentage'
 import { parseCurrency } from '@/utils/parse/currency'
 import { Label } from '../shadcnui/label'
 import { Input } from '../shadcnui/input'
+import InputError from '../ui/input-error'
 
 interface ApplyDiscountFormProps {
   subtotal: number
@@ -16,6 +17,8 @@ export default function ApplyDiscountForm({
   onChange,
   defaultValue = 0,
 }: ApplyDiscountFormProps) {
+  const [percentageError, setPercentageError] = useState<string | null>(null)
+  const [amountError, setAmountError] = useState<string | null>(null)
   const [percentage, setPercentage] = useState<number>(defaultValue)
   const [amount, setAmount] = useState<number>(
     Number(((defaultValue / 100) * subtotal).toFixed(2)),
@@ -24,6 +27,12 @@ export default function ApplyDiscountForm({
   const total = useMemo(() => subtotal - amount, [subtotal, amount])
 
   const handleUpdatePercentage = (percentage: number) => {
+    if (percentage > 100) {
+      setPercentageError('O desconto não pode ser maior que 100%.')
+    } else {
+      setPercentageError(null)
+    }
+
     const newAmount = Number(((percentage / 100) * subtotal).toFixed(2))
 
     setAmount(newAmount)
@@ -35,7 +44,12 @@ export default function ApplyDiscountForm({
     const newPercentage =
       subtotal === 0 ? 0 : Number(((amount / subtotal) * 100).toFixed(2))
 
-    console.log(amount)
+    if (newPercentage > 100) {
+      setAmountError('O desconto não pode ser maior que o valor da compra.')
+    } else {
+      setAmountError(null)
+    }
+
     setAmount(amount)
     setPercentage(newPercentage)
     onChange(newPercentage)
@@ -67,6 +81,7 @@ export default function ApplyDiscountForm({
                 handleUpdatePercentage(float)
               }}
             />
+            <InputError error={percentageError ?? undefined} />
           </div>
         </div>
 
@@ -82,6 +97,7 @@ export default function ApplyDiscountForm({
                 hadleUpdateAmount(float)
               }}
             />
+            <InputError error={amountError ?? undefined} />
           </div>
         </div>
       </div>

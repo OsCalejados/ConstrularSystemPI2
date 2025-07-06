@@ -49,6 +49,7 @@ export default function ApplyDiscountDialog({
 
           <DialogClose asChild>
             <Button
+              disabled={localDiscount > 100}
               onClick={() => onConfirm(localDiscount)}
               className="bg-primary hover:bg-primary-hover"
             >
