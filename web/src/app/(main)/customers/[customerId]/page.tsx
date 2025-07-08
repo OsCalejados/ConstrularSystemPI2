@@ -1,7 +1,6 @@
 'use client'
 
 import CustomerOptions from '@/components/dropdown-menus/customer-options'
-import Link from 'next/link'
 
 import { Customer as TCustomer } from '@/types/customer'
 import { getCustomerById } from '@/services/customer-service'
@@ -11,7 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/shadcnui/button'
 import { useRef } from 'react'
 import { Page } from '@/components/layout/page'
-import { CaretLeftIcon, PlusIcon } from '@phosphor-icons/react/dist/ssr'
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
 import Breadcrumb from '@/components/ui/breadcrumb'
 import { getOrdersByCustomer } from '@/services/order-service'
 import { Order } from '@/types/order'
