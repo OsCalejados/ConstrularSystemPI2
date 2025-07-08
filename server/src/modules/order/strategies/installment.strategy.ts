@@ -203,21 +203,14 @@ export class InstallmentOrderStrategy extends OrderStrategy {
       }
 
       // 3️⃣ - Montar DTO atualizado
-      const updateDto: OrderDto = {
-        id: undefined,
+      const updateDto: UpdateOrderDto = {
         total: dto.total,
         discount: dto.discount,
         subtotal: dto.subtotal,
         notes: dto.notes,
         customerId: dto.customerId,
         items: dto.items,
-        sellerId: undefined,
-        paid: existingOrder.paid,
-        status: existingOrder.status,
         type: OrderType.INSTALLMENT,
-        createdAt: undefined,
-        seller: undefined,
-        customer: undefined,
         payments: existingOrder.payments,
       };
 

@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
-import { OrderItemDto } from './order-item.dto';
 import { OrderType } from '@src/common/enums/order-type.enum';
-import { OrderPaymentDto } from './order-payment.dto';
+import { UpdateOrderItemDto } from './update-order-item.dto';
+import { UpdateOrderPaymentDto } from './update-order-payment.dto';
 
 export class UpdateOrderDto {
   total: number;
@@ -18,8 +18,8 @@ export class UpdateOrderDto {
   type: OrderType;
 
   @IsNotEmpty()
-  items: OrderItemDto[];
+  items: UpdateOrderItemDto[];
 
   @IsOptional()
-  payments: OrderPaymentDto[];
+  payments: UpdateOrderPaymentDto[];
 }
