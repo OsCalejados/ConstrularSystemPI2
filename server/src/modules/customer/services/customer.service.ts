@@ -36,7 +36,16 @@ export class CustomerService {
     if (!customer.name) {
       throw new BadRequestException({
         message: 'Customer name must be defined',
-        code: 'CUSTOMER_ALREADY_EXISTS',
+      });
+    }
+
+    const existingCustomer = await this.customerRepository.findByName(
+      customer.name,
+    );
+
+    if (existingCustomer) {
+      throw new BadRequestException({
+        message: 'Nome de cliente já utilizado.',
       });
     }
 

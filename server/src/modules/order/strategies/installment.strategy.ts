@@ -84,6 +84,25 @@ export class InstallmentOrderStrategy extends OrderStrategy {
           customer.balance >= dto.total ? dto.total : customer.balance;
       }
 
+      let status = OrderStatus.OPEN;
+      let isPaid = false;
+      // Atualiza saldo do cliente, se necessário
+      if (amountToPay && amountToPay > 0) {
+        await this.customerService.updateBalance(
+          dto.customerId,
+          {
+            balance: customer.balance - amountToPay,
+          },
+          tx,
+        );
+
+        // Se o saldo pagou tudo, já marca como pago e finalizado
+        if (amountToPay >= dto.total) {
+          status = OrderStatus.COMPLETED;
+          isPaid = true;
+        }
+      }
+
       // Monta DTO do pedido
       const createDto: CreateOrderDto = {
         total: dto.total,
@@ -94,8 +113,8 @@ export class InstallmentOrderStrategy extends OrderStrategy {
         items: dto.items,
         type: OrderType.INSTALLMENT,
         useBalance: dto.useBalance,
-        status: OrderStatus.OPEN,
-        paid: dto.paid,
+        status,
+        paid: isPaid,
         payments:
           amountToPay && amountToPay > 0
             ? [
@@ -112,27 +131,6 @@ export class InstallmentOrderStrategy extends OrderStrategy {
 
       // Cria pedido dentro da transação
       const order = await this.orderRepository.create(createDto, sellerId, tx);
-
-      // Atualiza saldo do cliente, se necessário
-      if (amountToPay && amountToPay > 0) {
-        await this.customerService.updateBalance(
-          order.customerId,
-          {
-            balance: customer.balance - amountToPay,
-          },
-          tx,
-        );
-
-        // Se o saldo pagou tudo, já marca como pago e finalizado
-        if (amountToPay >= order.total) {
-          await this.orderRepository.updateStatus(
-            order.id,
-            { status: OrderStatus.COMPLETED },
-            tx,
-          );
-          await this.orderRepository.updateIsPaid(order.id, true, tx);
-        }
-      }
 
       return order;
     });

@@ -1,7 +1,6 @@
 'use client'
 
 import CustomerOptions from '@/components/dropdown-menus/customer-options'
-import Link from 'next/link'
 
 import { Customer as TCustomer } from '@/types/customer'
 import { getCustomerById } from '@/services/customer-service'
@@ -11,7 +10,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/shadcnui/button'
 import { useRef } from 'react'
 import { Page } from '@/components/layout/page'
-import { CaretLeftIcon, PlusIcon } from '@phosphor-icons/react/dist/ssr'
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
 import Breadcrumb from '@/components/ui/breadcrumb'
 import { getOrdersByCustomer } from '@/services/order-service'
 import { Order } from '@/types/order'
@@ -73,13 +72,6 @@ export default function Customer() {
                 {formatCurrency(customer.balance)}
               </span>
             </div>
-
-            <Button className="bg-primary hover:bg-primary-hover gap-1" asChild>
-              <Link href={`/orders/create?customer=${customer.id}`}>
-                <PlusIcon size={20} weight="bold" className="text-white" />
-                <span>Novo pedido</span>
-              </Link>
-            </Button>
 
             <CustomerOptions
               customer={customer}
