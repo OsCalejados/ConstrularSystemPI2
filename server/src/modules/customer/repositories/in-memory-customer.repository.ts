@@ -33,6 +33,20 @@ export class InMemoryCustomerRepository implements CustomerRepository {
     };
   }
 
+  async findByName(name: string): Promise<CustomerDto> {
+    const index = this.customers.findIndex((item) => item.name === name);
+
+    if (index === -1) {
+      return null;
+    }
+
+    const customer = this.customers[index];
+
+    return {
+      ...customer,
+    };
+  }
+
   async create(customer: CreateCustomerDto): Promise<CustomerDto> {
     let id = 1;
 

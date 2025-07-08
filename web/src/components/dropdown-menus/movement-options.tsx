@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenu,
 } from '@/components/shadcnui/dropdown-menu'
-import { TrashSimpleIcon, EyeIcon } from '@phosphor-icons/react/dist/ssr'
+import { EyeIcon } from '@phosphor-icons/react/dist/ssr'
 import { toast } from '@/hooks/use-toast'
 
 interface MovementOptionsProps {
@@ -84,7 +84,7 @@ export default function MovementOptions({
               </Link>
             </DropdownMenuItem>
           )}
-          <DropdownMenuSeparator />
+          {/* <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={(event) => {
               event.stopPropagation()
@@ -94,7 +94,7 @@ export default function MovementOptions({
           >
             <TrashSimpleIcon size={16} />
             <span>Excluir</span>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
 

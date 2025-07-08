@@ -74,13 +74,6 @@ export default function Customer() {
               </span>
             </div>
 
-            <Button className="bg-primary hover:bg-primary-hover gap-1" asChild>
-              <Link href={`/orders/create?customer=${customer.id}`}>
-                <PlusIcon size={20} weight="bold" className="text-white" />
-                <span>Novo pedido</span>
-              </Link>
-            </Button>
-
             <CustomerOptions
               customer={customer}
               variant="primary"

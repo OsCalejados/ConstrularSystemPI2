@@ -14,6 +14,9 @@ import { Button } from '@/components/shadcnui/button'
 import { toast } from '@/hooks/use-toast'
 import { Page } from '@/components/layout/page'
 import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr'
+import { AxiosError } from 'axios'
+import { APIErrorResponse } from '@/types/api-error-response'
+import { useMutation } from '@tanstack/react-query'
 
 export default function CreateCustomer() {
   const router = useRouter()
@@ -39,23 +42,23 @@ export default function CreateCustomer() {
     formState: { isDirty },
   } = customerForm
 
-  const onSubmit = async (data: CustomerFormData) => {
-    try {
-      await createCustomer(data)
-
+  const { mutate } = useMutation({
+    mutationFn: createCustomer,
+    onSuccess: async () => {
       toast({
         title: 'Cliente criado com sucesso',
       })
 
       reset()
       router.back()
-    } catch (error) {
+    },
+    onError: (e: AxiosError<APIErrorResponse>) => {
       toast({
-        title: 'Erro ao criar cliente',
+        title: e.response?.data?.error?.message,
         variant: 'destructive',
       })
-    }
-  }
+    },
+  })
 
   return (
     <Page.Container>
@@ -115,7 +118,7 @@ export default function CreateCustomer() {
 
         <div className="mt-4">
           <FormProvider {...customerForm}>
-            <CustomerForm onSubmit={onSubmit} />
+            <CustomerForm onSubmit={async (data) => mutate(data)} />
           </FormProvider>
         </div>
       </Page.Content>

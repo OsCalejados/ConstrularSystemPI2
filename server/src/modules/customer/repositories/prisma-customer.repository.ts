@@ -35,6 +35,16 @@ export class PrismaCustomerRepository implements CustomerRepository {
     return CustomerMapper.toDto(customer);
   }
 
+  async findByName(name: string): Promise<CustomerDto> {
+    const customer = await this.prisma.customer.findFirst({
+      where: {
+        name,
+      },
+    });
+
+    return CustomerMapper.toDto(customer);
+  }
+
   async create(customer: CreateCustomerDto): Promise<CustomerDto> {
     const createdCustomer = await this.prisma.customer.create({
       data: {

@@ -26,5 +26,7 @@ export abstract class CustomerRepository {
     options?: FindCustomerOptions,
   ): Promise<CustomerDto>;
 
+  abstract findByName(name: string): Promise<CustomerDto>;
+
   abstract deleteById(customerId: number): Promise<CustomerDto>;
 }
