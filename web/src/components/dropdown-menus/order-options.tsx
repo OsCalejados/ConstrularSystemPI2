@@ -138,7 +138,7 @@ export default function OrderOptions({
             <>
               <DropdownMenuItem asChild>
                 <Link
-                  href={`${orderPath}/${order.id}`}
+                  href={`${orderPath}/edit/${order.id}`}
                   onClick={(event) => event.stopPropagation()}
                   className="gap-2"
                 >
