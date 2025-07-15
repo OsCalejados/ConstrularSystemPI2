@@ -7,6 +7,7 @@ import { OrderDto } from '../dtos/order.dto';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@src/common/services/prisma.service';
 import { CreateOrderDto } from '../dtos/create-order.dto';
+import { UpdateOrderDto } from '../dtos/update-order.dto';
 
 export abstract class IOrderRepository {
   constructor(protected prisma: PrismaService) {}
@@ -35,7 +36,7 @@ export abstract class IOrderRepository {
 
   abstract update(
     orderId: number,
-    order: OrderDto,
+    order: UpdateOrderDto,
     tx?: Prisma.TransactionClient,
   ): Promise<OrderDto>;
 

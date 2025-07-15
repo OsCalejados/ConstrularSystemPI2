@@ -11,6 +11,7 @@ import { OrderPaymentDto } from '../dtos/order-payment.dto';
 import { OrderPaymentMapper } from '../mappers/order-payment.mapper';
 import { Prisma } from '@prisma/client';
 import { CreateOrderDto } from '../dtos/create-order.dto';
+import { UpdateOrderDto } from '../dtos/update-order.dto';
 
 @Injectable()
 export class PrismaOrderRepository extends IOrderRepository {
@@ -140,7 +141,7 @@ export class PrismaOrderRepository extends IOrderRepository {
 
   async update(
     orderId: number,
-    order: OrderDto,
+    order: UpdateOrderDto,
     tx: Prisma.TransactionClient = this.prisma,
   ): Promise<OrderDto> {
     const updatedOrder = await tx.order.update({
@@ -148,12 +149,10 @@ export class PrismaOrderRepository extends IOrderRepository {
         id: orderId,
       },
       data: {
-        status: order.status,
         total: order.total,
         type: order.type,
         discount: order.discount,
         subtotal: order.subtotal,
-        paid: order.paid,
         notes: order.notes,
         customerId: order.customerId,
         items: {
