@@ -66,6 +66,10 @@ export default function CreateMovement() {
           parents={[
             {
               name: 'Estoque',
+              path: '/stock',
+            },
+            {
+              name: 'Movimentações',
               path: '/stock/movements',
             },
           ]}

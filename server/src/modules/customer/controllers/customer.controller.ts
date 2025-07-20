@@ -38,8 +38,8 @@ export class CustomerController {
   }
 
   @Post()
-  async createCustomer(@Body() CreateCustomerDto: CreateCustomerDto) {
-    return await this.customerService.createCustomer(CreateCustomerDto);
+  async createCustomer(@Body() createCustomerDto: CreateCustomerDto) {
+    return await this.customerService.createCustomer(createCustomerDto);
   }
 
   @Put(':id')

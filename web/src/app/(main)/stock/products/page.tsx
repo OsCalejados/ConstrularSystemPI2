@@ -23,7 +23,15 @@ export default function Products() {
   return (
     <Page.Container>
       <Page.Header>
-        <Breadcrumb currentPage="Estoque" />
+        <Breadcrumb
+          currentPage="Produtos"
+          parents={[
+            {
+              name: 'Estoque',
+              path: '/stock',
+            },
+          ]}
+        />
       </Page.Header>
       <Page.Content>
         <div className="flex justify-between items-center">
