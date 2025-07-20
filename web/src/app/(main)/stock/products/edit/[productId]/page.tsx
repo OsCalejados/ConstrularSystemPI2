@@ -73,11 +73,15 @@ export default function EditProduct() {
     <Page.Container>
       <Page.Header>
         <Breadcrumb
-          currentPage="Novo produto"
+          currentPage="Editar produto"
           parents={[
             {
               name: 'Estoque',
-              path: '/products',
+              path: '/stock',
+            },
+            {
+              name: 'Produtos',
+              path: '/stock/products',
             },
           ]}
         />

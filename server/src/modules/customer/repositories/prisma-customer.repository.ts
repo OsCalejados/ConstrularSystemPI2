@@ -32,6 +32,8 @@ export class PrismaCustomerRepository implements CustomerRepository {
       },
     });
 
+    if (!customer) return null;
+
     return CustomerMapper.toDto(customer);
   }
 
@@ -41,6 +43,8 @@ export class PrismaCustomerRepository implements CustomerRepository {
         name,
       },
     });
+
+    if (!customer) return null;
 
     return CustomerMapper.toDto(customer);
   }

@@ -32,7 +32,15 @@ export default function Movements() {
     return (
       <Page.Container>
         <Page.Header>
-          <Breadcrumb currentPage="Movimentações" />
+          <Breadcrumb
+            currentPage="Movimentações"
+            parents={[
+              {
+                name: 'Estoque',
+                path: '/stock',
+              },
+            ]}
+          />
         </Page.Header>
         <Page.Content>
           <p>Erro ao carregar movimentações.</p>
@@ -45,7 +53,15 @@ export default function Movements() {
     return (
       <Page.Container>
         <Page.Header>
-          <Breadcrumb currentPage="Movimentações" />
+          <Breadcrumb
+            currentPage="Movimentações"
+            parents={[
+              {
+                name: 'Estoque',
+                path: '/stock',
+              },
+            ]}
+          />
         </Page.Header>
         <Page.Content>
           <p>Nenhum dado de movimentação disponível.</p>
@@ -57,7 +73,15 @@ export default function Movements() {
   return (
     <Page.Container>
       <Page.Header>
-        <Breadcrumb currentPage="Movimentações" />
+        <Breadcrumb
+          currentPage="Movimentações"
+          parents={[
+            {
+              name: 'Estoque',
+              path: '/stock',
+            },
+          ]}
+        />
       </Page.Header>
       <Page.Content>
         <div className="flex justify-between items-center">

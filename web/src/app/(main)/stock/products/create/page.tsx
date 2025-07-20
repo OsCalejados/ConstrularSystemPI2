@@ -64,7 +64,11 @@ export default function CreateProduct() {
           parents={[
             {
               name: 'Estoque',
-              path: '/products',
+              path: '/stock',
+            },
+            {
+              name: 'Produtos',
+              path: '/stock/products',
             },
           ]}
         />
