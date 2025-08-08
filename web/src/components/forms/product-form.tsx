@@ -1,6 +1,6 @@
 import InputError from '../ui/input-error'
 
-import { useFormContext, Controller } from 'react-hook-form'
+import { useFormContext, Controller, useWatch } from 'react-hook-form'
 import { Input } from '../shadcnui/input'
 import { Label } from '../shadcnui/label'
 import { ProductFormData } from '@/types/validations'
@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../shadcnui/select'
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { MeasureUnit } from '@/enums/measure-unit'
 import { formatCurrency } from '@/utils/format/format-currency'
 import { parseCurrency } from '@/utils/parse/currency'
@@ -23,6 +23,13 @@ interface ProductFormProps {
   readOnly?: boolean
 }
 
+type EditableField =
+  | 'profitMargin'
+  | 'salePrice'
+  | 'profit'
+  | 'costPrice'
+  | null
+
 export default function ProductForm({
   onSubmit,
   readOnly = false,
@@ -31,46 +38,99 @@ export default function ProductForm({
     register,
     handleSubmit,
     control,
-    watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useFormContext<ProductFormData>()
 
-  const costPrice = watch('costPrice')
-  const profitMargin = watch('profitMargin')
-  const salePrice = watch('salePrice')
-  const profit = watch('profit')
+  const [costPrice, profitMargin, salePrice, profit] = useWatch({
+    control,
+    name: ['costPrice', 'profitMargin', 'salePrice', 'profit'],
+  })
+
+  const lastEditedRef = useRef<EditableField>(null)
+
+  const markEdited = (field: EditableField) => {
+    lastEditedRef.current = field
+  }
+
+  const updateIfDifferent = useCallback(
+    (name: keyof ProductFormData, value: number) => {
+      const current = Number(getValues(name))
+      const diff =
+        (current ?? 0) === 0
+          ? Math.abs(value) > 1e-9
+          : Math.abs(((current ?? 0) - value) / (current || 1)) > 1e-9
+      if (diff) {
+        setValue(name, value, {
+          shouldDirty: true,
+          shouldTouch: false,
+          shouldValidate: false,
+        })
+      }
+    },
+    [getValues, setValue],
+  )
+
+  useEffect(() => {
+    const last = lastEditedRef.current
+    const c = costPrice ?? 0
+    const margin = profitMargin ?? 0
+    const s = salePrice ?? 0
+    const p = profit ?? 0
+
+    if (c < 0) return
+
+    if (last === 'profitMargin' || last === 'costPrice') {
+      const newProfit = c * (margin / 100)
+      const newSale = c + newProfit
+      updateIfDifferent('profit', newProfit)
+      updateIfDifferent('salePrice', newSale)
+    } else if (last === 'salePrice') {
+      const newProfit = s - c
+      const newMargin = c > 0 ? (newProfit / c) * 100 : 0
+      updateIfDifferent('profit', newProfit)
+      updateIfDifferent('profitMargin', newMargin)
+    } else if (last === 'profit') {
+      const newSale = c + p
+      const newMargin = c > 0 ? (p / c) * 100 : 0
+      updateIfDifferent('salePrice', newSale)
+      updateIfDifferent('profitMargin', newMargin)
+    }
+
+    // Se last for null (primeiro render) não faz nada.
+  }, [costPrice, profitMargin, salePrice, profit, updateIfDifferent])
 
   // Calcular preço de venda e lucro automaticamente
-  useEffect(() => {
-    if (costPrice && profitMargin) {
-      const profit = (costPrice * profitMargin) / 100
-      const salePrice = costPrice + profit
+  // useEffect(() => {
+  //   if (costPrice && profitMargin) {
+  //     const profit = (costPrice * profitMargin) / 100
+  //     const salePrice = costPrice + profit
 
-      setValue('profit', profit)
-      setValue('salePrice', salePrice)
-    }
-  }, [costPrice, profitMargin, setValue])
+  //     setValue('profit', profit)
+  //     setValue('salePrice', salePrice)
+  //   }
+  // }, [costPrice, profitMargin, setValue])
 
-  useEffect(() => {
-    if (costPrice && salePrice) {
-      const newProfit = salePrice - costPrice
-      const newMargin = costPrice > 0 ? (newProfit / costPrice) * 100 : 0
+  // useEffect(() => {
+  //   if (costPrice && salePrice) {
+  //     const newProfit = salePrice - costPrice
+  //     const newMargin = costPrice > 0 ? (newProfit / costPrice) * 100 : 0
 
-      setValue('profit', newProfit)
-      setValue('profitMargin', newMargin)
-    }
-  }, [salePrice, costPrice, setValue])
+  //     setValue('profit', newProfit)
+  //     setValue('profitMargin', newMargin)
+  //   }
+  // }, [salePrice, costPrice, setValue])
 
-  useEffect(() => {
-    if (costPrice && profit) {
-      const newSalePrice = costPrice + profit
-      const newMargin = costPrice > 0 ? (profit / costPrice) * 100 : 0
+  // useEffect(() => {
+  //   if (costPrice && profit) {
+  //     const newSalePrice = costPrice + profit
+  //     const newMargin = costPrice > 0 ? (profit / costPrice) * 100 : 0
 
-      setValue('salePrice', newSalePrice)
-      setValue('profitMargin', newMargin)
-    }
-  }, [profit, costPrice, setValue])
+  //     setValue('salePrice', newSalePrice)
+  //     setValue('profitMargin', newMargin)
+  //   }
+  // }, [profit, costPrice, setValue])
 
   return (
     <form
@@ -169,6 +229,7 @@ export default function ProductForm({
                   value={field.value ? formatCurrency(field.value) : 'R$ 0,00'}
                   onChange={(e) => {
                     const float = parseCurrency(e.target.value)
+                    markEdited('costPrice')
                     field.onChange(float)
                   }}
                 />
@@ -191,6 +252,7 @@ export default function ProductForm({
                   onChange={(e) => {
                     percentageMask(e)
                     const float = parseCurrency(e.target.value)
+                    markEdited('profitMargin')
                     field.onChange(float)
                   }}
                 />
@@ -212,6 +274,7 @@ export default function ProductForm({
                   value={field.value ? formatCurrency(field.value) : 'R$ 0,00'}
                   onChange={(e) => {
                     const float = parseCurrency(e.target.value)
+                    markEdited('salePrice')
                     field.onChange(float)
                   }}
                 />
@@ -233,6 +296,7 @@ export default function ProductForm({
                   value={field.value ? formatCurrency(field.value) : 'R$ 0,00'}
                   onChange={(e) => {
                     const float = parseCurrency(e.target.value)
+                    markEdited('profit')
                     field.onChange(float)
                   }}
                 />

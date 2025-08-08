@@ -56,7 +56,11 @@ export default function ProductView() {
           parents={[
             {
               name: 'Estoque',
-              path: '/products',
+              path: '/stock',
+            },
+            {
+              name: 'Produtos',
+              path: '/stock/products',
             },
           ]}
         />

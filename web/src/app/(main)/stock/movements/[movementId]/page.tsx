@@ -47,6 +47,10 @@ export default function ViewMovement() {
           parents={[
             {
               name: 'Estoque',
+              path: '/stock',
+            },
+            {
+              name: 'Movimentações',
               path: '/stock/movements',
             },
           ]}
